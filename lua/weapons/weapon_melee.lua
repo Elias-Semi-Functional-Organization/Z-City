@@ -1305,7 +1305,7 @@ SWEP.SwingAng = -90
 SWEP.SwingAng2 = 0
 
 function SWEP:PrimaryAttack()
-    if not IsFirstTimePredicted() then return end
+    if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
     local ply = self:GetOwner()
 
     if self.cutthroat and self.cutthroat + 1 > CurTime() then return end
@@ -1427,7 +1427,7 @@ function SWEP:SecondaryAttack(override)
         return
     end
 
-    if not IsFirstTimePredicted() then return end
+    if not game.SinglePlayer() and not IsFirstTimePredicted() then return end
 
     local ent = hg.GetCurrentCharacter(ply)
 

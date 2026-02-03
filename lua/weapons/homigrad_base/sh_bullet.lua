@@ -368,7 +368,7 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 
 	local gunpos, gunang
 
-	if CLIENT then
+	if CLIENT and !closeanim then
 		gunpos, gunang = self.desiredPos, self.desiredAng
 	else
 		gunpos, gunang = self:WorldModel_Transform(true)

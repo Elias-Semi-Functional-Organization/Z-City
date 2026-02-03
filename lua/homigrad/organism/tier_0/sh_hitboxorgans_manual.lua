@@ -199,7 +199,7 @@ local models_female = {
 	["models/player/group03/police_fem.mdl"] = true
 }
 
-table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest1", 1, Vector(3, 8, 0), Angle(0, 0, 0), Vector(7, 1, 6), Color(250, 255, 0), true, hg.armor.torso["vest1"].protection})
+table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest1", 1, Vector(3, 7, 0), Angle(0, 0, 0), Vector(7, 2, 6), Color(250, 255, 0), true, hg.armor.torso["vest1"].protection})
 table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest1", 1, Vector(3, -2.5, 0), Angle(0, 0, 0), Vector(7, 1, 6), Color(250, 255, 0), true, hg.armor.torso["vest1"].protection})
 
 table.insert(male["ValveBiped.Bip01_Spine1"],1,{"vest2", 1, Vector(-4, 2, 0), Angle(0, 0, 0), Vector(5, 7, 7), Color(140, 0, 255), true, hg.armor.torso["vest2"].protection})
@@ -459,14 +459,3 @@ local cmb_mdls = {
 function hg.organism.GetHitBoxOrgans(model, ent)
 	return (models_female[model] and female) or male
 end
-
-util.AddNetworkString("HitboxesGetOrgans")
-
-concommand.Add("hg_show_organs",function(ply, cmd, args)
-	if ply:IsSuperAdmin() then
-		net.Start("HitboxesGetOrgans")
-			net.WriteTable(male)
-			net.WriteTable(female)
-		net.Send(ply)
-	end
-end)

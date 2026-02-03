@@ -410,7 +410,7 @@ end)
 hook.Add("HG_PlayerSay", "ZB_EventLootCommand", function(ply, txtTbl, text)
     if string.lower(text) == "!eventloot" and (ply:IsAdmin() or MODE.EventersList[ply:SteamID()]) then
         ply:ConCommand("zb_event_loot_menu")
-        return ""
+        txtTbl[1] = ""
     end
 end)
 

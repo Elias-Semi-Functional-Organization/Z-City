@@ -65,6 +65,6 @@ local whitelist = {
 hook.Add("HG_PlayerSay", "homigrad-drop-weapons", function(ply, txtTbl, text)
 	if whitelist[text] then
 		drop(ply)
-		return ""
+		txtTbl[1] = ""
 	end
 end)

@@ -246,7 +246,7 @@ function SWEP:CloseAnim(dtime)
 	//newAng:RotateAroundAxis(newAng:Forward(),180)
 	
 	--print(desiredAng)
-	local _, pos, ang = self:GetTrace(nil, nil, nil, true)
+	local _, pos, ang = self:GetTrace(nil, nil, nil, true, true)
 	
 	if !ang or !pos or !self.fuckingfuckangle then return 0 end
 	
