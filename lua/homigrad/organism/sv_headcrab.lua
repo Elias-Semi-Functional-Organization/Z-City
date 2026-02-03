@@ -23,12 +23,14 @@ end)
 hook.Add("Org Clear", "removeheadcrab", function(org)
     org.headcrabon = nil
 	org.headcrabevent = false
-	org.owner:SetNetVar("headcrab", false)
+	if IsValid(org.owner) then
+		org.owner:SetNetVar("headcrab", false)
+	end
 	org.noHead = false
 end)
 
 hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)
-    if not owner then return end
+    if not IsValid(owner) then return end
     if not owner:IsPlayer() or not owner:Alive() then return end
 
     if org.headcrabon and (org.headcrabon + 15) < CurTime() and org.brain != 1 and org.owner.organism.spine3 != 1 then
@@ -57,6 +59,7 @@ hook.Add("Org Think", "Headcrab",function(owner, org, timeValue)
 					org.owner:Kill()
 					org.owner.organism.spine3 = 1
 					org.owner:EmitSound("neck_snap_01.wav", 60, 100, 1, CHAN_AUTO)
+					-- do zombification here!!
 				else
 					org.painadd = org.painadd + 40
 					hg.StunPlayer(owner, 5)

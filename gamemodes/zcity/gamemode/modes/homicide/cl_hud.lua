@@ -379,7 +379,7 @@ hook.Add("HUDPaint", "DrawTraitorPanel", function()
                 local steamID = traitor_info[3] or ""
                 
                 local player_found = nil
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v.isTraitor and v.CurAppearance and v.CurAppearance.AName == name then
                         player_found = v
                         break
@@ -486,7 +486,7 @@ hook.Add("Think", "UpdateTraitorAssistants", function()
 		
 		for name, alpha in pairs(traitor_panel.dead_anim) do
 			local is_alive = false
-			for _, v in ipairs(player.GetAll()) do
+			for _, v in player.Iterator() do
 				if v.isTraitor and v.CurAppearance and v.CurAppearance.AName == name then
 					is_alive = v:Alive() and (not v.organism or not v.organism.incapacitated)
 					break

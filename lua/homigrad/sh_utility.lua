@@ -245,7 +245,7 @@ hg.ConVars = hg.ConVars or {}
 			return player.GetAll()
 		end
 
-		for i, ply in pairs(player.GetAll()) do
+		for i, ply in player.Iterator() do
 			if string.find(string.lower(ply:Name()), string.lower(name)) then list[#list + 1] = ply end
 		end
 		return list
@@ -289,6 +289,7 @@ hg.ConVars = hg.ConVars or {}
 	local HullDuckMins = -Vector(hull, hull, 0)
 	local ViewOffset = Vector(0, 0, 64)
 	local ViewOffsetDucked = Vector(0, 0, 38)
+	local Pos32 = Vector(0, 0, 32)
 
 	local gridsize = 24
 	local tpGrid = hg.spiralGrid(gridsize)
@@ -307,7 +308,7 @@ hg.ConVars = hg.ConVars or {}
 		offset:Rotate( Angle( 0, yawForward, 0 ) )
 
 		local t = {}
-		t.start = pos + Vector( 0, 0, 32 )
+		t.start = pos + Pos32
 		t.collisiongroup = COLLISION_GROUP_WEAPON
 		t.filter = player.GetAll()
 		t.endpos = t.start + offset
@@ -2105,7 +2106,7 @@ local IsValid = IsValid
 
 		if not flashlightwep then --custom flashlight
 			local inv = ply:GetNetVar("Inventory",{})
-			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled then
+			if inv and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and enabled and hg.CanUseLeftHand(ply) then
 				hg.GetCurrentCharacter(ply):EmitSound("items/flashlight1.wav",65)
 				ply:SetNetVar("flashlight",not ply:GetNetVar("flashlight"))
 				--return true
@@ -2242,6 +2243,11 @@ local IsValid = IsValid
 --\\ Can use hands
 	function hg.CanUseLeftHand(ply)
 		local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
+
+		if ent.organism and ent.organism.larmamputated then
+			return false
+		end
+
 		local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon()
 		local Car = (ply.GetSimfphys and IsValid(ply:GetSimfphys()) and ply:GetSimfphys()) or ( ply.GlideGetVehicle and IsValid(ply:GlideGetVehicle()) and ply:GlideGetVehicle()) or ply:GetVehicle()
 
@@ -2260,6 +2266,12 @@ local IsValid = IsValid
 	end
 
 	function hg.CanUseRightHand(ply)
+		local ent = IsValid(ply.FakeRagdoll) and ply.FakeRagdoll or ply
+
+		if ent.organism and ent.organism.rarmamputated then
+			return false
+		end
+
 		return true
 	end
 --//
@@ -2465,7 +2477,7 @@ duplicator.Allow( "homigrad_base" )
 			if Player:IsOnFire() then
 				anim = ACT_HL2MP_RUN_PANICKED
 			elseif isFurry then
-				if hg.KeyDown(Player, IN_WALK) then
+				if hg.KeyDown(Player, IN_WALK) and not hg.KeyDown(Player, IN_BACK) then
 					anim = ACT_HL2MP_RUN_ZOMBIE_FAST
 				else
 					anim = ACT_HL2MP_RUN_FAST

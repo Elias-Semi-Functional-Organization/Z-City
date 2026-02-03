@@ -33,7 +33,7 @@ end
 
 util.AddNetworkString("setupclass")
 hook.Add("PlayerInitializeSpawn", "PlayerClass", function(plySend)
-	for i, ply in pairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		if not ply:GetPlayerClass() then continue end
 		net.Start("setupclass")
 		net.WriteEntity(ply)

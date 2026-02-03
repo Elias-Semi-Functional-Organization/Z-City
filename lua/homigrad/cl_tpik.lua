@@ -1327,7 +1327,7 @@ hook.Add("Camera","Flashlights",function(ply, pos, angles, view)
 end)
 
 function hg.FlashlightPos(ply)    
-    if not ply:GetNetVar("flashlight",false) then
+    if not ply:GetNetVar("flashlight", false) then
         if IsValid(ply.flashlight) then
             ply.flashlight:Remove()
         end
@@ -1335,7 +1335,7 @@ function hg.FlashlightPos(ply)
         return
     end
 
-    if not ply:GetNetVar("Inventory") or not ply:GetNetVar("Inventory")["Weapons"] or not ply:GetNetVar("Inventory")["Weapons"]["hg_flashlight"] then
+    if not ply:GetNetVar("Inventory") or not ply:GetNetVar("Inventory")["Weapons"] or not ply:GetNetVar("Inventory")["Weapons"]["hg_flashlight"] or ply.organism and ply.organism.larmamputated then
         if IsValid(ply.flashlight) then
             ply.flashlight:Remove()
         end
@@ -1386,6 +1386,7 @@ function hg.FlashlightPos(ply)
     if IsValid(ply.FakeRagdoll) then return end
     if not rhmat or not lhmat then return end
     if not ishgweapon(wep) or wep.reload then return end
+	if ply.organism and ply.organism.larmamputated then return end
 
     if veclh and lang then
 	    lhmat:SetTranslation(veclh)

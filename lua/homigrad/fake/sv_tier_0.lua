@@ -599,6 +599,10 @@ function hg.Fake(ply, huyragdoll, no_freemove, force)
 		//ply:ExitVehicle()
 	--end)
 
+	timer.Simple(0, function() -- bandaid shitfix for now
+		ply:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+	end)
+
 	if ply:FlashlightIsOn() then ply:Flashlight(false) end
 	ply.oldCanUseFlashlight = ply:CanUseFlashlight()
 	ply:AllowFlashlight(false)
@@ -650,7 +654,7 @@ end
 local CurTime = CurTime
 
 hook.Add("PreCleanupMap","VSEM_VSTAT",function()
-	for i,ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		hg.FakeUp(ply)
 	end
 end)

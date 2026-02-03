@@ -149,7 +149,7 @@ SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empt
 --models/weapons/tfa_ins2/upgrades/laser_pistol.mdl
 SWEP.availableAttachments = {
 	barrel = {
-		[1] = {"supressor3", Vector(0,0,0), {}},
+		[1] = {"supressor3", Vector(-0.2,0,-0.12), {}},
 		[2] = {"supressor4", Vector(0,-0.15,0), {}},
 		[3] = {"supressor6", Vector(0,0,0), {}},
 		["mount"] = Vector(-0.2,0.6,0),

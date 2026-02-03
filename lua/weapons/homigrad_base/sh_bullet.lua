@@ -20,8 +20,6 @@ local surface_hardness = {
 	[MAT_GLASS] = 0.6,
 }
 
-local player_GetAll = player.GetAll
-
 local effect = {
 	[MAT_METAL] = {"metal",1},
 	[MAT_COMPUTER] = {"metal",1},
@@ -368,8 +366,14 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 	local gun = self:GetWeaponEntity()
 	if !IsValid(gun) then return end
 
-	local gunpos, gunang = self:WorldModel_Transform(true)
+	local gunpos, gunang
 
+	if CLIENT and !closeanim then
+		gunpos, gunang = self.desiredPos, self.desiredAng
+	else
+		gunpos, gunang = self:WorldModel_Transform(true)
+	end
+	
 	gunpos = gunpos or gun:GetPos()
 	gunang = gunang or gun:GetAngles()
 	--debugoverlay.Line(gunpos, gunpos + gunang:Forward() * 20,0.5,color_white)
@@ -381,7 +385,7 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 		mat = mat:GetInverse()
 		gunpos, gunang = LocalToWorld(mat:GetTranslation(), mat:GetAngles(), gunpos, gunang)
 	end
-
+	
 	local pos, ang = LocalToWorld(self.LocalMuzzlePos, self.LocalMuzzleAng, gunpos, gunang)
 	
 	if NoTrace then self.cache_trace = self.cache_trace or {} self.cache_trace[2] = pos self.cache_trace[3] = ang
@@ -406,7 +410,7 @@ function SWEP:GetTrace(bCacheTrace, desiredPos, desiredAng, NoTrace, closeanim)
 		self.cache_trace[2] = pos
 		self.cache_trace[3] = ang
 	end
-	
+	--debugoverlay.Sphere(trace.HitPos, 1, 1, SERVER and Color(255, 0, 0) or Color(0, 255, 0))
 	return trace, pos, ang
 end
 

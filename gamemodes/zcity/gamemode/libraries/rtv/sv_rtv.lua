@@ -473,7 +473,7 @@ function zb.CheckRTVVotes(needPrint)
     
     if votes >= votesNeeded then
         if needPrint then
-            for _, v in pairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 v:ChatPrint("Enough votes to change the map. RTV will be on next round.")
             end
         end

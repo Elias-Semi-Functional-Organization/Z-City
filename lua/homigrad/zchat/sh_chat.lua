@@ -194,9 +194,9 @@ else
 	end)
 
 	hook.Add("PlayerSay", "ZChat", function(ply, text)
- 		local txt = {text}
-		hook.Run("HG_PlayerSay", ply, txt) // our shit gets called later
-		text = isstring(txt[1]) and txt[1] or text // checks to see if shit hits the ceiling
+ 		local txtTbl = {text}
+		hook.Run("HG_PlayerSay", ply, txtTbl, text) // our shit gets called later
+		text = isstring(txtTbl[1]) and txtTbl[1] or text // checks to see if shit hits the ceiling
 
 		if ply:Alive() and ply.organism and ply.organism.otrub then return end
 

@@ -415,7 +415,7 @@ function playerMeta:GetLookTrace()
     return util.TraceLine(tr)
 end
 
-hook.Add("Player Think","loot-higgers",function(ply)
+hook.Add("Player Think","loot-fellows",function(ply)
     if not ply:Alive() then return end
     ply.keypressed = ply.keypressed or false
     --if not ply:GetLookTrace() then return end

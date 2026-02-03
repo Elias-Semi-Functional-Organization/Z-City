@@ -94,19 +94,6 @@ local models_female = {
 
 if SERVER then return end
 
-local male, female
-net.Receive("HitboxesGetOrgans",function()
-	male = net.ReadTable()
-	female = net.ReadTable()
-end)
-
-function hg.organism.GetHitBoxOrgans(model, ent)
-    if model == "models/gfreakman/gordonf_highpoly.mdl" then
-        return gordon
-    end
-    return (models_female[model] and female) or male
-end
-
 local render_DrawW
 local white, red, blue, black = Color(255, 255, 255), Color(255, 0, 0), Color(0, 0, 255), Color(0, 0, 0)
 local hg_show_hitbox = ConVarExists("hg_show_hitbox") and GetConVar("hg_show_hitbox") or CreateClientConVar("hg_show_hitbox", "0", false, false, "shows custom players hitboxes, work only for admins or with sv_cheats 1 enabled")

@@ -58,15 +58,21 @@ SWEP.AvailableCostumes = {
 
 SWEP.Identity = {
     AName = "Unknown", -- Player CustomName... 
-    AModel = "models/distac/player/ghostface.mdl",  -- GMODModel?
-    AColor = Color(255,0,0), 
-    AAttachments = {}-- Таблица внешней одежды по типу шапки и так далее... -- Потом! 
+    AModel = "models/distac/player/ghostface.mdl", -- GMODModel?
+    AColor = Color(255, 0, 0),
+    AAttachments = {} -- Таблица внешней одежды по типу шапки и так далее... -- Потом! 
 }
 
 SWEP.IsCostumeActive = false
 
 if SERVER then
-    function SWEP:OnRemove() end
+    hook.Add("HG_ReplacePhrase", "costume_pitch", function(ent, phrase, muffed, pitch)
+		if ent:GetModel() == "models/distac/player/ghostface.mdl" then
+			return ent, phrase, muffed, true
+		elseif ent:GetModel() == "models/eu_homicide/mkx_jajon.mdl" then
+			return ent, phrase, true, pitch
+		end
+	end)
 end
 
 function SWEP:DrawWorldModel()

@@ -73,7 +73,6 @@ if CLIENT then
 	end )
 end
 
-local player_GetAll = player.GetAll
 local team_GetAllTeams = team.GetAllTeams
 
 function zb:CheckTeams()
@@ -82,7 +81,7 @@ function zb:CheckTeams()
 		tbl[i] = {}
 	end
 
-	for _, ply in pairs(player_GetAll()) do
+	for _, ply in player.Iterator() do
 		tbl[ply:Team()][#tbl[ply:Team()] + 1] = ply
 	end
 	return tbl
@@ -96,7 +95,7 @@ function zb:CheckAliveTeams(incapacitatedcheck)
 		tbl[i] = {}
 	end
 
-	for _, ply in ipairs(player_GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if incapacitatedcheck and ply.organism and ply.organism.incapacitated then continue end
 
@@ -109,7 +108,7 @@ end
 
 function zb:CheckAlive(incapacitatedcheck)
 	local tbl = {}
-	for _, ply in ipairs(player_GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if incapacitatedcheck and ply.organism and ply.organism.incapacitated then continue end
 		tbl[#tbl + 1] = ply
@@ -119,7 +118,7 @@ end
 
 function zb:CheckPlaying()
 	local tbl = {}
-	for _, ply in ipairs(player_GetAll()) do
+	for _, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if not ply:Alive() then continue end
 		

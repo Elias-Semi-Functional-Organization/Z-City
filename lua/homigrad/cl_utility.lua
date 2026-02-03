@@ -881,29 +881,6 @@ players : 1 humans, 0 bots (20 max)
 	end
 --//
 
---\\ who write this, what doing this code?
-	if CLIENT then
-		local buf = {}
-		local count = 0
-
-		net.Receive("ZB_BufferSend",function()
-			local buf2 = net.ReadTable()
-
-			buf = buf2
-			count = #buf2
-		end)
-
-		hook.Add("HUDPaint", "huyUwUsss", function()
-			if not buf then return end
-
-			for i = 1, count do
-				local sz = math.Round(buf[i] * 0.5)
-				draw.RoundedBox(0,math.floor((i-1) * ScrW() / count),500 + (sz < 0 and sz or 0),math.ceil(ScrW() / count), math.abs(sz), Color( 255, buf[i] > 0 and 0 or 255, 0))
-			end
-		end)
-	end
---//
-
 --\\ Tinnitus function
 	if CLIENT then
 		local lply = LocalPlayer()

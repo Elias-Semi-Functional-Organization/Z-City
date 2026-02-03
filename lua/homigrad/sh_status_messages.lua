@@ -233,11 +233,15 @@ function string.Random(length)
 end
 
 function hg.nothing_happening(ply)
-	return ply.organism.fear < -0.6
+	if not IsValid(ply) then return end
+
+	return ply.organism and ply.organism.fear < -0.6
 end
 
 function hg.fearful(ply)
-	return ply.organism.fear > 0.5
+	if not IsValid(ply) then return end
+
+	return ply.organism and ply.organism.fear > 0.5
 end
 
 function hg.likely_to_phrase(ply)

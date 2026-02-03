@@ -225,6 +225,7 @@ end
 
 function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	if not self.ENT then return end
+
 	local owner = self.Thrower or self:GetOwner()
 	local ent = ents.Create(self.ENT)
 	local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or IsValid(owner) and owner
@@ -336,6 +337,10 @@ end
 
 function SWEP:SecondaryAttack()
 	if self.ReadyToThrow or self.CoolDown > CurTime() then return end
+
+	local owner = self:GetOwner()
+	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
+
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbacklow")
 	self.Thrower = self:GetOwner()
@@ -484,6 +489,10 @@ SWEP.CoolDown = 0
 
 function SWEP:PrimaryAttack()
 	if self.ReadyToThrow or self.CoolDown > CurTime() then return end
+
+	local owner = self:GetOwner()
+	if not hg.CanUseLeftHand(owner) or not hg.CanUseRightHand(owner) then return end
+
 	self.CoolDown = CurTime() + 2
 	self:PlayAnim("pullbackhigh")
 	self.Thrower = self:GetOwner()

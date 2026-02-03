@@ -17,7 +17,7 @@ MODE.TypeSounds = {
 }
 local fade = 0
 net.Receive("HMCD_RoundStart",function()
-	for i,ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply.isTraitor = false
 		ply.isGunner = false
 	end
@@ -491,7 +491,7 @@ CreateEndMenu = function(traitor)
 	local traitorName = IsValid(traitor) and traitor:GetPlayerName() or "unknown"
 	local traitorNick = IsValid(traitor) and traitor:Nick() or "unknown"
 
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		if !IsValid(ply) then return end
 		

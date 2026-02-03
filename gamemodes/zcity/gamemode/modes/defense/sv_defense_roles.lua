@@ -5,7 +5,7 @@ util.AddNetworkString("defense_commander_notification")
 util.AddNetworkString("defense_player_role_assigned")
 
 function MODE:ClearPlayerRoles()
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply:SetNWString("PlayerRole", "")
         ply:SetNWInt("CommanderPoints", 0)
     end
@@ -13,7 +13,7 @@ end
 
 
 function MODE:AddCommanderPoints(points)
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
             local currentPoints = ply:GetNWInt("CommanderPoints", 0)
             ply:SetNWInt("CommanderPoints", currentPoints + points)
@@ -54,7 +54,7 @@ function MODE:OnWaveComplete()
         pointsPerWave = pointsPerWave * 2
         
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
                 local currentPoints = ply:GetNWInt("CommanderPoints", 0)
                 ply:SetNWInt("CommanderPoints", currentPoints + pointsPerWave)
@@ -73,7 +73,7 @@ end
 
 function MODE:AssignPlayerRoles()
     local players = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Team() ~= TEAM_SPECTATOR and ply:Alive() then
             table.insert(players, ply)
         end
@@ -197,7 +197,7 @@ function MODE:GiveEquipment()
         self:AssignPlayerRoles()
     end)
 
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then
             continue
         end

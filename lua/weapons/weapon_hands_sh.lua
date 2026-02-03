@@ -508,7 +508,7 @@ end
 
 function SWEP:IsLocal()
 	if SERVER then return end
-	return self:GetOwner() == LocalPlayer()
+	return not game.SinglePlayer() and self:GetOwner() == LocalPlayer()
 end
 
 if SERVER then
@@ -1349,7 +1349,7 @@ function SWEP:PrimaryAttack(forcespecial)
 		special_attack = false
 	end
 
-	if CLIENT and self.IsLocal and self:IsLocal() then
+	if self.IsLocal and self:IsLocal() then
 		ViewPunch(special_attack and Angle(0, 0, 0) or Angle((-1), -(rand and 2 or -2), (rand and 6 or -6)))
 		//ViewPunch2(special_attack and Angle(5, -2, 2) or Angle((-1), -(rand and 2 or -2), (rand and 6 or -6)))
 		if special_attack then
@@ -1359,7 +1359,7 @@ function SWEP:PrimaryAttack(forcespecial)
 		end
 	end
 
-	if CLIENT and self.IsLocal and not self:IsLocal() then
+	if self.IsLocal and not self:IsLocal() then
 		owner:AddVCDSequenceToGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD,owner:LookupSequence((special_attack or rand) and "range_fists_r" or "range_fists_l"),0,true)
 	end
 

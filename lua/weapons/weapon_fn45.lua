@@ -27,8 +27,8 @@ SWEP.AnimList = {
 }
 
 SWEP.CustomShell = "45acp"
-SWEP.EjectPos = Vector(-5,2,10)
---SWEP.EjectAng = Angle(-55,80,0)
+SWEP.EjectPos = Vector(12,3,0)
+SWEP.EjectAng = Angle(0,0,0)
 
 SWEP.weight = 1
 SWEP.punchmul = 1.5
@@ -48,7 +48,7 @@ SWEP.Primary.Ammo = ".45 ACP"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 25
 SWEP.Primary.Sound = {"zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", 75, 90, 100}
-SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 55, 90, 100}
+SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 25
 SWEP.Primary.Wait = PISTOLS_WAIT
@@ -101,21 +101,22 @@ SWEP.shouldntDrawHolstered = true
 SWEP.availableAttachments = {
 	barrel = {
 		[1] = {"supressor4", Vector(0,0,0), {}},
-        ["mount"] = Vector(-3.35,0.73,0),
+        ["mount"] = Vector(-0.7,0.73,0),
     },
 	sight = {
 		["mountType"] = {"picatinny","pistolmount"},
-		["mount"] = {["picatinny"] = Vector(-5, 1.3, 0.05), ["pistolmount"] = Vector(-6.9, -0.4, 0.05)}
+		["mount"] = {["picatinny"] = Vector(-3.5, 1.75, 0.05), ["pistolmount"] = Vector(-4.5, -0.4, 0.05)}
 	},
 	underbarrel = {
-		["mount"] = Vector(9.8, -0.6, -0.8),
+		[1] = {"laser5", Vector(0,0.25,0.2), {}},
+		["mount"] = Vector(12.5, -1, -1),
 		["mountAngle"] = Angle(0, 0, 90),
 		["mountType"] = "picatinny_small"
 	},
 	mount = {
 		["picatinny"] = {
 			"mount4",
-			Vector(-3.8, -0.9, 0),
+			Vector(-2, -0.3, 0),
 			{},
 			["mountType"] = "picatinny",
 		}

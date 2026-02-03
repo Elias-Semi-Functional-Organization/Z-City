@@ -282,7 +282,7 @@ function DrawAppearance(ent, ply, setup)
 		ply.flmodel:SetNoDraw(!(ply:GetNetVar("flashlight") and (!wep.IsPistolHoldType or wep:IsPistolHoldType())) or wep.reload or flashlightwep)
 	end
 
-	if ply:GetNetVar("flashlight") and not flashlightwep and (!wep.IsPistolHoldType or wep:IsPistolHoldType() or ply.PlayerClassName == "Gordon") and not wep.reload then
+	if ply:GetNetVar("flashlight") and not flashlightwep and (!wep.IsPistolHoldType or wep:IsPistolHoldType() or ply.PlayerClassName == "Gordon") and not wep.reload and hg.CanUseLeftHand(ply) then
 		local hand = ent:LookupBone("ValveBiped.Bip01_L_Hand")
 		if not hand then return end
 
@@ -350,7 +350,7 @@ function DrawAppearance(ent, ply, setup)
 			render.DrawSprite(ply.flmodel:GetPos() + ply.flmodel:GetAngles():Forward() * 5 + ply.flmodel:GetAngles():Right() * -0.5, 50 * math.min(deg, 0), 50 * math.min(deg, 0), color_white)
 		end
 	else
-		if ply.flashlight and ply.flashlight:IsValid() then
+		if ply.flashlight and IsValid(ply.flashlight) then
 			ply.flashlight:Remove()
 			ply.flashlight = nil
 		end

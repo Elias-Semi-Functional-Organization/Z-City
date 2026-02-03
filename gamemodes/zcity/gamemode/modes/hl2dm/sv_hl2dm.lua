@@ -26,7 +26,7 @@ function MODE:Intermission()
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_T" ), self.TPoints)
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_CT" ), self.CTPoints)
 
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
 	end
 

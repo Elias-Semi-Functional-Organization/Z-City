@@ -147,6 +147,8 @@ local hg_fov = ConVarExists("hg_fov") and GetConVar("hg_fov") or CreateClientCon
 local fov = hg_fov:GetFloat()
 local fov_mode_lerp = 0
 
+local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
+
 local angZero = Angle(0,0,0)
 
 local scopedLerpAddvec = Vector()
@@ -156,6 +158,7 @@ local lastPosSelected = 0
 local randomPos = VectorRand(-1, 1)
 local randomPosL = Vector()
 local lerpedAdren = Angle()
+
 function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	if not IsValid(self) then return end
 	ply = ply or self:GetOwner()
@@ -204,7 +207,9 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	randomPosL = LerpFT(0.05 * (inpain and 25 - (24 * painmul) or 1), randomPosL, randomPos)
 	
 	scopedLerpAddvec = LerpVectorFT(((false or self.shot2 == 1) and 1 or 0.05) * (cocking and 0.25 or 1) * (inpain and 1 or 1), scopedLerpAddvec, (cocking and 1 or 1) * (justzoomed and 0.5 or 1) * (self.shot2 == 1 and 0.5 or 1) * 3 * randomPosL * slowlyZooming)
-	posZoom:Add(scopedLerpAddvec)
+	if !hg_oldsights:GetBool() then
+		posZoom:Add(scopedLerpAddvec)
+	end
 	oldzoom = zooming
 
 	if LocalPlayer():IsAdmin() and hg_gun_cam:GetBool() then

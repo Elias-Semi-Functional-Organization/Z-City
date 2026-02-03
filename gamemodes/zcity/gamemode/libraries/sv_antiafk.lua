@@ -46,7 +46,7 @@ timer.Create("ZB_AntiAfkThink",10,0,function()
 end)
 
 hook.Add("KeyPress", "ZB_AnitAfk", stopAFK)
-hook.Add("PlayerSay", "ZB_AnitAfk", stopAFK)
+hook.Add("HG_PlayerSay", "ZB_AnitAfk", stopAFK)
 
 
 --[[                                                   I HATE MY LIFE SOO MUCH        

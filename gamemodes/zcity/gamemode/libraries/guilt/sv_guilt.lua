@@ -359,13 +359,13 @@ hook.Add("Org Think", "Its_Karma_Bro",function(owner, org, timeValue)
 end)
 
 hook.Add("ZB_EndRound","savevalues",function()
-    for i,ply in ipairs(player.GetAll()) do
+    for i,ply in player.Iterator() do
         ply:guilt_SetValue( ply.Karma or 100 )
     end
 end)
 
 hook.Add("ZB_StartRound","NO_HARM",function()
-    for i,ply in ipairs(player.GetAll()) do
+    for i,ply in player.Iterator() do
         if (ply.Guilt or 0) < 1 then
             ply.KarmaGain = math.Clamp((ply.KarmaGain or 0.75) + 0.25, 0.75, 1.5)
         else
@@ -385,7 +385,7 @@ net.Receive("get_karma",function(len, ply)
 
     local tbl = {}
 
-    for i,pl in ipairs(player.GetAll()) do
+    for i,pl in player.Iterator() do
         tbl[pl:UserID()] = pl.Karma
     end
 

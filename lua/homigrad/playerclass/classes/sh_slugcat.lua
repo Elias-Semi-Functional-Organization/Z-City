@@ -185,3 +185,19 @@ function CLASS.PlayerDraw(self)
         end
     end
 end
+
+if SERVER then
+	local slugy_phrases = {
+		"zcity/voice/slugcat_1/waw_1.mp3",
+		"zcity/voice/slugcat_1/waw_2.mp3",
+		"zcity/voice/slugcat_1/waw_3.mp3",
+		"zcity/voice/slugcat_1/waw_4.mp3"
+	}
+
+	hook.Add("HG_ReplacePhrase", "ScugPhrases", function(ent, phrase, muffed, pitch)
+		local wawer = string.match(ent:GetModel(), "scug")
+		if wawer then
+			return ent, slugy_phrases[math.random(#slugy_phrases)], muffed, pitch
+		end
+	end)
+end

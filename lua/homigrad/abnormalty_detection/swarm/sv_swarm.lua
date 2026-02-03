@@ -116,7 +116,7 @@ function SWARM:GetStats()
 	local mothers = 0
 	local ordercd = 0
 	local kingbuildcd = 0
-	for i,p in pairs(player.GetAll())do
+	for i,p in player.Iterator() do
 		perc=perc+(p.SwarmPerc or 0)
 		if(p.Swm)then
 			inf=inf+1
@@ -140,7 +140,7 @@ end
 hook.Add('Think','Swarm',function() 
 	if(SWARM.NextNet<=CurTime())then	
 		SWARM.NextNet = CurTime() + SWARM.NextNetCD
-		for _,ply in pairs(player.GetAll())do
+		for _,ply in player.Iterator() do
 			local perc = math.Round(ply.SwarmPerc or 0)
 			if(perc<60)then
 				perc = 0
@@ -149,7 +149,7 @@ hook.Add('Think','Swarm',function()
 		end
 	end
 
-	for i,p in pairs(player.GetAll())do
+	for i,p in player.Iterator() do
 		p.SwarmPerc=p.SwarmPerc or 0
 		
 		g=p.SwarmPerc
@@ -311,7 +311,7 @@ PlayerMeta.InvoluntaryEvent = PlayerMeta.InvoluntaryEvent or function(self)
 end
 
 hook.Add('PostCleanupMap','Swarm',function()
-	for i,p in pairs(player.GetAll())do
+	for i,p in player.Iterator() do
 		p:ClearSwarm()
 	end 
 end)

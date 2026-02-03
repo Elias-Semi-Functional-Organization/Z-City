@@ -6,7 +6,7 @@ if CLIENT then
 		local broadcastAnyways = net.ReadBool()
 		
 		if not IsValid(self) then return end
-		if !broadcastAnyways and self:GetOwner() == LocalPlayer() then return end
+		if !broadcastAnyways and self:GetOwner() == LocalPlayer() and !game.SinglePlayer() then return end
 		
 		if self.Shoot then
 			self:Shoot(shoot)

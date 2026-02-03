@@ -351,6 +351,41 @@ function CLASS.PlayerDeath(self)
     hook.Remove( "OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
+if SERVER then
+	local cmb_phrases = {
+		"npc/combine_soldier/vo/reportingclear.wav",
+		"npc/combine_soldier/vo/ripcordripcord.wav",
+		"npc/combine_soldier/vo/reportallpositionsclear.wav",
+		"npc/combine_soldier/vo/readyweaponshostilesinbound.wav",
+		"npc/combine_soldier/vo/overwatchrequestreserveactivation.wav",
+		"npc/combine_soldier/vo/overwatchconfirmhvtcontained.wav",
+		"npc/combine_soldier/vo/onedown.wav",
+		"npc/combine_soldier/vo/heavyresistance.wav",
+		"npc/combine_soldier/vo/containmentproceeding.wav",
+		"npc/combine_soldier/vo/contactconfirmprosecuting.wav",
+		"npc/combine_soldier/vo/movein.wav",
+		"npc/combine_soldier/vo/overwatchteamisdown.wav",
+		"npc/combine_soldier/vo/prosecuting.wav",
+		"npc/combine_soldier/vo/stayalertreportsightlines.wav",
+		"npc/combine_soldier/vo/teamdeployedandscanning.wav",
+		"npc/combine_soldier/vo/copythat.wav",
+		"npc/combine_soldier/vo/engagedincleanup.wav",
+		"npc/combine_soldier/vo/executingfullresponse.wav",
+		"npc/combine_soldier/vo/goactiveintercept.wav",
+		"npc/combine_soldier/vo/necroticsinbound.wav",
+		"npc/combine_soldier/vo/standingby].wav",
+		"npc/combine_soldier/vo/stayalert.wav",
+		"npc/combine_soldier/vo/targetmyradial.wav",
+		"npc/combine_soldier/vo/weareinaninfestationzone.wav",
+		"npc/combine_soldier/vo/wehavenontaggedviromes.wav"
+	}
+
+	hook.Add("HG_ReplacePhrase", "combine_phrase", function(ent, phrase, muffed, pitch)
+		if ent.PlayerClassName == "Combine" then
+			return ent, cmb_phrases[math.random(#cmb_phrases)], muffed, pitch
+		end
+	end)
+end
 
 if CLIENT then
     local color_hp = Color(0,255,255,220)
@@ -710,7 +745,7 @@ if SERVER then
         end
     end)
 
-    hook.Add("HG_PlayerSay","CombineChatMessage",function(ply,text)
+    hook.Add("HG_PlayerSay","CombineChatMessage",function(ply, txtTbl, text)
         if ply.PlayerClassName == "Combine" and ply:Alive() and not ply.organism.otrub then
             ply:EmitSound("npc/metropolice/vo/on1.wav")
         end

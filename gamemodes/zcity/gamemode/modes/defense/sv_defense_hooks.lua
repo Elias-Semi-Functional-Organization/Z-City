@@ -415,7 +415,7 @@ hook.Add("Think", "DefenseCleanupCheck", function()
     if not MODE or MODE.name ~= "defense" then return end
     
     if not MODE:IsWaveActive() and MODE.WaveCompleted then
-        for _, ent in pairs(ents.GetAll()) do
+        for _, ent in ents.Iterator() do
             if IsValid(ent) and (ent:IsNPC() or 
                 string.find(tostring(ent:GetClass() or ""), "npc_vj_") or
                 string.find(tostring(ent:GetClass() or ""), "sent_vj_") or

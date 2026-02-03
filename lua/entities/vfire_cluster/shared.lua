@@ -160,7 +160,7 @@ end
 if SERVER then
 	local pvsLODCheckTime = 100
 	function ENT:CalcPVSLOD()
-		for k, ply in pairs(player.GetAll()) do
+		for k, ply in player.Iterator() do
 			self.PVSLOD = self:TestPVS(ply:GetPos())
 			if self.PVSLOD then
 				-- One is enough

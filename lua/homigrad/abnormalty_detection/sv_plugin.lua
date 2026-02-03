@@ -1115,7 +1115,7 @@ util.AddNetworkString("Abnormalties(SendOpenedPage)")
 		PLUGIN.RandomizeCharInfos()
 	end
 
-	hook.Add("PlayerSay", "Abnormalties", function(ply, text, team_chat)
+	hook.Add("HG_PlayerSay", "Abnormalties", function(ply, txtTbl, text)
 		if(GetGlobalBool("AbnormaltiesEnabled", false) and IsValid(ply))then
 			if(ply:Alive())then
 				-- local id = data.userid

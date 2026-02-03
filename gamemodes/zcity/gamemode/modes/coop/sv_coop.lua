@@ -147,7 +147,7 @@ function MODE:Intermission()
 
     self.COOPPoints = zb.GetMapPoints("HMCD_COOP_SPAWN")
 
-    for k, ply in ipairs(player.GetAll()) do
+    for k, ply in player.Iterator() do
         if ply:Team() == TEAM_SPECTATOR then continue end
         ply:SetupTeam(0)
     end
@@ -532,7 +532,7 @@ end)
 hook.Add("ZB_RoundStart", "RTSoff", function()
     if CurrentRound().name ~= "coop" then return end
     
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply.hasUsedRTS = false
     end
 end)
@@ -540,7 +540,7 @@ end)
 hook.Add("PostCleanupMap", "RTScleanup", function()
     if CurrentRound().name ~= "coop" then return end
     
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply.hasUsedRTS = false
     end
 end)

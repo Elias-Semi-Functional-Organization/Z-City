@@ -76,6 +76,7 @@ if CLIENT then
         [6] = "Shooting from cover",
         [7] = "Gangsta",
         [8] = "One-handed",
+		[9] = "Somalian",
     }
 
 	concommand.Add("hg_change_posture", function(ply, cmd, args)
@@ -87,8 +88,9 @@ if CLIENT then
 4 - low ready
 5 - point shooting
 6 - shooting from cover
-7 - one-handed shooting (gangsta)
+7 - gangsta shooting
 8 - one-handed shooting
+9 - somalian shooting
 ]]) printed = true end
 		local pos = math.Round(args[1] or -1)
 		net.Start("change_posture")

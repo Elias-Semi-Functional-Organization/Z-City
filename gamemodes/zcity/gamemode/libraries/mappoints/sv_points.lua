@@ -161,7 +161,7 @@ end
 function zb.SendPoints()
     local rf = RecipientFilter()
     
-    for k, v in ipairs(player.GetAll()) do
+    for k, v in player.Iterator() do
         rf:AddPlayer(v)
     end
 

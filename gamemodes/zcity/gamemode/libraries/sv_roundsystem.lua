@@ -210,7 +210,7 @@ hook.Add("Think", "zb-think", function() zb:Think(CurTime()) end)
 
 function zb:KillPlayers()
 	local mode = CurrentRound()
-	for i, ply in ipairs(player_GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 
 		ply:GiveExp(math.random(4,15))
@@ -725,21 +725,21 @@ function zb.NotifyQueueModified(ply, action)
 end
 
 function zb:Unfreeze()
-	for i, ply in ipairs(player_GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Alive() then ply:Freeze(false) end
 	end
 end
 
 
 function zb:Freeze()
-	for i, ply in ipairs(player_GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Alive() then ply:Freeze(true) end
 	end
 end
 
 function zb.GetAllAdmins()
 	local admins = {}
-	for _, ply in ipairs(player_GetAll()) do
+	for _, ply in player.Iterator() do
 		if ply:IsAdmin() then
 			table.insert(admins, ply)
 		end

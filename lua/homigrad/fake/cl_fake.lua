@@ -494,7 +494,6 @@ function playerMeta:IsFirstPerson()
 end
 
 local ents_FindByClass = ents.FindByClass
-local player_GetAll = player.GetAll
 function playerMeta:BoneScaleChange()
 	do return end
 	local firstPerson = LocalPlayer():IsFirstPerson()
@@ -511,7 +510,7 @@ function playerMeta:BoneScaleChange()
 		end
 	end
 
-	for i,ent in ipairs(player_GetAll()) do
+	for i,ent in player.Iterator() do
 		if not ent:LookupBone("ValveBiped.Bip01_Head1") then continue end
 		if ent:GetManipulateBoneScale(ent:LookupBone("ValveBiped.Bip01_Head1")) == vector_origin then continue end
 		if ent == viewEnt then
@@ -540,7 +539,7 @@ hook.Add("PlayerInitialSpawn","asdfgacke",function(ply)
 end)
 
 hook.Add("InitPostEntity","fuckyou",function()
-	for i,ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply:SetNWVarProxy("RagdollDeath",funcrag)
 		ply:SetNWVarProxy("FakeRagdoll", funcrag)
 	end

@@ -144,6 +144,21 @@ hook.Add("HG_PlayerCanHearPlayersVoice","BrainDamage", function(listener, speake
 	if speaker.organism.brain > 0.05 then return false, false end
 end)
 
+local braindeadphrase_male = {
+	"vo/episode_1/npc/male01/cit_behindyousfx01.wav",
+	"vo/episode_1/npc/male01/cit_behindyousfx02.wav",
+}
+local braindeadphrase_female = {
+	"vo/episode_1/npc/female01/cit_behindyousfx01.wav",
+	"vo/episode_1/npc/female01/cit_behindyousfx02.wav",
+}
+hook.Add("HG_ReplacePhrase", "BraindeadPhrase", function(ent, phrase, muffed, pitch)
+	if ent.organism.brain >= 0.5 then
+		local phr = ThatPlyIsFemale(ent) and braindeadphrase_female[math.random(#braindeadphrase_female)] or braindeadphrase_male[math.random(#braindeadphrase_male)]
+		return ent, phr, muffed, pitch
+	end
+end)
+
 hook.Add("PlayerCanHearPlayersVoice", "RealisticVoice", function(listener,speaker)
 	local result,is3D = ChatLogic(speaker,listener,false,false)
 	local speak = speaker:IsSpeaking()

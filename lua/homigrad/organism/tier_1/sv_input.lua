@@ -158,6 +158,7 @@ local sounds = {
 	Sound("player/zombie_head_explode_06.wav")
 }
 
+local ents_Create = ents.Create
 function hg.organism.AmputateLimb(org, limb)
 	if org[limb.."amputated"] == nil then return end
 
@@ -193,6 +194,8 @@ function hg.organism.AmputateLimb(org, limb)
 	
 	local ent = hg.GetCurrentCharacter(org.owner)
 	SpawnMeatGore(ent, select(1, ent:GetBonePosition(ent:LookupBone(bone))), 4)
+
+	hook.Run("OnAmputateLimb", org, ent, limb)
 
 	net.Start("organism_send")
 	local tbl = {}
@@ -1518,6 +1521,45 @@ function hg.BreakNeck(ent)
 		end
 	end)
 end
+
+hook.Add("OnAmputateLimb", "amputate_cuffs", function(org, ent, limb)
+	if limb == "larm" or limb == "rarm" and (ent.handcuffed or ent:GetNetVar("handcuffed", false)) then
+		if ent.handcuffs then
+			if IsValid(ent.handcuffs[1]) then ent.handcuffs[1]:Remove() end
+			if IsValid(ent.handcuffs[2]) then ent.handcuffs[2]:Remove() end
+			ent.handcuffed = false
+		end
+
+		local ply = hg.RagdollOwner(ent)
+		org.handcuffed = false
+		ent:SetNetVar("handcuffed", false)
+		if ply then ply:SetNetVar("handcuffed", false) end
+
+		local cuffs = ents_Create("weapon_handcuffs")
+		cuffs:SetPos(ent:GetPos())
+		cuffs.IsSpawned = true
+		cuffs.init = true
+		cuffs:Spawn()
+	end
+end)
+
+hook.Add("OnAmputateLimb", "amputate_flashlight", function(org, ent, limb)
+	local inv = ent:GetNetVar("Inventory", {})
+	if limb == "larm" and inv["Weapons"] and inv["Weapons"]["hg_flashlight"] and ent:GetNetVar("flashlight", false) then
+		local flashlight = ents.Create("hg_flashlight")
+		flashlight:SetPos(ent:EyePos())
+		flashlight:SetAngles(ent:EyeAngles())
+		flashlight:Spawn()
+		flashlight:SetNetVar("enabled", ent:GetNetVar("flashlight",false))
+		local phys = ent:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:ApplyForceCenter(ent:GetAimVector() * 150 * phys:GetMass())
+		end
+		ent:SetNetVar("flashlight",false)
+		inv["Weapons"]["hg_flashlight"] = nil
+		ent:SetNetVar("Inventory", inv)
+	end
+end)
 
 hg.velocityDamage = velocityDamage
 

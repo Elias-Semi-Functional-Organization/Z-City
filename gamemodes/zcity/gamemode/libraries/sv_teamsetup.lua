@@ -21,7 +21,7 @@ function zb:AutoBalance()
 
 	if mode.OverrideBalance and mode:OverrideBalance() then return end
 
-	for i, ply in ipairs(player_GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		ply:SetTeam(TEAM_UNASSIGNED)
 	end

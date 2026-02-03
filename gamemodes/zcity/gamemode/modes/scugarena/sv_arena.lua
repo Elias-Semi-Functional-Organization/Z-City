@@ -18,7 +18,7 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
@@ -33,7 +33,7 @@ end
 
 function MODE:CheckAlivePlayers()
 	local AlivePlyTbl = {}
-	for _, ply in ipairs(player.GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if ply.organism and ply.organism.incapacitated then continue end
 		AlivePlyTbl[#AlivePlyTbl + 1] = ply

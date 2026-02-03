@@ -54,7 +54,7 @@ hook.Add("DatabaseConnected", "AchievementsCreateData", function()
 
     print("Achievements SQL database connected.")
 
-    for i, ply in ipairs(player.GetAll()) do
+    for i, ply in player.Iterator() do
         updatePlayer(ply)
     end
 end)
@@ -286,7 +286,7 @@ local tblToFind_bking = {
     {"calm down","calm down"},
 	{"успокойтесь","calm down"}
 }
-hook.Add("PlayerSay","burgerking",function(ply, txt)
+hook.Add("HG_PlayerSay","burgerking",function(ply, txtTbl, txt)
     local bking = {
         ["sir"] = false,
         ["please"] = false,

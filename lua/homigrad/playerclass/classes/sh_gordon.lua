@@ -150,7 +150,7 @@ end
 if SERVER then
     hook.Add("PostCleanupMap","huyhuygordonspasjizn",function(ent)
         timer.Simple(1,function()
-            for i,ent in ipairs(ents.GetAll()) do
+            for i, ent in ents.Iterator() do
                 if ent:GetClass() == "item_suitcharger" then
                     local entnew = ents.Create("prop_physics")
                     entnew:SetModel(ent:GetModel())
@@ -527,9 +527,9 @@ hook.Add("CanListenOthers", "GordonWeDontHearYou", function(talker)
     end
 end)
 
-hook.Add("HG_PlayerSay", "GordonWeDontSeeYouChat", function(ply, text)
+hook.Add("HG_PlayerSay", "GordonWeDontSeeYouChat", function(ply, txtTbl, text)
     if ply:Alive() and ply.PlayerClassName == "Gordon" then
-        text[1] = ""
+        txtTbl[1] = ""
     end
 end)
 

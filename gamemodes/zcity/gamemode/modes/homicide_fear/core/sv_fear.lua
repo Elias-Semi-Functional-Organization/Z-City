@@ -113,7 +113,7 @@ function MODE:Intermission()
 	self.Type = CROUND
 	local player_count = 0
 
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		ply:KillSilent()
 
@@ -195,7 +195,7 @@ function MODE:Intermission()
 	self.PoliceSpawned = false
 	self.PoliceAllowed = false
 
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if(MODE.ShouldStartRoleRound())then
 			net.Start("HMCD_RoundStart")	--; TODO Structure description
 				net.WriteBool(ply.isTraitor)	--; Is Traitor
@@ -253,7 +253,7 @@ function MODE:EndRound()
 	local players_alive = 0
 	local endround, winner = zb:CheckWinner(self:CheckAlivePlayers())
 
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply.isTraitor and ply:Team() ~= TEAM_SPECTATOR then
 			traitors[#traitors + 1] = ply
 		end

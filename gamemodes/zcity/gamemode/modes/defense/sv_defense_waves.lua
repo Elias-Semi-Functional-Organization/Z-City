@@ -71,7 +71,7 @@ function MODE:AssignNPCTarget(npc)
     if not IsValid(npc) then return end  
     local function GetValidPlayers()
         local validPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if IsValid(ply) and ply:Alive() and ply:Team() ~= TEAM_SPECTATOR then
                 table.insert(validPlayers, ply)
             end
@@ -162,7 +162,7 @@ function MODE:SpawnWave()
         net.Broadcast()
         
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
                 net.Start("defense_commander_notification")
                 net.WriteString("Boss wave! You'll receive double points after completing this wave!")

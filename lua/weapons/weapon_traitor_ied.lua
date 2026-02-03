@@ -138,6 +138,11 @@ if CLIENT then
 		surface.DrawRect(x - 2.5, y - 25 * lerpthing * 0.1, 5, 50 * lerpthing * 0.1)
 
 		if IsValid(tr.Entity) and not tr.Entity:IsPlayer() and not tr.Entity:IsRagdoll() and not self:GetPlanted() then
+			local min, max = tr.Entity:GetModelBounds()
+			local minmaxs = (max - min)
+			local size = minmaxs[1] + minmaxs[2] + minmaxs[3]
+			if size <= 15 then return end
+
 			if tr.MatType == MAT_METAL then
 				draw.SimpleText( "It will explode with shrapnel.", "HomigradFont", toScreen.x+3, toScreen.y + 25 + 32, color_black, TEXT_ALIGN_CENTER )
 				draw.SimpleText( "It will explode with shrapnel.", "HomigradFont", toScreen.x, toScreen.y + 25 + 30, colblue, TEXT_ALIGN_CENTER )
@@ -430,6 +435,11 @@ if SERVER then
 			local Tr = self:GetEyeTrace()
 
 			if IsValid(Tr.Entity) and IsValid(Tr.Entity:GetPhysicsObject()) and Tr.Entity:GetPhysicsObject():GetMass() < 500 then
+				local min, max = Tr.Entity:GetModelBounds()
+				local minmaxs = (max - min)
+				local size = minmaxs[1] + minmaxs[2] + minmaxs[3]
+				if size <= 15 then return end
+
 				bomb = Tr.Entity
 				--bomb:GetPhysicsObject():SetMass(bomb:GetPhysicsObject():GetMass()+20)
 

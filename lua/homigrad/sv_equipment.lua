@@ -520,3 +520,9 @@ hg.organism.input_list.protovisor = function(org, bone, dmg, dmgInfo, ...)
 	//dmgInfo:GetAttacker():ChatPrint(tostring(org.owner.armors_health["protovisor"]))
 	return protect
 end
+
+hook.Add("HG_ReplacePhrase", "MaskMuffed", function(ent, phrase, muffed, pitch)
+	if ent.armors["face"] == "mask2" then
+		return ent, phrase, true, pitch
+	end
+end)

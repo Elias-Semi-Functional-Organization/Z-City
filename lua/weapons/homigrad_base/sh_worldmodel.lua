@@ -74,6 +74,10 @@ hg.postureFuncWorldModel = {
 		if self:IsZoom() then return end
 		self.weaponAng[3] = self.weaponAng[3] + 20
 	end,
+	[9] = function(self,ply)
+		if self:IsZoom() then return end
+		self.weaponAng[3] = self.weaponAng[3] - 40
+	end,
 }
 SWEP.lerpaddcloseanim = 0
 SWEP.closeanimdis = 40
@@ -91,7 +95,7 @@ function SWEP:ChangeGunPos(dtime)
 	local fakeRagdoll = IsValid(ply.FakeRagdoll)
 
 	local inuse = self:InUse()
-
+	
 	local should = true and not (fakeRagdoll and not (inuse))
 
 	self.lerped_positioning = Lerp(hg.lerpFrameTime2(0.1, dtime), self.lerped_positioning or 0, should and (ent != owner and 0.8 or 1) or 0.3)
@@ -188,7 +192,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		
 	self.setrhik = true
 	self.setlhik = !self:IsPistolHoldType() or !ply.suiciding
-	self.setlhik = (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
+	self.setlhik = (not (ply.posture == 7 or ply.posture == 8 or ( (self:IsPistolHoldType() or self.CanEpicRun) and self:IsSprinting() and !(ply.organism and ply.organism.rarmamputated) ) or (self:IsPistolHoldType() and ply.posture == 9) or (self:IsPistolHoldType() and ply.suiciding) ) or self.reload and self.setlhik or false)
 	self.setlhik = !(self:IsPistolHoldType() and (self:GetButtstockAttack() - CurTime() > -0.5)) and self.setlhik
 	
 	local tr = hg.eyeTrace(ply, 60, ent)
@@ -213,7 +217,7 @@ function SWEP:PosAngChanges(ply, desiredPos, desiredAng, bNoAdditional, closeani
 		local _, ot = WorldToLocal(vector_origin, ang, vector_origin, att_Ang)
 		ot:Normalize()
 	
-		local use = hg.KeyDown(ply, IN_USE) or ply:InVehicle()
+		local use = hg.KeyDown(ply, IN_USE) or ply:InVehicle() or (ply:GetNetVar("lastFake",0) > CurTime()) or IsValid(ply.OldRagdoll)
 		local fourtyfive = 45 * (use and 1 or 0)
 		ot[2] = math.Clamp(ot[2], -fourtyfive, fourtyfive)
 		ot[1] = math.Clamp(ot[1], -fourtyfive, fourtyfive)
@@ -621,7 +625,7 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		local matrixRAngRot = matrixR:GetAngles()
 		matrixRAngRot:RotateAroundAxis(matrixRAngRot:Forward(),180)
 		local lerp = self:KeyDown(IN_ATTACK2) and 1 or 1
-		local _,ang = WorldToLocal(vecZero,matrixRAngRot,vecZero,aimvec)
+		local _, ang = WorldToLocal(vecZero,matrixRAngRot,vecZero,aimvec)
 		ang = ang * lerp
 		local _,ang = LocalToWorld(vecZero,ang,vecZero,aimvec)
 		ang[3] = matrixRAngRot[3]

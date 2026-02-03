@@ -18,53 +18,6 @@ local bigPainPhrases = {
 	}
 }
 
-local cmb_phrases = {
-	"npc/combine_soldier/vo/reportingclear.wav",
-	"npc/combine_soldier/vo/ripcordripcord.wav",
-	"npc/combine_soldier/vo/reportallpositionsclear.wav",
-	"npc/combine_soldier/vo/readyweaponshostilesinbound.wav",
-	"npc/combine_soldier/vo/overwatchrequestreserveactivation.wav",
-	"npc/combine_soldier/vo/overwatchconfirmhvtcontained.wav",
-	"npc/combine_soldier/vo/onedown.wav",
-	"npc/combine_soldier/vo/heavyresistance.wav",
-	"npc/combine_soldier/vo/containmentproceeding.wav",
-	"npc/combine_soldier/vo/contactconfirmprosecuting.wav",
-	"npc/combine_soldier/vo/movein.wav",
-	"npc/combine_soldier/vo/overwatchteamisdown.wav",
-	"npc/combine_soldier/vo/prosecuting.wav",
-	"npc/combine_soldier/vo/stayalertreportsightlines.wav",
-	"npc/combine_soldier/vo/teamdeployedandscanning.wav",
-	"npc/combine_soldier/vo/copythat.wav",
-	"npc/combine_soldier/vo/engagedincleanup.wav",
-	"npc/combine_soldier/vo/executingfullresponse.wav",
-	"npc/combine_soldier/vo/goactiveintercept.wav",
-	"npc/combine_soldier/vo/necroticsinbound.wav",
-	"npc/combine_soldier/vo/standingby].wav",
-	"npc/combine_soldier/vo/stayalert.wav",
-	"npc/combine_soldier/vo/targetmyradial.wav",
-	"npc/combine_soldier/vo/weareinaninfestationzone.wav",
-	"npc/combine_soldier/vo/wehavenontaggedviromes.wav"
-}
-
-local slugy_phrases = {
-	"zcity/voice/slugcat_1/waw_1.mp3",
-	"zcity/voice/slugcat_1/waw_2.mp3",
-	"zcity/voice/slugcat_1/waw_3.mp3",
-	"zcity/voice/slugcat_1/waw_4.mp3"
-}
-
-local uwuspeak_phrases = {
-	"zbattle/furry/cat_mrrp1.ogg",
-	"zbattle/furry/cat_mrrp1.ogg",
-	"zbattle/furry/cat_purr1.ogg",
-	"zbattle/furry/cat_purr2.ogg",
-	"zbattle/furry/mewo.ogg",
-	"zbattle/furry/mrrp.ogg",
-	"zbattle/furry/prbt.ogg",
-	"zbattle/furry/beep1.wav",
-	"zbattle/furry/beep2.wav",
-}
-
 local terrorist_phrases = {
 	normal = {
 		"mercenary/moving1.mp3",
@@ -259,25 +212,7 @@ local swat_phrases = {
 	}
 }
 
-local fur_pain = {
-	"zbattle/furry/exp5.wav",
-	"zbattle/furry/exp6.wav",
-	"zbattle/furry/exp7.wav",
-	"zbattle/furry/exp8.wav",
-	"zbattle/furry/exp9.wav",
-	"zbattle/furry/exp10.wav",
-	"zbattle/furry/exp11.wav",
-	"zbattle/furry/exp12.wav",
-	"zbattle/furry/exp13.wav",
-	"zbattle/furry/exp14.wav",
-	"zbattle/furry/exp15.wav",
-	"zbattle/furry/exp16.wav",
-	"zbattle/furry/exp17.wav",
-	"zbattle/furry/death1.wav",
-	"zbattle/furry/death3.wav",
-	"zbattle/furry/death4.wav",
-	"zbattle/furry/death5.wav",
-}
+
 
 local laugh = {
 	"zbattle/laugh/laugh1.ogg",
@@ -299,12 +234,6 @@ local f_laugh = {
 }
 
 local file, math, table, CurTime, timer, string = file, math, table, CurTime, timer, string
-
-local mtcop_phrases = {}
-local files,_ = file.Find("sound/npc/metropolice/vo/*.wav","GAME")
-for k,v in ipairs(files) do
-	mtcop_phrases[k] = "npc/metropolice/vo/" .. v
-end
 
 local function GetPlayerClassPhrases(ply, phraseType)
 	local playerClass = ply.PlayerClassName
@@ -356,22 +285,13 @@ end
 hook.Add("PlayerSpawn","GiveRandomPitch",function(ply)
 	if OverrideSpawn then return end
 
-	ply.VoicePitch = mRandom(93,107)
+	ply.VoicePitch = mRandom(93, 107)
 end)
-
-local braindeadphrase_male = {
-	"vo/episode_1/npc/male01/cit_behindyousfx01.wav",
-	"vo/episode_1/npc/male01/cit_behindyousfx02.wav",
-}
-local braindeadphrase_female = {
-	"vo/episode_1/npc/female01/cit_behindyousfx01.wav",
-	"vo/episode_1/npc/female01/cit_behindyousfx02.wav",
-}
 
 util.AddNetworkString("hg_phrase")
 net.Receive("hg_phrase", function(len, ply)
 	if (ply.phrCld or 0) > CurTime() then return end
-	local result = hook.Run("HG_Phrase", ply, cmd, args) // return here true to reject phrase 
+	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase 
 	if result then return end
 
 	local playerClass = ply.PlayerClassName
@@ -387,7 +307,7 @@ net.Receive("hg_phrase", function(len, ply)
 	local num = net.ReadInt(8)
 	if ply.organism.brain > 0.1 then
 		i = 5
-		num = mRandom(1,2)
+		num = mRandom(1, 2)
 	end
 
 	local phrases2 = phrases
@@ -415,42 +335,16 @@ net.Receive("hg_phrase", function(len, ply)
 	local huy = random < 10 and "0" or ""
 	local phrase = phr[1] .. huy .. random .. phr[2]
 	local ent = hg.GetCurrentCharacter(ply)
-	local muffed = ply.armors["face"] == "mask2"
+	local muffed = false
 	local pitch = nil
 
-	if ply.PlayerClassName == "Combine" then
-		phrase = cmb_phrases[math.random(#cmb_phrases)]
+	-- overrides
+	local override_ent, override_phrase, override_muffed, override_pitch = hook.Run("HG_ReplacePhrase", ent, phrase, muffed, pitch)
+	if override_ent ~= nil then
+		ent, phrase, muffed, pitch = override_ent, override_phrase, override_muffed, override_pitch
 	end
 
-	if ply.PlayerClassName == "Metrocop" then
-		phrase = mtcop_phrases[math.random(#mtcop_phrases)]
-	end
 
-	if ply:GetModel() == "models/distac/player/ghostface.mdl" then
-		pitch = true
-	end
-
-	if ply.organism.brain >= 0.5 then
-		if ThatPlyIsFemale(ply) then
-			phrase = braindeadphrase_female[math.random(#braindeadphrase_female)]
-		else
-			phrase = braindeadphrase_male[math.random(#braindeadphrase_male)]
-		end
-	end
-
-	local wawer = string.match( ply:GetModel(), "scug" )
-	if wawer then
-		phrase = slugy_phrases[math.random(#slugy_phrases)]
-	end
-
-	if ply.PlayerClassName == "furry" then
-		if inpain then
-			phrase = fur_pain[math.random(#fur_pain)]
-		else
-			phrase = uwuspeak_phrases[math.random(#uwuspeak_phrases)]
-		end
-	end
-	
 	if ply.PlayerClassName == "bloodz" or ply.PlayerClassName == "groove" then
 		phrase = table.Random(hg.ghetto_phrases)
 		local rf = RecipientFilter()
@@ -472,6 +366,8 @@ net.Receive("hg_phrase", function(len, ply)
 	end
 
 	if SoundDuration(phrase) == 0 then return end
+
+	local wawer = string.match(ply:GetModel(), "scug")
 	if wawer then
 		ent:EmitSound(phrase, wawer and 65 or muffed and 65 or 75,ply.VoicePitch or 100,1,CHAN_AUTO,0, muffed and 14 or 0)
 		ent:EmitSound(phrase, wawer and 65 or muffed and 65 or 75,ply.VoicePitch or 100,1,CHAN_AUTO,0, muffed and 14 or 0)
@@ -480,7 +376,7 @@ net.Receive("hg_phrase", function(len, ply)
 	end
 
 	if string.match( phrase, ".ogg" ) then // ogg doesn't return the right soundduration
-		ply.phrCld = CurTime() + 2
+		ply.phrCld = CurTime() + 1
 	else
 		ply.phrCld = CurTime() + (SoundDuration(phrase) or 0)
 	end
@@ -503,33 +399,47 @@ local femaleCount = 10
 local maleCount = 14
 local clr = Color(204,48,0)
 
+local fur_pain = {
+	"zbattle/furry/exp5.wav",
+	"zbattle/furry/exp6.wav",
+	"zbattle/furry/exp7.wav",
+	"zbattle/furry/exp8.wav",
+	"zbattle/furry/exp9.wav",
+	"zbattle/furry/exp10.wav",
+	"zbattle/furry/exp11.wav",
+	"zbattle/furry/exp12.wav",
+	"zbattle/furry/exp13.wav",
+	"zbattle/furry/exp14.wav",
+	"zbattle/furry/exp15.wav",
+	"zbattle/furry/exp16.wav",
+	"zbattle/furry/exp17.wav",
+	"zbattle/furry/death1.wav",
+	"zbattle/furry/death3.wav",
+	"zbattle/furry/death4.wav",
+	"zbattle/furry/death5.wav",
+}
+
 hook.Add("PreHomigradDamage","BurnScream", function( ent, dmgInfo )
 	local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
 
-	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer() and ply.organism and !ply.organism.otrub and ply:Alive() then
+	if dmgInfo:IsDamageType(DMG_BURN) and IsValid(ply) and ply:IsPlayer() 
+	and ply.organism and !ply.organism.otrub and ply:Alive() then
 		local phrase = "zcitysnd/"..(ThatPlyIsFemale(ply) and "fe" or "").."male/burn/death_burn"..mRandom(1,ThatPlyIsFemale(ply) and femaleCount or maleCount)..".mp3"
-		ply:Notify(table.Random(hg.sharp_pain),SoundDuration(phrase),"ply_burn",0.5,function(ply)
+
+		-- overrides
+		override_ply, override_phrase = hook.Run("HG_ReplaceBurnPhrase", ply, phrase)
+		if override_ply ~= nil then
+			ply, phrase = override_ply, override_phrase
+		end
+
+		ply:Notify(hg.sharp_pain[math.random(#hg.sharp_pain)], 
+		SoundDuration(phrase), "ply_burn", 0.5, function(ply)
 			if hg.GetCurrentCharacter(ply):IsOnFire() then
-				hg.GetCurrentCharacter(ply):EmitSound(ply.PlayerClassName == "furry" and table.Random(fur_pain) or phrase)
+				hg.GetCurrentCharacter(ply):EmitSound(phrase)
 				ply.phrCld = CurTime() + (SoundDuration(phrase) or 0)
 				ply.lastPhr = phrase
 			end
 		end, clr)
-	end
-end)
-
-hook.Add("Org Think", "ItHurtsfrfr",function(owner, org, timeValue)
-	if owner.PlayerClassName != "furry" then return end
-
-	if (owner.lastPainSoundCD or 0) < CurTime() and !org.otrub and org.pain >= 30 and mRandom(1, 50) == 1 then
-		local phrase = table.Random(fur_pain)
-
-		local muffed = owner.armors["face"] == "mask2"
-
-		owner:EmitSound(phrase, muffed and 65 or 75,owner.VoicePitch or 100,1,CHAN_AUTO,0, pitch and 56 or muffed and 16 or 0)
-
-		owner.lastPainSoundCD = CurTime() + math.Rand(10, 25)
-		owner.lastPhr = phrase
 	end
 end)
 
@@ -547,7 +457,6 @@ hook.Add("Org Think", "WhatsSoFunny",function(owner, org, timeValue)
 end)
 
 // Stop it in water
-
 hook.Add("OnEntityWaterLevelChanged","StopPhraseInWater",function(ent,old,new)
 	if ent:IsPlayer() or ent:IsRagdoll() then
 		local ply = ent:IsRagdoll() and hg.RagdollOwner(ent) or ent
@@ -562,7 +471,7 @@ end)
 // Context Phrases
 concommand.Add("hg_phrase_context",function(ply, cmd, args)
 	if !IsValid(ply) then return end
-	local result = hook.Run("HG_Phrase", ply, cmd, args) // return here true to reject phrase 
+	local result = hook.Run("HG_CanDoPhrase", ply, cmd, args) // return here true to reject phrase 
 	if result then return end
 
 	result = hook.Run("HG_Phrase_Context", ply, cmd, args) // return here true to reject phrase 
@@ -578,7 +487,7 @@ concommand.Add("hg_phrase_context",function(ply, cmd, args)
 	ply.lastPhr = phrase
 end)
 
-hook.Add("HG_Phrase", "Pharse_Check", function(ply, cmd, args)
+hook.Add("HG_CanDoPhrase", "Pharse_Check", function(ply, cmd, args)
 	if (ply.phrCld or 0) > CurTime() then return true end
 	if ply.PlayerClassName == "Gordon" then return true end // move it to gordon playerclass soon...
 	if !IsValid(ply) or !ply:Alive() or ply:WaterLevel() >= 3 then return true end
@@ -587,7 +496,7 @@ hook.Add("HG_Phrase", "Pharse_Check", function(ply, cmd, args)
 	if org.otrub then return true end
 	if org.o2[1] < 15 then return true end
 	if org.holdingbreath then return true end
-	if ply.PlayerClassName and ply:GetPlayerClass() and !ply:GetPlayerClass().CanUseDefaultPhrase then return true end
+	--if ply.PlayerClassName and ply:GetPlayerClass() and !ply:GetPlayerClass().CanUseDefaultPhrase then return true end
 
 	if org.vomitInThroat then
 		hg.organism.CoughBlood(org)
@@ -599,10 +508,12 @@ end)
 hook.Add("HG_Phrase_Context", "Pharse_Check", function(ply, cmd, args)
 	local org = ply.organism
 	if !org then return true end
+
 	if org.brain > 0.1 then
 		return true
 	end
-	if org.pain > 30 and args[1] == "Satisfied" then return true end
+
+	if (org.pain > 30 or hg.fearful(ply)) and args[1] == "Satisfied" then return true end
 end)
 
 hook.Add("HarmDone", "killmazafaka", function(attacker, victim, amt)
@@ -630,7 +541,7 @@ hook.Add("HarmDone", "MateDead", function(attacker, victim, amt)
 	if !(victimClass == "terrorist" or victimClass == "nationalguard" or 
 			victimClass == "commanderforces" or victimClass == "swat") then return end
 	
-	for _, ply in pairs(player.GetAll()) do
+	for _, ply in player.Iterator() do
 		if IsValid(ply) and ply:Alive() and ply ~= victim and ply.PlayerClassName == victimClass then
 			local distance = ply:GetPos():Distance(victim:GetPos())
 			if distance <= 1000 then

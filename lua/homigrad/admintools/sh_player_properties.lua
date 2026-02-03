@@ -193,37 +193,6 @@ properties.Add( "freeze", {
 	end 
 } )
 
-properties.Add( "breakneck", {
-	MenuLabel = "Kill", -- Name to display on the context menu
-	Order = 7, -- The order to display this property relative to other properties
-	MenuIcon = "icon16/cross.png", -- The icon to display next to the property
-
-	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-        Derma_Query(
-            "It will break his neck",
-            "Are you sure?",
-            "Yes",
-            function()
-                self:MsgStart()
-                    net.WriteEntity( ent )
-                self:MsgEnd()
-            end,
-        	"No"
-        )
-
-	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
-		local ent = net.ReadEntity()
-
-		--if ( !properties.CanBeTargeted( ent, ply ) ) then return end
-		if ( !self:Filter( ent, ply ) ) then return end
-        ent = hg.RagdollOwner( ent ) or ent
-
-		hg.BreakNeck(ent)
-	end 
-} )
-
 properties.Add( "snatch", {
 	MenuLabel = "Snatch", -- Name to display on the context menu
 	Order = 7, -- The order to display this property relative to other properties
@@ -333,161 +302,219 @@ properties.Add( "lobotomize", {
     end 
 } )
 
-properties.Add( "breakaleg", {
-	MenuLabel = "Break a leg", -- Name to display on the context menu
-	Order = 11, -- The order to display this property relative to other properties
-	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+properties.Add("killsilent", {
+	MenuLabel = "Kill (Silent)",
+	Order = 11,
+	MenuIcon = "icon16/cross.png",
 
 	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+	Action = function( self, ent )
 		self:MsgStart()
 			net.WriteEntity( ent )
 		self:MsgEnd()
 	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+	Receive = function( self, length, ply )
 		local ent = net.ReadEntity()
+
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		ent:Kill()
+	end 
+})
+
+properties.Add("removeply", {
+	MenuLabel = "Remove",
+	Order = 12,
+	MenuIcon = "icon16/cross.png",
+
+	Filter = check,
+	Action = function( self, ent )
+		self:MsgStart()
+			net.WriteEntity( ent )
+		self:MsgEnd()
+	end,
+	Receive = function( self, length, ply )
+		local ent = net.ReadEntity()
+
+		if ( !self:Filter( ent, ply ) ) then return end
+        ent = hg.RagdollOwner( ent ) or ent
+
+		ent:KillSilent()
+		ent:Remove()
+	end 
+})
+
+properties.Add( "break_limb", {
+	MenuLabel = "Break Limb",
+	Order = 13,
+	MenuIcon = "pluv/pluv51.png",
+
+	Filter = check,
+	MenuOpen = function( self, option, ent, tr )
+		ent = hg.RagdollOwner(ent) or ent
+
+		local submenu = option:AddSubMenu()
+
+		local neck = submenu:AddOption("Neck")
+		neck:SetRadio(true)
+		neck:SetChecked(ent.organism.larm > 0)
+		neck:SetIsCheckable(true)
+		neck.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 0) end end
+
+		local larm = submenu:AddOption("Left Arm")
+		larm:SetRadio(true)
+		larm:SetChecked(ent.organism.larm > 0)
+		larm:SetIsCheckable(true)
+		larm.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 1) end end
+
+		local rarm = submenu:AddOption("Right Arm")
+		rarm:SetRadio(true)
+		rarm:SetChecked(ent.organism.rarm > 0)
+		rarm:SetIsCheckable(true)
+		rarm.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 2) end end
+
+		local lleg = submenu:AddOption("Left Leg")
+		lleg:SetRadio(true)
+		lleg:SetChecked(ent.organism.lleg > 0)
+		lleg:SetIsCheckable(true)
+		lleg.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 3) end end
+
+		local rleg = submenu:AddOption("Right Leg")
+		rleg:SetRadio(true)
+		rleg:SetChecked(ent.organism.rleg > 0)
+		rleg:SetIsCheckable(true)
+		rleg.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 4) end end
+
+		local spine1 = submenu:AddOption("Spine 1")
+		spine1:SetRadio(true)
+		spine1:SetChecked(ent.organism.rleg > 0)
+		spine1:SetIsCheckable(true)
+		spine1.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 5) end end
+
+		local spine2 = submenu:AddOption("Spine 2")
+		spine2:SetRadio(true)
+		spine2:SetChecked(ent.organism.rleg > 0)
+		spine2:SetIsCheckable(true)
+		spine2.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 6) end end
+
+		local spine3 = submenu:AddOption("Spine 3")
+		spine3:SetRadio(true)
+		spine3:SetChecked(ent.organism.rleg > 0)
+		spine3:SetIsCheckable(true)
+		spine3.OnChecked = function(s, checked) if checked then self:BreakLimb(ent, 7) end end
+	end,
+
+	BreakLimb = function( self, ent, id )
+		self:MsgStart()
+			net.WriteEntity( ent )
+			net.WriteUInt( id, 8 )
+		self:MsgEnd()
+	end,
+
+	Receive = function( self, length, ply )
+		local ent = net.ReadEntity()
+		local limb = net.ReadUInt( 8 )
         
 		if not self:Filter(ent, ply) then return end
         ent = hg.RagdollOwner(ent) or ent
         
         local dmgInfo = DamageInfo()
-        if ent.organism.rleg != 1 then
-            hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
-        elseif ent.organism.lleg != 1 then
-            hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
-        end
-    end 
-} )
-
-properties.Add( "breakanarm", {
-	MenuLabel = "Break an arm", -- Name to display on the context menu
-	Order = 12, -- The order to display this property relative to other properties
-	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
-
-	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-		self:MsgStart()
-			net.WriteEntity( ent )
-		self:MsgEnd()
-	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
-		local ent = net.ReadEntity()
-        
-		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
-        
-        local dmgInfo = DamageInfo()
-        if ent.organism.rarm != 1 then
-            hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
-        elseif ent.organism.larm != 1 then
+		if limb == 0 then
+            hg.BreakNeck(ent)
+        elseif limb == 1 then
             hg.organism.input_list.larmup(ent.organism, 0, 1, dmgInfo)
-        end
-    end 
+		elseif limb == 2 then
+			hg.organism.input_list.rarmup(ent.organism, 0, 1, dmgInfo)
+		elseif limb == 3 then
+			hg.organism.input_list.llegup(ent.organism, 0, 1, dmgInfo)
+		elseif limb == 4 then
+			hg.organism.input_list.rlegup(ent.organism, 0, 1, dmgInfo)
+		elseif limb == 5 then
+			hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
+		elseif limb == 6 then
+			hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
+		elseif limb == 7 then
+			hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
+		end
+	end
 } )
 
-properties.Add( "breakspine", {
-	MenuLabel = "Break the spine", -- Name to display on the context menu
-	Order = 13, -- The order to display this property relative to other properties
-	MenuIcon = "pluv/pluv51.png", -- The icon to display next to the property
+properties.Add( "amputate_limb", {
+	MenuLabel = "Amputate Limb",
+	Order = 14,
+	MenuIcon = "effects/arc9_eft/evil.png",
 
 	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
+	MenuOpen = function( self, option, ent, tr )
+		ent = hg.RagdollOwner(ent) or ent
+
+		local submenu = option:AddSubMenu()
+
+		local head = submenu:AddOption("Head")
+		head:SetRadio(true)
+		head:SetChecked(ent.organism.larm > 0)
+		head:SetIsCheckable(true)
+		head.OnChecked = function(s, checked) if checked then self:AmputateLimb(ent, 0) end end
+
+		local larm = submenu:AddOption("Left Arm")
+		larm:SetRadio(true)
+		larm:SetChecked(ent.organism.larm > 0)
+		larm:SetIsCheckable(true)
+		larm.OnChecked = function(s, checked) if checked then self:AmputateLimb(ent, 1) end end
+
+		local rarm = submenu:AddOption("Right Arm")
+		rarm:SetRadio(true)
+		rarm:SetChecked(ent.organism.rarm > 0)
+		rarm:SetIsCheckable(true)
+		rarm.OnChecked = function(s, checked) if checked then self:AmputateLimb(ent, 2) end end
+
+		local lleg = submenu:AddOption("Left Leg")
+		lleg:SetRadio(true)
+		lleg:SetChecked(ent.organism.lleg > 0)
+		lleg:SetIsCheckable(true)
+		lleg.OnChecked = function(s, checked) if checked then self:AmputateLimb(ent, 3) end end
+
+		local rleg = submenu:AddOption("Right Leg")
+		rleg:SetRadio(true)
+		rleg:SetChecked(ent.organism.rleg > 0)
+		rleg:SetIsCheckable(true)
+		rleg.OnChecked = function(s, checked) if checked then self:AmputateLimb(ent, 4) end end
+	end,
+
+	AmputateLimb = function( self, ent, id )
 		self:MsgStart()
 			net.WriteEntity( ent )
+			net.WriteUInt( id, 8 )
 		self:MsgEnd()
 	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
+
+	Receive = function( self, length, ply )
 		local ent = net.ReadEntity()
+		local limb = net.ReadUInt( 8 )
         
 		if not self:Filter(ent, ply) then return end
         ent = hg.RagdollOwner(ent) or ent
         
         local dmgInfo = DamageInfo()
-        if ent.organism.spine1 != 1 then
-            hg.organism.input_list.spine1(ent.organism, 0, 1, dmgInfo)
-        elseif ent.organism.spine2 != 1 then
-            hg.organism.input_list.spine2(ent.organism, 0, 1, dmgInfo)
-        elseif ent.organism.spine3 != 1 then
-            hg.organism.input_list.spine3(ent.organism, 0, 1, dmgInfo)
-        end
-    end 
-} )
-
-properties.Add( "amputatealeg", {
-	MenuLabel = "Amputate a leg", -- Name to display on the context menu
-	Order = 11, -- The order to display this property relative to other properties
-	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
-
-	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-		self:MsgStart()
-			net.WriteEntity( ent )
-		self:MsgEnd()
-	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
-		local ent = net.ReadEntity()
-        
-		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
-
-        if !ent.organism.rlegamputated then
-            hg.organism.AmputateLimb(ent.organism, "rleg")
-        elseif !ent.organism.llegamputated then
-            hg.organism.AmputateLimb(ent.organism, "lleg")
-        end
-    end 
-} )
-
-properties.Add( "amputateanarm", {
-	MenuLabel = "Amputate an arm", -- Name to display on the context menu
-	Order = 11, -- The order to display this property relative to other properties
-	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
-
-	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-		self:MsgStart()
-			net.WriteEntity( ent )
-		self:MsgEnd()
-	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
-		local ent = net.ReadEntity()
-        
-		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
-
-        if !ent.organism.larmamputated then
+		if limb == 0 then
+			if SERVER and not ent.noHead then
+				ent:Kill()
+				timer.Simple(0, function()
+					if not IsValid(ent.RagdollDeath) then return end
+					Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
+				end)
+			end
+        elseif limb == 1 then
             hg.organism.AmputateLimb(ent.organism, "larm")
-        elseif !ent.organism.rarmamputated then
-            hg.organism.AmputateLimb(ent.organism, "rarm")
-        end
-    end 
-} )
-
-properties.Add( "explodehead", {
-	MenuLabel = "Explode head", -- Name to display on the context menu
-	Order = 11, -- The order to display this property relative to other properties
-	MenuIcon = "effects/arc9_eft/evil.png", -- The icon to display next to the property
-
-	Filter = check,
-	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-		self:MsgStart()
-			net.WriteEntity( ent )
-		self:MsgEnd()
-	end,
-	Receive = function( self, length, ply ) -- The action to perform upon using the property ( Serverside )
-		local ent = net.ReadEntity()
-        
-		if not self:Filter(ent, ply) then return end
-        ent = hg.RagdollOwner(ent) or ent
-
-        if SERVER and not ent.noHead then
-			ent:Kill()
-			timer.Simple(0, function()
-				if not IsValid(ent.RagdollDeath) then return end
-				Gib_Input(ent.RagdollDeath, ent.RagdollDeath:LookupBone("ValveBiped.Bip01_Head1"))
-			end)
-        end
-    end 
+		elseif limb == 2 then
+			hg.organism.AmputateLimb(ent.organism, "rarm")
+		elseif limb == 3 then
+			hg.organism.AmputateLimb(ent.organism, "lleg")
+		elseif limb == 4 then
+			hg.organism.AmputateLimb(ent.organism, "rleg")
+		end
+	end
 } )
 
 local function doorCheck(self, ent, ply)

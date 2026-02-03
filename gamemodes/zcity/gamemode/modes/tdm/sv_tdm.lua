@@ -26,7 +26,7 @@ util.AddNetworkString("tdm_start")
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
 		
 		ply:SetNWInt( "TDM_Money", self.StartMoney )
@@ -87,7 +87,7 @@ function MODE:GiveEquipment()
 	timer.Simple(0.1,function()
 		local mrand = math.random(#tblweps[0])
 
-		for _, ply in ipairs(player.GetAll()) do
+		for _, ply in player.Iterator() do
 			if not ply:Alive() then continue end
 			
 			local inv = ply:GetNetVar("Inventory")
