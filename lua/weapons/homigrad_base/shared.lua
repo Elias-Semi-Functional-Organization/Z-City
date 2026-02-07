@@ -650,16 +650,17 @@ function SWEP:EmitShoot()
 		self:PlaySnd("zcitysnd/sound/weapons/firearms/hndg_colt1911/colt_1911_fire1.wav", nil, nil, vol * (insideVal / 16), 80, 50256, true)
 
 		self:PlaySnd("weapons/shoot/shot1.wav", nil, nil, vol * 1, 150, 52256, true)
+	end
+	local nearDist = (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150)
 
-		if !hadEarProtection and GetGlobalBool("hg_shoot_tinnitus", false) then
-			lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
-			if lply.TinnitusFactor > 32 then
-				lply:AddTinnitus(lply.TinnitusFactor / 100)
-			end
+	if GetGlobalBool("hg_shoot_tinnitus", false) and nearDist and !self.Supressor and !hadEarProtection then
+		lply.TinnitusFactor = (lply.TinnitusFactor or 0) + ( (self.Primary.Force * (self.NumBullet or 1) ) / 3) + insideVal
+		if lply.TinnitusFactor > 32 then
+			lply:AddTinnitus(lply.TinnitusFactor / 100)
 		end
 	end
 
-	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and (GetViewEntity() == ply or GetViewEntity():GetPos():Distance( self:GetPos() ) < 150) then
+	if (self.Primary.SoundFP or self.Supressor and self.SupressedSoundFP) and nearDist then
 		self:PlaySnd((self.Supressor and self.SupressedSoundFP) or self.Primary.SoundFP, nil, nil, vol, nil, 55533, not self.Supressor)
 	else
 		self:PlaySnd(self.Supressor and (self.SupressedSound or (self:IsPistolHoldType() and "homigrad/weapons/pistols/sil.wav" or "m4a1/m4a1_suppressed_fp.wav")) or self.Primary.Sound, nil, nil, vol, nil, 55533, not self.Supressor)
