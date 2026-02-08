@@ -2576,7 +2576,7 @@ duplicator.Allow( "homigrad_base" )
 			amtflashed2 = 0
 		end)
 
-		hook.Add("RenderScreenspaceEffects","flasheseffect",function()
+		hook.Add("Post Post Processing","flasheseffect",function()
 			if !lply:Alive() then
 				if !next(hg.flashes) then
 					hg.flashes = {}

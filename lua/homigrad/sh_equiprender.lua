@@ -146,8 +146,8 @@ if CLIENT then
 				model:SetNoDraw(true)
 				model:SetModelScale( (fem and armorData.femscale) or armorData.scale or 1 )
 				local fallback_mat = istable(armorData.material) and armorData.material[1] or armorData.material or ""
-				if ent:GetNWString("ArmorMaterials" .. armor, fallback_mat) and not model.materialset then
-					model.materialset = true
+				if model.materialset != ply:GetNWString("ArmorMaterials" .. armor, fallback_mat) then
+					model.materialset = ply:GetNWString("ArmorMaterials" .. armor, fallback_mat)
 					model:SetSubMaterial(0, ply:GetNWString("ArmorMaterials" .. armor, fallback_mat))
 				end
 

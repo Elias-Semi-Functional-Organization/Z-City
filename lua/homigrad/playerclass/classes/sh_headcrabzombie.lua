@@ -334,6 +334,12 @@ if SERVER then
 			return ply, ent, false
 		end
 	end)
+
+	hook.Add("HG_PlayerCanHearPlayersVoice", "ZombVoice", function(listener, speaker)
+		if speaker.PlayerClassName == "headcrabzombie" then
+			return false, false
+		end
+	end)
 else
 	local function DrawHeadcrab(ply, strModel, vecAdjust, fFov, setMat)
 		if not IsValid(ply.FirstPersonCrab) then
