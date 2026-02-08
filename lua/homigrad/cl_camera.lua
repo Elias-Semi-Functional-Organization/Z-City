@@ -244,8 +244,8 @@ end)
 surface.CreateFont(
 	"BODYCAMFONT",
 	{
-		font = "Arial",
-		size = 42,
+		font = "Bahnschrift",
+		size = ScreenScale(16),
 		italic = true,
 		weight = 1500
 	}
@@ -273,11 +273,11 @@ end)
 
 function SpecCam(ply, vec, ang, fov, znear, zfar)
 	if !ply:Alive() then return end
-	local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
+	--local hand = ply:GetAttachment(ply:LookupAttachment("anim_attachment_rh"))
 	local eye = ply:GetAttachment(ply:LookupAttachment("eyes"))
-	local org = eye.Pos
+	--local org = eye.Pos
 	local ang1 = eye.Ang + Angle(5, 2, 0)
-	local org1 = eye.Pos + eye.Ang:Up() * 6 + eye.Ang:Forward() * -1 + eye.Ang:Right() * 6.5
+	local org1 = eye.Pos + eye.Ang:Up() * 6 + eye.Ang:Forward() * -3 + eye.Ang:Right() * 6.5
 
 	local view = {
 		origin = org1,
