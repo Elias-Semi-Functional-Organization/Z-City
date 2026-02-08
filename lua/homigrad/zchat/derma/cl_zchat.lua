@@ -286,7 +286,7 @@ function PANEL:Paint(w, h)
 	end
 end
 
-function PANEL:SetActive(bActive)
+function PANEL:SetActive(bActive, bRemovePrev)
 	if (bActive) then
 		self:SetAlpha(255)
 		self:MakePopup()
@@ -300,8 +300,10 @@ function PANEL:SetActive(bActive)
 		self:SetMouseInputEnabled(false)
 		self:SetKeyboardInputEnabled(false)
 
-		self.entry:SetText("")
-		self.entry.prevText = ""
+		if bRemovePrev then
+			self.entry:SetText("")
+			self.entry.prevText = ""
+		end
 
 		gui.EnableScreenClicker(false)
 
@@ -352,7 +354,7 @@ function PANEL:OnMessageSent()
 		net.SendToServer()
 	end
 
-	self:SetActive(false)
+	self:SetActive(false, true)
 end
 
 function PANEL:AddLine(elements)
