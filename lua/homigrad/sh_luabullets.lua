@@ -422,7 +422,7 @@ local function Damage(bDoDebugHit, bStartedWater, bEndNotWater, iFlags, iDamage,
 		pEntity:DispatchTraceAttack(info, tr, vShotDir)
 		
 		if (fCallback) then
-			fCallback(pAttacker, tr, info, tInfo, Weapon)
+			fCallback(info:GetAttacker(), tr, info, tInfo, Weapon)
 		end
 		
 		if (bEndNotWater or bit.band(iFlags, FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS) ~= 0) then

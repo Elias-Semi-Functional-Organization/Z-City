@@ -101,13 +101,13 @@ function CLASS.On(self)
 		end
 
 		local index = self:EntIndex()
-		hook.Add("OnEntityCreated", "relation_shipdo"..index, function(ent)
-			if not IsValid(self) then hook.Remove("OnEntityCreated","relation_shipdo"..index) return end
+		hook.Add("OnEntityCreated", "relation_shipdo" .. index, function(ent)
+			if not IsValid(self) or self.PlayerClassName ~= "headcrabzombie" then hook.Remove("OnEntityCreated","relation_shipdo" .. index) return end
 			if ent:IsNPC() then
 				if table.HasValue(rebels, ent:GetClass()) or table.HasValue(combines, ent:GetClass()) then
-					v:AddEntityRelationship(self, D_HT, 99)
+					ent:AddEntityRelationship(self, D_HT, 99)
 				elseif table.HasValue(zombies, ent:GetClass()) then
-					v:AddEntityRelationship(self, D_LI, 99)
+					ent:AddEntityRelationship(self, D_LI, 99)
 				end
 			end
 		end)

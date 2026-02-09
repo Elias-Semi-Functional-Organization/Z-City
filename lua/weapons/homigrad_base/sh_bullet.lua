@@ -303,7 +303,7 @@ bulletHit = function(ply, tr, dmgInfo, bullet, Weapon)
 		util.Decal("Impact.Flesh", trPos + trNormal, trPos - trNormal)
 	end
 
-	local force = bullet.Force
+	--local force = bullet.Force
 	if force >= 20 then
 		local dist = trStart:DistToSqr(trPos)
 		if dist <= 160000 and (math.random(3) == 2 or force >= 30) and tr.Entity:IsWorld() then
