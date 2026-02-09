@@ -167,7 +167,6 @@ net.Receive("ZB_RockTheVote_vote", function(len, ply)
     net.Broadcast()
 end)
 
-
 local endStarted = false
 
 function zb.EndRTV()
@@ -180,7 +179,7 @@ function zb.EndRTV()
         winmap = mappull[math.random(#mappull)]
     end
 
-	if not winmap then
+    if not winmap then
 		winmap = "gm_construct"
 	end
 

@@ -203,8 +203,8 @@ function ENT:Explode()
 	end
 
 	net.Start("projectileFarSound")
-		net.WriteString(self.Sound[math.random(#self.Sound)])
-		net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
+	net.WriteString(self.Sound[math.random(#self.Sound)])
+	net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 		net.WriteVector(self:GetPos())
 		net.WriteEntity(self)
 		net.WriteBool(self:WaterLevel() > 0)
@@ -220,13 +220,13 @@ function ENT:Explode()
 		
 		timer.Simple(0.05, function() 
 			if IsValid(self) then
-				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.95, CHAN_AUTO) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 150, 70, 0.95, CHAN_AUTO)
 			end
 		end)
 
 		timer.Simple(0.1, function() 
 			if IsValid(self) then
-				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 155, 60, 0.9, CHAN_BODY) 
+				self:EmitSound(self.SoundBass[math.random(#self.SoundBass)], 155, 60, 0.9, CHAN_BODY)
 			end
 		end)
 	end
@@ -253,7 +253,7 @@ function ENT:Explode()
 				end)
 			end
 		end
-		
+
 		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
 
@@ -314,7 +314,7 @@ function ENT:Explode()
 
 		EmitSound(self.DebrisSounds[math.random(#self.DebrisSounds)], self:GetPos(), self:EntIndex(), CHAN_AUTO, 1, 80)
 	end
-	
+
 	local Poof=EffectData()
 	Poof:SetOrigin(selfPos)
 	Poof:SetScale(1.2)
@@ -322,7 +322,7 @@ function ENT:Explode()
 
 	timer.Simple(0, function()
 		util.ScreenShake( selfPos, 35, 1, 1, 3000 )
-		
+
 		local co = coroutine.create(function()
 
 			local LastShrapnel = SysTime()
