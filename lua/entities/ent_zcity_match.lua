@@ -20,6 +20,14 @@ function ENT:SetupDataTables()
 	end
 end
 
+local ignitable = { -- Very sorry for this silly table, but i don't want allow to ignite all wooden entity
+    ["models/gibs/wood_gib01b.mdl"] = true,
+    ["models/gibs/wood_gib01a.mdl"] = true,
+    ["models/gibs/wood_gib01c.mdl"] = true,
+    ["models/gibs/wood_gib01d.mdl"] = true,
+    ["models/gibs/wood_gib01e.mdl"] = true
+}
+
 function ENT:Initialize()
     self:SetModel(self.Model)
 
@@ -40,6 +48,11 @@ function ENT:Initialize()
         self:AddCallback("PhysicsCollide",function(ent1, data)
             if ent1:GetFireLeft() <= 0 then return end
             local pos = ent1:GetPos()
+            local ent = data.HitEntity
+            --print(IsValid(ent), ignitable[ent:GetModel()], ent:GetModel())
+            if IsValid(ent) and ignitable[ent:GetModel()] then
+                ent:Ignite()
+            end
 
             for _,v in ipairs(hg.gasolinePath) do
                 if v[1]:Distance(pos) > 30 or v[2] ~= false then continue end
