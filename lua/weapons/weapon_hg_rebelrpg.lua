@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Grenade Launchers"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/mmod/weapons/w_rocket_launcher.mdl"
+SWEP.WorldModel = "models/weapons/w_rocket_launcher.mdl"
 SWEP.WorldModelFake = "models/mmod/weapons/c_rpg.mdl"
 
 SWEP.FakePos = Vector(-20, 5, 8)

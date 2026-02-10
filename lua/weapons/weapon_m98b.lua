@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Sniper Rifles"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/w_snip_sg550.mdl"
+SWEP.WorldModel = "models/weapons/zcity/w_m98b.mdl"
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/m98b.png")
 SWEP.IconOverride = "entities/weapon_pwb_m98b.png"

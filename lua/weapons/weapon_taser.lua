@@ -6,7 +6,7 @@ SWEP.Author = "Taser"
 SWEP.Instructions = "A TASER is a conducted energy device (CED) primarily used to incapacitate people, allowing them to be approached and handled in an unresisting and thus less-lethal manner."
 SWEP.Category = "Weapons - Other"
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/w_pist_glock18.mdl"
+SWEP.WorldModel = "models/weapons/w_pistol.mdl"
 SWEP.WorldModelFake = "models/realistic_police/taser/c_taser.mdl"
 
 SWEP.FakePos = Vector(-14.4, 2, 5.8)

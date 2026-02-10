@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Machineguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/w_mach_m249para.mdl"
+SWEP.WorldModel = "models/pwb/weapons/w_hk23e.mdl"
 
 SWEP.WepSelectIcon2 = Material("pwb/sprites/hk23e.png")
 SWEP.IconOverride = "entities/weapon_pwb_hk23e.png"

@@ -26,11 +26,9 @@ SWEP.FakeBodyGroupsPresets = {
 	"1006",
 }
 
---SWEP.MagIndex = 46
+
 SWEP.FakeEjectBrassATT = "2"
 
-
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
 SWEP.FakeVPShouldUseHand = true
 
 SWEP.stupidgun = true

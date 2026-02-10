@@ -603,7 +603,7 @@ function SWEP:WorldModel_Transform(bNoApply, bNoAdditional, model)
 		self.last_transform = SysTime()
 
 		local should = hg.ShouldTPIK(owner) and not (ent ~= owner and not (inuse))
-		if not should then
+		if not should and not IsValid(owner.FakeRagdoll) then
 			if IsValid(model) then
 				-- local ownAngs = owner:EyeAngles()
 				-- model:SetRenderAngles(ownAngs)
