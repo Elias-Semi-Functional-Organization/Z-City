@@ -907,14 +907,14 @@ function SWEP:ApplyForce()
 				if not ply2.noHead and ply2.organism then
 
 					if ply2.organism.CantCheckPulse then
-						--ply:ChatPrint("The armor is too thick to feel the pulse.")
+						ply:ChatPrint("The armor is too thick to feel the pulse.")
 					elseif ((bone == "ValveBiped.Bip01_L_Hand") or (bone == "ValveBiped.Bip01_R_Hand") or (bone == "ValveBiped.Bip01_Head1")) then
 						local org = ply2.organism
 
 						if org.heartstop then
-							--ply:ChatPrint("No pulse.")
+							ply:ChatPrint("No pulse.")
 						else
-							--ply:ChatPrint(org.pulse < 20 and "Barely can feel the pulse." or (org.pulse <= 50 and "Low pulse.") or (org.pulse <= 90 and "Normal pulse.") or "High pulse.")
+							ply:ChatPrint(org.pulse < 20 and "Barely can feel the pulse." or (org.pulse <= 50 and "Low pulse.") or (org.pulse <= 90 and "Normal pulse.") or "High pulse.")
 						end
 
 						if (org.last_heartbeat + 60) > CurTime() then
@@ -968,9 +968,9 @@ function SWEP:ApplyForce()
 
 						if (bone == "ValveBiped.Bip01_Head1") then
 							if (org.o2.curregen == 0 or not org.alive or org.holdingbreath) then
-								--ply:ChatPrint("Not breathing.")
+								ply:ChatPrint("Not breathing.")
 							else
-								--ply:ChatPrint("Breathing.")
+								ply:ChatPrint("Breathing.")
 							end
 
 							--ply:ChatPrint(org.otrub and "No reaction." or "Reaction present.")
