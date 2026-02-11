@@ -375,7 +375,7 @@ hook.Add("NetworkEntityCreated", "HG_GiveRenderOverride", function(ragdoll)
 			end
 		end
 
-		for _, v in ipairs(ents.FindInSphere(ragdoll:GetPos(),32)) do
+		for _, v in ipairs(ents.FindInSphere(ragdoll:GetPos(),16)) do
 			if IsValid(v) and v:IsPlayer() and v:GetModel() == ragdoll:GetModel() then
 				--ragdoll:SetNWString("PlayerName", v:Name())
 				ragdoll:SetNWVector("PlayerColor", v:GetPlayerColor())

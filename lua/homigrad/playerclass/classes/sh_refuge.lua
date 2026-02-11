@@ -196,9 +196,9 @@ function CLASS.GiveEquipment(self, class)
     local vesta = vest[math.random(#vest)]
     local facea = face[math.random(#face)]
     local helmeta = helmet[math.random(#helmet)]
-    ply.armors["torso"] = vesta ~= "" and vesta or ply.armors["torso"]
-    ply.armors["head"] = helmeta ~= "" and helmeta or ply.armors["head"]
-    ply.armors["face"] = facea ~= "" and facea or ply.armors["face"]
+    hg.AddArmor(ply, vesta)
+    hg.AddArmor(ply, helmeta)
+    hg.AddArmor(ply, facea)
 
     ply:SyncArmor()
 
