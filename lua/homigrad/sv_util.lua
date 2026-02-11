@@ -356,7 +356,7 @@ net.Receive("LookAway",function(len,ply)
 	net.Send(rf)
 end)
 
-local hg = hg or {}
+hg = hg or {}
 -- С помощью этой функции можно пугать неписей.. Либо наоборот приманивать туда куда надо, мгс5 режим можно устроить
 function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
 	local snd = ents.Create("ai_sound")
