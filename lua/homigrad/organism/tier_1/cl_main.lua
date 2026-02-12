@@ -602,7 +602,7 @@ hook.Add("RenderScreenspaceEffects", "organism-effects", function()
 
 		local parsed = markup.Parse( 
 			"<font=HomigradFontMedium>"..
-			( critical and "You're criticaly injured." or textOtrub )..
+			( critical and "You're critically injured." or textOtrub )..
 			"\n<colour=255,"..( critical and 25 or 255 )..","..( critical and 25 or 255 ) ..",255>"..
 			( textOtrub2 ).."\n\n"..( textOtrub3 ).."</colour></font>"
 		)
