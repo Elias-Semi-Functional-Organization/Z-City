@@ -273,7 +273,7 @@ local function ExplodeTheItem(self,ent)
 
 			hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
 			hgBlastDoors(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
-			util.ScreenShake( EntPos, 35, 35, 1, 5000 )
+			util.ScreenShake( EntPos, 45, 225, 2.5, 3000 )
 
 			if FireEnts[ent:GetModel()] then
 				local Tr = util.QuickTrace(EntPos, -vector_up*500, {EntPos})

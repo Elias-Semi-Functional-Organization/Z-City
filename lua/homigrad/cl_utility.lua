@@ -471,7 +471,7 @@ players : 1 humans, 0 bots (20 max)
 --//
 
 --\\ custom sens
-	local hg_zoomsensitivity = ConVarExists("hg_zoomsensitivity") and GetConVar("hg_zoomsensitivity") or CreateConVar("hg_zoomsensitivity", 1, FCVAR_ARCHIVE, "aiming zoom sensitifity multiplier", 0, 3)
+	local hg_zoomsensitivity = ConVarExists("hg_zoomsensitivity") and GetConVar("hg_zoomsensitivity") or CreateConVar("hg_zoomsensitivity", 1, FCVAR_ARCHIVE, "Multiply aiming zoom sensivity", 0, 3)
 
 	hook.Add("AdjustMouseSensitivity", "AdjustRunSensivityHUY", function(defaultSensitivity)
 		if not lply:Alive() then return end--kakoy sencivity NOOB

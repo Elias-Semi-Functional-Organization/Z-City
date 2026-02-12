@@ -325,9 +325,9 @@ function SWEP:IsLocal2()
 	return CLIENT and self:GetOwner() == LocalPlayer() and LocalPlayer() == GetViewEntity()
 end
 
-local hg_quietshots = GetConVar("hg_quietshots") or CreateClientConVar("hg_quietshots", "0", true, false, "quieter gun sounds", 0, 1)
-local hg_gunshotvolume = GetConVar("hg_gunshotvolume") or CreateClientConVar("hg_gunshotvolume", "1", true, false, "volume of gun sounds", 0, 1)
-local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
+local hg_quietshots = GetConVar("hg_quietshots") or CreateClientConVar("hg_quietshots", "0", true, false, "Toggle quieter gun sounds", 0, 1)
+local hg_gunshotvolume = GetConVar("hg_gunshotvolume") or CreateClientConVar("hg_gunshotvolume", "1", true, false, "Modify volume of gun sounds", 0, 1)
+local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Disable camera wobble when aiming")
 
 if CLIENT then
 	EmitSound = hg.EmitSound
@@ -494,10 +494,14 @@ end
 
 function SWEP:Shoot(override)
 	self:PrimaryShootPre()
-	if self:GetOwner():IsNPC() then self.drawBullet = true end
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then self.drawBullet = true end
+
 	if !override and !self:CanPrimaryAttack() then return false end
 	if !override and !self:CanUse() then return false end
-	if CLIENT and self:GetOwner() != LocalPlayer() and !override then return false end
+	if CLIENT and owner != LocalPlayer() and !override then return false end
+
 	local primary = self.Primary
 	if override then self.drawBullet = true end
 	
@@ -509,8 +513,8 @@ function SWEP:Shoot(override)
 		return false
 	end
 	
-	if !override and IsValid(self:GetOwner()) and !self:GetOwner():IsNPC() and primary.Next > CurTime() then return false end
-	if !override and IsValid(self:GetOwner()) and !self:GetOwner():IsNPC() and (primary.NextFire or 0) > CurTime() then return false end
+	if !override and IsValid(owner) and !owner:IsNPC() and primary.Next > CurTime() then return false end
+	if !override and IsValid(owner) and !owner:IsNPC() and (primary.NextFire or 0) > CurTime() then return false end
 	
 	primary.Next = CurTime() + primary.Wait * 1.1
 	primary.RealAutomatic = primary.RealAutomatic or weapons_Get(self:GetClass()).Primary.Automatic
@@ -615,7 +619,7 @@ if SERVER then
 		net.Send(ply)
 	end)
 
-	hg_shoot_tinnitus = ConVarExists("hg_shoot_tinnitus") and GetConVar("hg_shoot_tinnitus") or CreateConVar("hg_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Enables shooting tinnitus")
+	hg_shoot_tinnitus = ConVarExists("hg_shoot_tinnitus") and GetConVar("hg_shoot_tinnitus") or CreateConVar("hg_shoot_tinnitus","0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle shooting tinnitus")
 	SetGlobalBool("hg_shoot_tinnitus",hg_shoot_tinnitus:GetBool())
 
 	cvars.AddChangeCallback("hg_shoot_tinnitus", function(convar_name, value_old, value_new)

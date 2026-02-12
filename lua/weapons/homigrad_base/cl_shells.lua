@@ -54,9 +54,9 @@ local ShellsSND = {
 }
 
 hg_trails = hg_trails or {}
-local hg_shouldnt_autoremove = ConVarExists("hg_shouldnt_autoremove") and GetConVar("hg_shouldnt_autoremove") or CreateConVar("hg_shouldnt_autoremove", 0, FCVAR_REPLICATED, "no remove ammo", 0, 1)
+local hg_shouldnt_autoremove = ConVarExists("hg_shouldnt_autoremove") and GetConVar("hg_shouldnt_autoremove") or CreateConVar("hg_shouldnt_autoremove", 0, FCVAR_REPLICATED, "Toggle weapon shell disappearing", 0, 1)
 local hg_potatopc
-local hg_maxsmoketrails = GetConVar("hg_maxsmoketrails") or CreateClientConVar("hg_maxsmoketrails", "7", true, false, "Max amount of smoke trail effects (lags after 10)", 0, 30)
+local hg_maxsmoketrails = GetConVar("hg_maxsmoketrails") or CreateClientConVar("hg_maxsmoketrails", "7", true, false, "Max amount of smoke trail effects (lags starts after 10)", 0, 30)
 function SWEP:MakeShell(shell, pos, ang, vel)
 	if not shell or not pos or not ang then
 		return

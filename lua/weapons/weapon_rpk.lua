@@ -60,6 +60,8 @@ SWEP.ViewPunchDiv = 70
 
 SWEP.FakeMagDropBone = 57
 
+SWEP.RestPosition = Vector(25, -1, 4)
+
 SWEP.AnimList = {
 	["idle"] = "idle",
 	["reload"] = "reload",

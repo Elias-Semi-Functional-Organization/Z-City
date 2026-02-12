@@ -30,6 +30,17 @@ SWEP.modeNames = {
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 100), 0, owner:GetMaxHealth() * 100))
+		owner:SetPlaybackRate(2)
+		owner:SetKeyValue("m_flPlaybackSpeed", 2)
+		owner:EmitSound("snd_jack_hmcd_needleprick.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 1
 	}

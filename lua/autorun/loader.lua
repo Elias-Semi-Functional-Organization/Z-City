@@ -1,5 +1,5 @@
 hg = hg or {}
-hg.Version = "Release 1.0.8"
+hg.Version = "Release 1.0.1.9"
 hg.GitHub_ReposOwner = "NotaQuickster"
 hg.GitHub_ReposName = "Z-City-Fork" -- please add your real git fork!
 

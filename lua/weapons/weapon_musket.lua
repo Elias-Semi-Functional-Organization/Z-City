@@ -105,7 +105,8 @@ SWEP.holsteredAng = Angle(320, 0, 0)
 SWEP.attPos = Vector(0.5,-3.5,75)
 SWEP.attAng = Angle(-0.1,.4,0)
 
-SWEP.bipodAvailable = false
+SWEP.bipodAvailable = true
+SWEP.RestPosition = Vector(15, -1, 5)
 
 --local to head
 SWEP.RHPos = Vector(2,-3.8,3)

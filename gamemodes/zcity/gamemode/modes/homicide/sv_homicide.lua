@@ -629,8 +629,6 @@ local modes = {
 	"gunfreezone",
 }
 
-local setmode = ConVarExists("homicide_setmode") and GetConVar("homicide_setmode") or CreateConVar( "homicide_setmode", "random", FCVAR_NONE, "sets hmcd mode" )
-
 util.AddNetworkString("HMCD_RoundStart")
 
 function MODE:GetPlySpawn(ply)

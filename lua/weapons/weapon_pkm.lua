@@ -164,6 +164,8 @@ SWEP.DistSound = "m249/m249_dist.wav"
 SWEP.bipodAvailable = true
 SWEP.bipodsub = 15
 
+SWEP.RestPosition = Vector(22, -1, 4)
+
 SWEP.RecoilMul = 0.3
 
 SWEP.availableAttachments = {

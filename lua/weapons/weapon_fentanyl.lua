@@ -30,10 +30,20 @@ SWEP.HolsterSnd = ""
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.5), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("snd_jack_hmcd_needleprick.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 1,
 	}
 end
+
 SWEP.ofsV = Vector(0,8,-3)
 SWEP.ofsA = Angle(-90,-90,90)
 SWEP.modeValuesdef = {

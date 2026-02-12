@@ -329,8 +329,8 @@ function ENT:Explode()
 	util.Effect("eff_jack_hmcd_shrapnel",Poof,true,true)
 
 	timer.Simple(0, function()
-		util.ScreenShake( selfPos, 35, 1, 1, 3000 )
-
+		util.ScreenShake( selfPos, 35, 200, 1, 1000 )
+		
 		local co = coroutine.create(function()
 
 			local LastShrapnel = SysTime()

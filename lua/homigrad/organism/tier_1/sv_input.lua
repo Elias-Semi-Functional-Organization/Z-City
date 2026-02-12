@@ -300,7 +300,7 @@ local headcrabsmodels = {
 	["npc_headcrab_black"] = "models/headcrabblack.mdl",
 }
 
-local hg_norespawn = ConVarExists("hg_norespawn") and GetConVar("hg_norespawn") or CreateConVar("hg_norespawn",0,FCVAR_SERVER_CAN_EXECUTE,"disable respawns in any gamemodes",0,1)
+local hg_norespawn = ConVarExists("hg_norespawn") and GetConVar("hg_norespawn") or CreateConVar("hg_norespawn",0,FCVAR_SERVER_CAN_EXECUTE,"Disable respawns in any gamemode (useful for hg_sync)",0,1)
 
 hook.Add("PlayerDeathThink","stoprespawning",function()
 	if hg_norespawn:GetBool() then return true end
@@ -312,7 +312,7 @@ util.AddNetworkString("hg_bloodimpact")
 --util.AddNetworkString("blood particle explode")
 util.AddNetworkString("bloodsquirt")
 
-local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer",0,FCVAR_SERVER_CAN_EXECUTE,"enable developer mode (enables damage traces)",0,1)
+local hg_developer = ConVarExists("hg_developer") and GetConVar("hg_developer") or CreateConVar("hg_developer",0,FCVAR_SERVER_CAN_EXECUTE,"Toggle developer mode (enables damage traces)",0,1)
 
 local npcDmg = {
 	npc_combine_s = {

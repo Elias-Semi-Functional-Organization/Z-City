@@ -137,11 +137,11 @@ hook.Add("HG.InputMouseApply", "fakeCameraAngles2", function(tbl)
 end)
 
 fakeTimer = fakeTimer or nil
-local hg_cshs_fake = ConVarExists("hg_cshs_fake") and GetConVar("hg_cshs_fake") or CreateConVar("hg_cshs_fake", 0, FCVAR_ARCHIVE, "fake from cshs", 0, 1)
-local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", "first person death", true, false, 0, 1)
-local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", 0, FCVAR_ARCHIVE, "first person ragdoll", 0, 1)
-local hg_fov = ConVarExists("hg_fov") and GetConVar("hg_fov") or CreateClientConVar("hg_fov", "70", true, false, "changes fov to value", 75, 100)
-local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "gopro camera", 0, 1)
+local hg_cshs_fake = ConVarExists("hg_cshs_fake") and GetConVar("hg_cshs_fake") or CreateConVar("hg_cshs_fake", 0, FCVAR_ARCHIVE, "Toggle C'SHS-like ragdoll camera view", 0, 1)
+local hg_firstperson_death = ConVarExists("hg_firstperson_death") and GetConVar("hg_firstperson_death") or CreateClientConVar("hg_firstperson_death", "0", "Toggle first-person death camera view", true, false, 0, 1)
+local hg_firstperson_ragdoll = ConVarExists("hg_firstperson_ragdoll") and GetConVar("hg_firstperson_ragdoll") or CreateConVar("hg_firstperson_ragdoll", 0, FCVAR_ARCHIVE, "Toggle first-person ragdoll camera view", 0, 1)
+local hg_fov = ConVarExists("hg_fov") and GetConVar("hg_fov") or CreateClientConVar("hg_fov", "70", true, false, "Change first-person field of view", 75, 100)
+local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like camera view", 0, 1)
 
 local k = 0
 local wepPosLerp = Vector(0,0,0)
@@ -328,7 +328,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	if hg_gopro:GetBool() then
 		return SpecCam(follow, origin, angles, fov, znear, zfar)
 	end
-
+	hook.Run("PostHGCalcView", ply, view)
 	return view
 end
 

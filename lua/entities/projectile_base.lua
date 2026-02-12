@@ -276,7 +276,7 @@ if SERVER then
 			end)
 		end
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+        util.ScreenShake(SelfPos,100,200,1,3000)
 
 		coroutine.resume(co)
 		local index = self:EntIndex()

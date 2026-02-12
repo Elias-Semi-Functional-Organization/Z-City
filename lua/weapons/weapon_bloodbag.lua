@@ -34,6 +34,15 @@ end
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
+	local owner = self:GetOwner()
+	if owner:IsNPC() then
+		self:SetHold("melee")
+		owner:SetHealth(math.Clamp(owner:Health() + (owner:GetMaxHealth() * 0.15), 0, owner:GetMaxHealth() * 2))
+		owner:EmitSound("zcity/healing/bloodbag_spear_0.wav", 75, math.random(95, 105))
+		self:Remove()
+	end
+
 	self.modeValues = {
 		[1] = 0
 	}

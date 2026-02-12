@@ -1,6 +1,6 @@
 
 local min, max, Round = math.min, math.max, math.Round
-local hg_organism_stamina_sprint_mul = CreateConVar("hg_organism_stamina_sprint_mul","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY,FCVAR_NEVER_AS_STRING},"change sprint drain when sprinting",0,10)
+local hg_organism_stamina_sprint_mul = CreateConVar("hg_organism_stamina_sprint_mul","1",{FCVAR_ARCHIVE,FCVAR_NOTIFY,FCVAR_NEVER_AS_STRING},"Multiply stamina drain when sprinting",0,10)
 --local Organism = hg.organism
 hg.organism.module.stamina = {}
 local module = hg.organism.module.stamina

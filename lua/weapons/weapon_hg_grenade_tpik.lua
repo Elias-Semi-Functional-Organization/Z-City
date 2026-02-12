@@ -7,10 +7,12 @@ SWEP.Instructions =
 LMB - High ready
 While high ready:
 RMB to remove spoon.
+Reload to insert pin back.
 
 RMB - Low ready
 While low ready:
 LMB to remove spoon.
+Reload to insert pin back.
 ]]--"тильда двуеточее три"
 SWEP.Category = "Weapons - Explosive"
 SWEP.Spawnable = true

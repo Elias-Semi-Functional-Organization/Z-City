@@ -132,6 +132,7 @@ SWEP.Penetration = 40
 
 SWEP.weight = 3
 
+SWEP.RestPosition = Vector(21, -1, 2)
 
 function SWEP:Shoot(override)
 	if not self:CanPrimaryAttack() then return false end

@@ -1245,7 +1245,7 @@ if CLIENT then
 		if self.LOD then return end
 
 
-		if vFireEnableLights and not potato then
+		if true and not potato then
 			-- Load information onto our light calls table
 			local entIndex = self:EntIndex()
 			lightCalls[state][entIndex] = {
@@ -1279,11 +1279,7 @@ if CLIENT then
 	end)
 
 	-- We need to cache our r_maxdlights ConVar for the sake of performance
-	local maxLightsConVar = GetConVar("r_maxdlights")
-	local maxLights = maxLightsConVar:GetInt()
-	cvars.AddChangeCallback("r_maxdlights", function()
-		maxLights = maxLightsConVar:GetInt()
-	end)
+	local maxLights = 100
 
 	-- Draw our light calls so that priority is given to larger fires
 	hook.Add("Think", "_vFireLightCallbacks", function()

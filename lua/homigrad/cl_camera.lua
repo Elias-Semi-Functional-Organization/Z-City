@@ -216,8 +216,8 @@ local CalcView
 local oldVechicleAng = Angle(0,0,0)
 local viewOverride
 
-local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
-local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+local hg_thirdperson = ConVarExists("hg_thirdperson") and GetConVar("hg_thirdperson") or CreateConVar("hg_thirdperson", 0, FCVAR_REPLICATED, "Toggle third-person camera view", 0, 1)
+local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person camera view if hg_thirdperson is enabled", 0, 1)
 local lerpasad = 0
 
 hook.Remove("CalcView", "wac_air_calcview")
@@ -503,6 +503,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		vpang[3] = 0
 		view.angles:Add(-vpang)
 		view.angles[3] = view.angles[3] + GetViewPunchAngles4()[3]
+		hook_Run("PostHGCalcView", ply, view)
 		return view
 	end
 	

@@ -3,7 +3,7 @@ local angFull = Angle(-30, 30, 30)
 local angZero = Angle(0, 0, 0)
 hg.attachments = hg.attachments or {}
 SWEP.availableAttachments = {}
-local hg_random_atts = ConVarExists("hg_random_atts") and GetConVar("hg_random_atts") or CreateConVar("hg_random_atts", 0, FCVAR_SERVER_CAN_EXECUTE, "", 0, 1)
+local hg_random_atts = ConVarExists("hg_random_atts") and GetConVar("hg_random_atts") or CreateConVar("hg_random_atts", 0, FCVAR_SERVER_CAN_EXECUTE, "Toggle random attachments on weapon spawn", 0, 1)
 function SWEP:ClearAttachments()
 	self.attachments = {
 		barrel = {},
