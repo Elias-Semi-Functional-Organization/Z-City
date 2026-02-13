@@ -22,7 +22,7 @@ local function ChatLogic(output, input, isChat, teamonly, text)
 		chat_dist = chat_dist_whisper
 	end
 
-	if output:Alive() and input:Alive() and not output.organism.otrub and not input.organism.otrub and output.organism.o2[1] >= 15 and not output.organism.holdingbreath and input:TestPVS( output ) then
+	if output:Alive() and input:Alive() and not output.organism.otrub and output.organism.o2[1] >= 15 and not output.organism.holdingbreath and input:TestPVS( output ) then
 		if input:GetPos():Distance(output:GetPos()) < chat_dist and not teamonly then
 			return true, true
 		else
