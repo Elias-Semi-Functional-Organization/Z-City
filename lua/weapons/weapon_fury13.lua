@@ -69,7 +69,7 @@ if SERVER then
 		local owner = self:GetOwner()
 		local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
 		entOwner:EmitSound("snd_jack_hmcd_needleprick.wav", 60, math.random(95, 105))
-		if ent.PlayerClassName != "furry" then
+		if ent.PlayerClassName and ent.PlayerClassName != "furry" then
 			org.berserk = org.berserk + 2
 		else
 			org.poison4 = CurTime()
