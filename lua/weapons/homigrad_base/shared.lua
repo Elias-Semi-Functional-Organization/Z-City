@@ -2292,10 +2292,11 @@ function SWEP:CanRest()
 
 	if SERVER then
 		self:WorldModel_Transform()
-	end
-
+	end -- this shit needs to be changed
+	-- desiredPos differs on CLIENT and SERVER (drastically)
     local pos, ang = self.desiredPos, self:GetOwner():EyeAngles()--self:GetTrace(true, nil, nil, true)
-    local pos, _ = LocalToWorld(self.RestPosition + (self.BipodOffset or vector_origin), angle_zero, pos, ang)
+    
+	local pos, _ = LocalToWorld(self.RestPosition + (self.BipodOffset or vector_origin), angle_zero, pos, ang)
 	
     local tr = {}
     local vec = vector_up--ang:Up()
@@ -2419,10 +2420,10 @@ hook.Add("HG_MovementCalc_2", "moveWithWeapon", function(mul, ply, cmd, mv)
 				--mv:AddKey(IN_DUCK)
 				--wep:SetNWBool("IsResting", false)
 
-				return
+				--return
 			end
-
-            if ply:EyeAngles()[1] < -10 or restpos[3] < ply:EyePos()[3] - 40 then
+			
+            if ply:EyeAngles()[1] < -10 or restpos[3] < ply:GetPos()[3] + 30 - 10 then
                 mv:AddKey(IN_DUCK)
             else
                 mv:SetButtons(bit.band(mv:GetButtons(), bit.bnot(IN_DUCK)))
