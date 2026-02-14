@@ -892,7 +892,7 @@ function hg.DoTPIK(ply, ent)
     if !ply_l_hand_index then return end
     if !ply_r_hand_index then return end
 
-    local eyepos, eyeang = ply:EyePos(), ply:EyeAngles()//ply:GetAimVector():Angle()
+    local eyepos, eyeang = ply:EyePos(), ply:EyeAngles() + (IsValid(ply:GetVehicle()) and ply:GetVehicle():GetAngles() or angle_zero)//ply:GetAimVector():Angle()
     local headpos = ply_head_matrix:GetTranslation()
 
     local ply_r_upperarm_matrix = ent:GetBoneMatrix(ply_r_upperarm_index)
