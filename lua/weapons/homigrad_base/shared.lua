@@ -79,7 +79,7 @@ SWEP.AmmoTypes2 = {
 		[2] = {"23x75 SH25"},
 		[3] = {"23x75 Barricade"},
 		[4] = {"23x75 Zvezda"},
-		[5] = {"23x75 Waver"}
+		[5] = {"23x75 Wave R"}
 	},
 	["20/70 gauge"] = {
 		[1] = {"20/70 gauge"},

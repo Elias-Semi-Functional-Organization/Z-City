@@ -243,8 +243,8 @@ local hands = {
 }
 
 local shootDecals, shootDecalRand = {
-	"decals/metal/shot6",
-	"decals/metal/shot7",
+	--"decals/metal/shot6",
+	--"decals/metal/shot7",
 	"decals/bigshot2",
 	"decals/bigshot4",
 	"decals/bigshot5",
