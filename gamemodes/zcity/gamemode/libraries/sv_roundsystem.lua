@@ -579,6 +579,8 @@ function zb:RoundStart()
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
 
+	RunConsoleCommand("hostname", "Elias's Semi Functional Z-City Server | " .. "Current Round: " .. mode.PrintName or "Unknown.")
+
 	if forcemodeconvar:GetString() != "" then
 		forcemode = forcemodeconvar:GetString()
 	end
