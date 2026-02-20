@@ -255,14 +255,16 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			thinkwait = CurTime() + 0.25
 			table.Empty(hg.radialOptions)
 			local functions = hook.GetTable()["radialOptions"]
-			
+			colWhiteTransparent = lply:GetPlayerColor():ToColor()
+			colWhiteTransparent.a = 100
+
 			for i, func in SortedPairs(functions) do
 				//if i == "zmeyka_test" then continue end
 				func()
 			end
 		end
 	end
-	
+
 	local sizePan = 0
 	local optionSelected = {}
 	menuPanel.Paint = function(self, w, h)

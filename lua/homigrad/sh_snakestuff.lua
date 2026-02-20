@@ -88,7 +88,7 @@ if CLIENT then
 
 	local cursor
 
-	local zmeyka_legs = ConVarExists("zmeyka_legs") and GetConVar("zmeyka_legs") or CreateClientConVar("zmeyka_legs",0,true,true,"Toggle UI snake/worm legs",0,1)
+	local zmeyka_legs = ConVarExists("zmeyka_legs") and GetConVar("zmeyka_legs") or CreateClientConVar("zmeyka_legs",1,true,true,"Toggle UI snake/worm legs",0,1)
 
 	local zmeyka_lmao = function()
 		cursor = Vector(input.GetCursorPos())
