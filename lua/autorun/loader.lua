@@ -1,7 +1,7 @@
 hg = hg or {}
 hg.Version = "Release 1.0.1.9"
-hg.GitHub_ReposOwner = "NotaQuickster"
-hg.GitHub_ReposName = "Z-City-Fork" -- please add your real git fork!
+hg.GitHub_ReposOwner = "Elias-Semi-Functional-Organization"
+hg.GitHub_ReposName = "Z-City" -- please add your real git fork!
 
 -- if hg.GitHub_ReposOwner and hg.GitHub_ReposOwner != "" then
 -- 	http.Fetch( "https://api.github.com/repos/" .. hg.GitHub_ReposOwner .. "/" .. hg.GitHub_ReposName .. "/commits?sha=" .. hg.GitHub_Branch .. "&per_page=1",
