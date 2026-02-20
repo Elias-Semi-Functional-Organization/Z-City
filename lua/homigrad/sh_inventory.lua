@@ -166,10 +166,13 @@ if CLIENT then
 		inv["Armor"] = armor
 		if not inv then return end
 
-		local nameStr = "Unknown"
+		local nameStr = "???"
 		if IsValid(ent) then
 			if (ent:IsPlayer() or ent:IsRagdoll()) then
 				nameStr = ent:GetPlayerName() or string.NiceName(ent:GetClass())
+			end
+			if (!ent:IsPlayer() and !ent:IsRagdoll()) then
+				nameStr = "Container"
 			end
 		end
 		local name = nameStr .. "'s inventory" or "Container"
