@@ -182,7 +182,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		end
 	end
 
-
+	
 	if not lply:Alive() and hg.DeathCam and hg.DeathCamAvailable(ply) then return hg.DeathCam(ply,origin,angles,fov,znear,zfar) end
 
 	if not IsValid(ply) then return end
@@ -316,7 +316,7 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 		wep:WorldModel_Transform()
 		wep:DrawAttachments()
 	end--]]
-	
+
 	if hg_gopro:GetBool() then
 		return SpecCam(follow, origin, angles, fov, znear, zfar)
 	end
