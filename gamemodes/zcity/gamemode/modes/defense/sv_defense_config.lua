@@ -26,7 +26,7 @@ DEFENSE_MUSIC = {
         [3] = "music_themes/defense/wave03.wav",
         [4] = "music_themes/defense/wave04.wav",
         [5] = "music_themes/exhaustion.mp3",
-        [6] = "music_themes/defense/wave02.wav",
+        [6] = "music_themes/defense/wave04.wav",
         [7] = "music_themes/defense/wave01.wav",
         [8] = "music_themes/defense/wave02.wav",
         [9] = "music_themes/defense/wave03.wav",
@@ -163,7 +163,7 @@ DEFENSE_WAVE_DEFINITIONS = {
             {type = "npc_combine_s", weapon = "weapon_osipr", health = 200, count = 4, model = "models/Combine_Super_Soldier.mdl", 
              default_weapon = false, relationship = {class = "npc_metropolice", disposition = D_LI},
              keyvalues = {SquadName = "overwatch", NumGrenades = "3", spawnflags = "260"}},
-            {type = "npc_metropolice", weapon = "", health = 50, count = 2, default_weapon = true,
+            {type = "npc_metropolice", weapon = "weapon_mp7", health = 50, count = 2, default_weapon = true,
              relationship = {class = "npc_combine_s", disposition = D_LI}}
         }
     },

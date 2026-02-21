@@ -1062,12 +1062,11 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 
 	if org.isPly then
 		hook.Run("Org Think Call", ply, org)
-		
+		if org.skull == 1 then
+			ent:SetNWString("PlayerName", "Unrecognizable")
+		end
+
 		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("hg_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
-			if org.skull == 1 then
-				//ent:SetNWString("PlayerName", "Unidentifiable person")
-			end
-			
 			ply:ScreenFade(0, color_black, 1, 1)
 			ply:ConCommand("soundfade 100 99999")
 		end
@@ -1503,12 +1502,11 @@ local function velocityDamage(ent, data)
 	
 	if org.isPly and ply then
 		hook.Run("Org Think Call", ply, org)
-		
+		if org.skull == 1 then
+			ent:SetNWString("PlayerName", "Unrecognizable")
+		end
+
 		if (not ply:Alive() or not org.alive) and (math.Round(ply:GetInfoNum("hg_deathfadeout", 1)) == 1) then// or org.otrub or hg.organism.paincheck(org) or (ply:Health() <= 0) then
-			if org.skull == 1 then
-				//ent:SetNWString("PlayerName", "Unidentifiable person")
-			end
-			
 			ply:ScreenFade(0, color_black, 1, 1)
 			ply:ConCommand("soundfade 100 99999")
 		end

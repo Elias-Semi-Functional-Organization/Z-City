@@ -5,7 +5,8 @@ local red_select = Color(192,0,0)
 local Selects = {
     {Title = "Disconnect", Func = function(luaMenu) RunConsoleCommand("disconnect") end},
     {Title = "Main Menu", Func = function(luaMenu) gui.ActivateGameUI() luaMenu:Close() end},
-    {Title = "Discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL("https://discord.gg/475EmEdTgH")  end},
+    --{Title = "Discord", Func = function(luaMenu) luaMenu:Close() gui.OpenURL("https://discord.gg/475EmEdTgH")  end},
+    {Title = "How to play", Func = function(luaMenu) gui.OpenURL("https://docs.google.com/document/d/1oVOleCQSrbfWddLKOgjAKD-EKpbS1dxCfNdCSUwNfn4/edit?tab=t.0") end},
     {Title = "Traitor Role",
     GamemodeOnly = true,
     CreatedFunc = function(self, parent, luaMenu)
@@ -79,21 +80,16 @@ local Selects = {
 }
 
 local splasheh = {
-    'LIKE HOMICIDED',
+    'THE CITY AWAITS',
     'PLUV PLUV PLUVISKI',
-    'LULU IS NOT DEAD | !PLUV',
-    'THE TRAITOR WAS KILLED',
-    'NAB HOMICIDE SERVER',
+    'SCHIZO SHACK WILL PREVAIL',
+    'KILL THE TRAITOR',
     'ALSO TRY MODDED HOMICIDE 2',
     'HOP ON Z-CITY',
     'JOHN Z-CITY',
     ':pluvrare:',
-    'SAW51 IS REAL',
-    'MORE SMALLTOWN',
-    'MORE CLUE2022',
-    'BACKROOMS == CLUE',
+    'THE END IS NEVER THE END IS NEVER THE END THE END IS NEVER THE END IS NEVE',
     'HELL IS NEAR',
-    'I WISH YOU GOOD HEALTH, JASON STATHAM'
 }
 
 --print(string.upper('I wish you good health, Jason Statham'))

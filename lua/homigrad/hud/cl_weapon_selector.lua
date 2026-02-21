@@ -92,6 +92,16 @@ function WS.WeaponSelectorDraw( ply )
         --if slotTbl and table.Count(slotTbl) < 0 then continue end
         local Ammout = 0
         local lastPos = 0
+
+        local playercolor = ply:GetPlayerColor():ToColor()
+        if playercolor.r >= playercolor.g and playercolor.r >= playercolor.b then
+            playercolor.r = math.Clamp(playercolor.r - 35, 0, 255)
+        elseif playercolor.g >= playercolor.r and playercolor.g >= playercolor.b then
+            playercolor.g = math.Clamp(playercolor.g - 35, 0, 255)
+        else
+            playercolor.b = math.Clamp(playercolor.b - 35, 0, 255)
+        end
+
         for Id = 0, #slotTbl do
             wepId = Id
             local wep = slotTbl[wepId]
@@ -118,11 +128,11 @@ function WS.WeaponSelectorDraw( ply )
                 2, 
                 ColorAlpha(color_black,WS.Transparent*205) 
             )
-            surface.SetDrawColor( 155, 0, 0, WS.Transparent*( SelectedWep == wep and 200 or 0 )  )
+            surface.SetDrawColor( playercolor.r, playercolor.g, playercolor.b, WS.Transparent*( SelectedWep == wep and 200 or 0 )  )
             surface.SetMaterial( gradient_u )
             surface.DrawTexturedRect( position, (scrH * 0.025) * (Ammout) + (scrH * 0.05) + lastPos, sizeX, sizeH )
             if SelectedWep == wep then
-                surface.SetDrawColor( 255, 0, 0, WS.Transparent*155 )
+                surface.SetDrawColor( playercolor.r, playercolor.g, playercolor.b, WS.Transparent*155 )
 	            surface.DrawOutlinedRect( position, (scrH * 0.025) * (Ammout) + (scrH * 0.05) + lastPos, sizeX, sizeH, 2 )
             end
             local sizeHi = (scrH *0.025) * (Ammout) + (scrH * 0.05) + lastPos

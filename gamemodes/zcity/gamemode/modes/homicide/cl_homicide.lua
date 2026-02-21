@@ -17,7 +17,7 @@ MODE.TypeSounds = {
 }
 local fade = 0
 net.Receive("HMCD_RoundStart",function()
-	for i, ply in player.Iterator() do
+	for i,ply in player.Iterator() do
 		ply.isTraitor = false
 		ply.isGunner = false
 	end

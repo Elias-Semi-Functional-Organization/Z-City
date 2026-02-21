@@ -255,14 +255,16 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			thinkwait = CurTime() + 0.25
 			table.Empty(hg.radialOptions)
 			local functions = hook.GetTable()["radialOptions"]
-			
+			colWhiteTransparent = lply:GetPlayerColor():ToColor()
+			colWhiteTransparent.a = 100
+
 			for i, func in SortedPairs(functions) do
 				//if i == "zmeyka_test" then continue end
 				func()
 			end
 		end
 	end
-	
+
 	local sizePan = 0
 	local optionSelected = {}
 	menuPanel.Paint = function(self, w, h)
@@ -521,7 +523,7 @@ hook.Add("radialOptions", "7", function()
 
     if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply then
         if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures ~= nil and not ply:GetPlayerClass().CanUseGestures then return end
-		local tbl = {function(mouseClick)
+        local tbl = {function(mouseClick)
 			if mouseClick == 1 then
 				RunConsoleCommand("act", randomGestures[math.random(#randomGestures)])
 				if (ply.NextFoley or 0) < CurTime() then
@@ -709,10 +711,9 @@ hook.Add("HUDPaint","afflictionlist",function()
 		end
 	end--]]
 end)
-
 -- Now playable :steamhappy:
 --[[if game.SinglePlayer() then
 	hook.Add("HUDPaint","Exit the singleplayer",function()
-		draw.SimpleText("Z-City is not for SINGLEPLAYER server, in map select change green SINGLEPLAYER to 2 players or any.", "HomigradFontMedium",ScrW()/2,ScrH()/2,nil,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleText("Z-City doesn't work in singleplayer, switch to multiplayer.", "HomigradFontMedium",ScrW()/2,ScrH()/2,nil,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end)
 end]]

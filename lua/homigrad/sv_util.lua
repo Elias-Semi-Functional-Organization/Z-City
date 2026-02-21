@@ -1549,6 +1549,10 @@ hg.MapTemps = {
 	["gm_fork_north"] = -16,
 	["gm_fork_north_day"] = -21,
 	["gm_ijm_boreas"] = -40,
+	["gm_cozysnowdwelling"] = -10,
+	["gm_cozysnowdwellingnight"] = -16,
+	["mu_calmtime_winter"] = -16,
+	["gm_bbicotka_snow_hmcd"] = -16,
 	["gm_construct"] = 20 -- тест температуры
 }
 
@@ -1566,6 +1570,7 @@ end)
 hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- переделал систему температуры
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
+
 	if !hg_temperaturesystem:GetBool() then return end
 	if (owner.CheckTemp or 0) > CurTime() then return end
 	owner.CheckTemp = CurTime() + 0.5--optimization update
@@ -1610,7 +1615,7 @@ hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- пе
 	local changeRate = timeValue / 30 -- 1 degree every 1 minute
 
 	local temp = (IsVisibleSkyBox and temp or 20) + warming * 5
-	
+
 	local isFreezing = temp < 0
 	local isHeating = temp > 30
 

@@ -22,21 +22,21 @@ local function FindAirdropPosition()
             table.insert(validPlayers, ply)
         end
     end
-    
+
     if #validPlayers == 0 then return nil end
-    
+
     local centerPos = Vector(0, 0, 0)
     for _, ply in ipairs(validPlayers) do
         centerPos = centerPos + ply:GetPos()
     end
     centerPos = centerPos / #validPlayers
-    
 
-    local attempts = 20 
+
+    local attempts = 20
     for i = 1, attempts do
         local randomOffset = Vector(math.random(-800, 800), math.random(-800, 800), 0)
         local dropPos = centerPos + randomOffset
-        
+
 
         local skyCheckHeight = 4000
 
@@ -45,7 +45,7 @@ local function FindAirdropPosition()
             endpos = dropPos,
             mask = MASK_SOLID
         })
-        
+
 
         if skyTrace.HitSky or not skyTrace.Hit then
             local groundTrace = util.TraceLine({
@@ -492,7 +492,7 @@ local function RespawnDeadPlayers(requester)
         
         timer.Simple(2, function()
             for _, ply in player.Iterator() do
-				if not IsValid(ply) then return end
+                if not IsValid(ply) then return end
                 ply:StopSound("ambient/alarms/combine_bank_alarm_loop1.wav")
             end
         end)
