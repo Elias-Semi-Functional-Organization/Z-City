@@ -37,6 +37,8 @@ local hg_coolcamera = ConVarExists("hg_coolcamera") and GetConVar("hg_coolcamera
 				footcl = 1
 			end
 			local mul = 1 * len / 300 * math_max((350 - ply.move) / 50, 0.4)
+
+			if not ply.organism then return end
 			local legsDamaged = ply.organism.rleg + ply.organism.lleg
 			local mul2 = ((ply.organism.lleg or 0) * 3 + 1) * ((ply.organism.rleg or 0) * 3 + 1) * (hg_coolcamera:GetBool() and legsDamaged < 0.2 and 1.5 or 0.5)
 

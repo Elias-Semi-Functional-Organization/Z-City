@@ -51,7 +51,7 @@ hg.settings:AddOpt("Gameplay","hg_old_notificate", "Old Notifications")
 hg.settings:AddOpt("Gameplay","hg_cheats", "Enable Cheats")
 hg.settings:AddOpt("Gameplay","hg_showthoughts", "Show thoughts")
 hg.settings:AddOpt("Gameplay","hg_hints", "Show hints")
-hg.settings:AddOpt("Gameplay","hg_gary", "HG GARY")
+hg.settings:AddOpt("Gameplay","hg_gary", "Center weapon in fake")
 hg.settings:AddOpt("Gameplay","hg_deathfadeout", "Death fade out")
 --hg_gary
 --hg_deathfadeout
@@ -68,9 +68,11 @@ if not game.IsDedicated() then
 	hg.settings:AddOpt("Server-side settings","hg_slings", "Sling system")
 	hg.settings:AddOpt("Server-side settings","hg_allow_gopro", "Allow GoPro-like first-person camera")
 	hg.settings:AddOpt("Server-side settings","hg_allow_gopro_pos", "Allow editing GoPro camera position")
+	hg.settings:AddOpt("Server-side settings","hg_giveammomul", "Multiply given ammo for weapon spawned from spawnmenu")
 	hg.settings:AddOpt("Server-side settings","hg_ixanims", "Toggle Helix-like animations on NPC models for players. Experimental")
 	hg.settings:AddOpt("Server-side settings","hg_coolhands", "Give cool hands instead of default hands on spawn")
-  hg.settings:AddOpt("Server-side settings","homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
+	hg.settings:AddOpt("Server-side settings","hg_loadcontent", "Toggle loading content to clients using 'resource.AddWorkshop' (need server restart to apply)")
+    hg.settings:AddOpt("Server-side settings","homicide_traitoramount", "Homicide: Traitor Amount", nil, nil, "int")
 end
 --hg_appearance_access_for_all
 --hg_furcity
@@ -93,7 +95,7 @@ hg.settings:AddOpt("Blood","hg_blood_fps", "Blood FPS")
 hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVERYONE)")
 hg.settings:AddOpt("Blood","hg_old_blood", "Old blood")
 
-hg.settings:AddOpt("UI","hg_font", "Change Custom Font", false, true)
+hg.settings:AddOpt("UI","hg_font", "Set Custom Font", false, true)
 hg.settings:AddOpt("UI","hg_nostatic", "Remove static border effects")
 hg.settings:AddOpt("UI","hg_unconscioustimer", "Unconscious Timer")
 

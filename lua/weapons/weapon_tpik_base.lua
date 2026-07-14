@@ -417,6 +417,10 @@ function SWEP:Deploy()
     self.Initialzed = true
     self:PlayAnim("deploy")
     self:SetHold(self.HoldType)
+
+	if self.DeployAdd then
+		self:DeployAdd()
+	end
 	
 	return true
 end

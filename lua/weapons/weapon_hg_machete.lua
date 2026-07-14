@@ -71,7 +71,7 @@ SWEP.StaminaSecondary = 10
 
 SWEP.AttackLen1 = 50
 SWEP.AttackLen2 = 35
-SWEP.weight = 1.2
+SWEP.weight = 1.4
 
 SWEP.AnimList = {
     ["idle"] = "Idle",
