@@ -1000,7 +1000,7 @@ function SWEP:ApplyForce()
 							--ply:ChatPrint(org.otrub and "No reaction." or "Reaction present.")
 
 							if org.isPly and not org.otrub then
-								org.owner:ChatPrint("You were checked for reaction.")
+								--org.owner:ChatPrint("You were checked for reaction.")
 							end
 						end
 					end
