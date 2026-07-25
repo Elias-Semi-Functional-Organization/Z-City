@@ -107,7 +107,7 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local spect = LocalPlayer():GetNWEntity("spect")
 	if not IsValid(spect) then return end
 	if viewmode == 3 then return end
-	
+
 	surface.SetFont("HomigradFont")
 	surface.SetTextColor(255, 255, 255, 255)
 	local txt = "Spectating player: "..spect:Name()
@@ -118,8 +118,56 @@ hook.Add("HUDPaint","FUCKINGSAMENAMEUSEDINHOOKFUCKME",function()
 	local w, h = surface.GetTextSize(txt)
 	surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7 + h)
 	surface.DrawText(txt)
+
+
+	if spect.organism == nil then return end
+
+	if spect.organism.otrub and not viewmode == 2 then
+		local txt = spect:GetPlayerName().." is unconscious."
+		local w, h = surface.GetTextSize(txt)
+		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 2.1)
+		surface.DrawText(txt)
+	end
+
+	if spect.PlayerClassName == nil and viewmode ~= 2 or spect.organism.o2 == nil or spect.organism.brain == nil then return end -- this is ass
+
+	if spect.organism.o2[1] < 15 or spect.organism.brain > 0.05 or spect.PlayerClassName and spect.PlayerClassName == "Gordon" then
+		local txt = spect:GetPlayerName().." is unable to speak to other alive players."
+		local w, h = surface.GetTextSize(txt)
+		surface.SetTextPos(ScrW() / 2 - w / 2, ScrH() / 8 * 7 + h + h)
+		surface.DrawText(txt)
+	end
 end)
 
+hook.Add("HUDPaint","flashlightspectator",function()
+if LocalPlayer():Alive() then return end
+local key = input.IsButtonDown(KEY_P)
+if not lply:Alive() and keyOld2 ~= key and key then
+	flashlightOn = not flashlightOn
+
+	if flashlightOn then
+		if not IsValid(flashlight) then
+			flashlight = ProjectedTexture()
+			flashlight:SetTexture("effects/flashlight001")
+			flashlight:SetFarZ(900)
+			flashlight:SetFOV(70)
+			flashlight:SetEnableShadows( false )
+		end
+	else
+		if IsValid(flashlight) then
+			flashlight:Remove()
+			flashlight = nil
+		end
+	end
+end
+keyOld2 = key
+
+if flashlight then
+	flashlight:SetPos(EyePos())
+	flashlight:SetAngles(EyeAngles())
+	flashlight:Update()
+end
+end)
 hook.Add("HG_CalcView", "zzzzzzzUwU", function(ply, pos, angles, fov)
 	if not lply:Alive() then
 		if lply:KeyDown(IN_ATTACK) then
@@ -590,7 +638,7 @@ function GM:ScoreboardShow()
 		end 
 	end
 
-	local ServerName = GetHostName() or "ZCity | Developer Server | #01"
+	local ServerName = "Z-City | Elias's Semi Functional World"
 	local tick
 	scoreBoardMenu.PaintOver = function(self,w,h)
 		surface.SetDrawColor( 255, 0, 0, 128)

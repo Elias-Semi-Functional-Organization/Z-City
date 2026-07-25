@@ -41,7 +41,7 @@ else
 	include("cl_optics.lua")
 end
 
-local hg_npcspreadmul = CreateConVar("hg_npcspreadmul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the less accurate are npcs", 0, 10)
+local hg_npcspreadmul = CreateConVar("hg_npcspreadmul", "3", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the less accurate are npcs", 0, 10)
 local hg_npcfireratemul = CreateConVar("hg_npcfireratemul", "1", FCVAR_ARCHIVE + FCVAR_SERVER_CAN_EXECUTE, "The more this value is, the more time is between each shot in the npc's burst", 0, 10)
 
 -- NPC SHIT
