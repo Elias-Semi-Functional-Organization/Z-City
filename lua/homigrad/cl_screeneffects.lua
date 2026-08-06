@@ -491,8 +491,8 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.UpdateScreenEffectTexture()
 
 		vignetteMat:SetFloat("$c2_x", CurTime() + 10000) //Time
-		vignetteMat:SetFloat("$c0_z", org.otrub and 5 or (pain / 40 + math.max(shock - 5, 0) / 3)) //ColorIntensity
-		vignetteMat:SetFloat("$c1_y", org.otrub and 10 or (pain / 40 + math.max(shock - 5, 0) / 3)) //Vignette
+		vignetteMat:SetFloat("$c0_z", org.otrub and 1 or (pain / 40 + math.max(shock - 5, 0) / 6)) //ColorIntensity
+		vignetteMat:SetFloat("$c1_y", org.otrub and 5 or (pain / 40 + math.max(shock - 5, 0) / 6)) //Vignette
 
 		render.SetMaterial(vignetteMat)
 		render.DrawScreenQuad()
@@ -500,7 +500,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.UpdateScreenEffectTexture()
 
 		painMat:SetFloat("$c2_x", CurTime() + 10000) //Time
-		painMat:SetFloat("$c0_y", 0.8) //Gate
+		painMat:SetFloat("$c0_y", 0.3) //Gate
 		painMat:SetFloat("$c0_z", 1) //ColorIntensity
 		painMat:SetFloat("$c1_x", math.Clamp(pain / 90, 0, 0.75)) //Lerp
 		painMat:SetFloat("$c1_y", math.Clamp(pain / 90, 0, 0.75)) //Vignette
@@ -509,7 +509,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.DrawScreenQuad()
 
 		if org.otrub then
-			DrawMotionBlur(0.1, 1., 0.01)
+			--DrawMotionBlur(0.1, 1., 0.01)
 			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 2, 0.5 )
 		end
 		

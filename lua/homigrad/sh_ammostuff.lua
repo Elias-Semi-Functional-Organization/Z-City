@@ -1288,7 +1288,7 @@ hg.ammotypes = {
 		}
 	},
 	["9x18mmpbm"] = {
-		name = "9x18 mm PBM 7N25",
+		name = "9x18 mm PBM",
 		allowed = true,
 		dmgtype = DMG_BULLET,
 		tracer = TRACER_LINE,
