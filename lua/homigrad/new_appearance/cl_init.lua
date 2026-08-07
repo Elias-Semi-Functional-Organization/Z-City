@@ -120,7 +120,7 @@ function RenderAccessories(ply, accessories, setup)
 			if not accessData then continue end
 			if accessData.needcoolRender then continue end
 
-			DrawAccesories(ply, ent, accessoriess, accessData, islply, nil, setup)
+			DrawAccesories(ply, ent, accessoriess, accessData, islply, nil, setup, accessories)
 		end
 	else
 		local accessData = hg.Accessories[accessories]
@@ -132,7 +132,7 @@ function RenderAccessories(ply, accessories, setup)
 end
 
 local huy_addvec = Vector(0.4,0,0.4)
-function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup)
+function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup, tAccessories)
 	if not accessories then return end
 	if not accessData then return end
 
@@ -183,6 +183,10 @@ function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup)
 	local mdl = string.Split(string.sub(ent:GetModel(),1,-5),"/")[#string.Split(string.sub(ent:GetModel(),1,-5),"/")]
 	if mdl and model:GetFlexIDByName(mdl) then
 		model:SetFlexWeight(model:GetFlexIDByName(mdl),1)
+	end
+
+	if accessData["modelPreRenderCallback"] then
+		accessData["modelPreRenderCallback"](ply,ent,model,tAccessories)
 	end
 	--if model:GetFlexIDByName(ThatPlyIsFemale(ply) and "F" or "M") then
 	--	model:SetFlexWeight(model:GetFlexIDByName(ThatPlyIsFemale(ply) and "F" or "M"),1)
