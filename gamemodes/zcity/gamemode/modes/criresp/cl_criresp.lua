@@ -1005,7 +1005,16 @@ function MODE:HUDPaint()
 
 				local title, titleCol
 				if endStats.winner == 1 then
-					title, titleCol = "MISSION ACCOMPLISHED", Color(90, 200, 90)
+					local clean = endStats.arrested + endStats.incap
+					local ratio = endStats.total > 0 and clean / endStats.total or 0
+
+					if ratio >= 0.7 then
+						title, titleCol = "MISSION ACCOMPLISHED", Color(90, 200, 90)
+					elseif ratio >= 0.35 then
+						title, titleCol = "SLOPPY MISSION", Color(230, 190, 60)
+					else
+						title, titleCol = "DISASTROUS MISSION", Color(235, 120, 45)
+					end
 				elseif endStats.winner == 2 then
 					title, titleCol = "MISSION FAILED", criRed
 				else
