@@ -447,10 +447,10 @@ net.Receive("hmcd_announce_traitor_lose", function()
 	local traitor = net.ReadEntity()
 	local traitor_alive = net.ReadBool()
 
-	if (IsValid(traitor)) and traitor:GetPlayerName() != traitor:Nick() then
+	if (IsValid(traitor)) and string.lower(traitor:GetPlayerName()) != string.lower(traitor:Nick()) then
 		chat.AddText(color_white, (traitor_alive and "" or "Traitor "), traitor:GetPlayerColor():ToColor(), traitor:GetPlayerName() .. ", " .. traitor:Nick(), color_white, " was " .. (traitor_alive and "a Traitor." or "killed."))
-	elseif (IsValid(traitor)) and traitor:GetPlayerName() == traitor:Nick() then
-		chat.AddText(color_white, (traitor_alive and "" or "Traitor "), traitor:GetPlayerColor():ToColor(), traitor:GetPlayerName(), color_white, " was " .. (traitor_alive and "a Traitor." or "killed."))
+	elseif (IsValid(traitor)) and string.lower(traitor:GetPlayerName()) == string.lower(traitor:Nick()) then
+		chat.AddText(color_white, (traitor_alive and "" or "Traitor "), traitor:GetPlayerColor():ToColor(), traitor:Nick(), color_white, " was " .. (traitor_alive and "a Traitor." or "killed."))
 	end
 end)
 
