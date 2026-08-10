@@ -11,7 +11,7 @@ local flavortextwallofdoom1 = {
 }
 
 local flavortextwallofdoom2 = {
-	"Well we should start assumming the worst outcome.",
+	"Ever heard of the butterfly effect? Do you think your choices would've changed this outcome?",
 	"Do you see it? Your life flashing before your eyes?",
 	"It's terrifying I know but...",
 	"Is it really that time again?"
@@ -57,8 +57,6 @@ if not org then return end
 local unconsciousblud = org.otrub
 
     if unconsciousblud then
-        --render.PushFilterMag( TEXFILTER.ANISOTROPIC )
-		--render.PushFilterMin( TEXFILTER.ANISOTROPIC )
 
 		local textOtrub = "You are unconscious."
 		local textOtrub2 =
@@ -77,7 +75,7 @@ local unconsciousblud = org.otrub
 		(brain >= 0.52 and "Farewell, "..plyguy:GetPlayerName()..".") or
 		(brain >= 0.52 and random3 and plyguy:GetPlayerName() == "Unrecognizable") or
 		(brain >= 0.385 and "This is where it ends.") or
-		(brain >= 0.34 and "...") or
+		(brain >= 0.35 and "...") or
 		(brain >= 0.3 and random2) or
 		(brain >= 0.25 and "...") or
 		(brain >= 0.15 and random1) or
@@ -93,20 +91,11 @@ local unconsciousblud = org.otrub
 			( textOtrub2 ).."\n\n"..( textOtrub3 ).."</colour></font>"
 		)
 
-		--surface.SetTextColor(255,255,255,255)
-		--surface.SetFont("HomigradFontMedium")
-		--local txtSizeX, txtSizeY = surface.GetTextSize(textOtrub)
-		--surface.SetTextPos(ScrW()/2 - (txtSizeX/2),ScrH()/1.1 - (txtSizeY/2))
-		--surface.DrawText(textOtrub)
-
 		parsed:Draw( ScrW()*0.009, ScrH()*0.9, TEXT_ALIGN_LEFT, nil, nil, TEXT_ALIGN_LEFT )
-
-		--render.PopFilterMag()
-		--render.PopFilterMin()
     end
 end)
 
-hook.Add("PlayerSpawn", "randomizethestupidtextplease", function(ply)
+hook.Add("Player_Death", "randomizethestupidtextplease", function(ply)
 	if ply == LocalPlayer() then
 		timer.Simple(0.1, function()
 			random1, random2, random3 = randomtextplease()
