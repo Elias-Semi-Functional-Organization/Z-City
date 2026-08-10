@@ -480,12 +480,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		grainMat:SetFloat("$c2_y", 0) -- g
 		grainMat:SetFloat("$c2_z", 0) -- b
 		grainMat:SetFloat("$c3_x", 0) -- ImageIntensity
-		if org.otrub then
-			grainMat:SetFloat("$c0_z", 0) -- Pixelize
-			grainMat:SetFloat("$c1_x", consciousness) -- lerp
-			grainMat:SetFloat("$c1_y", 0) -- vignette intensity
-			grainMat:SetFloat("$c1_z", 0) -- blur
-		end
+
 		render.SetMaterial(grainMat)
 		render.DrawScreenQuad()
 	end
@@ -526,9 +521,11 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.SetMaterial(painMat)
 		render.DrawScreenQuad()
 
-		if org.otrub then
+		if org.otrub and org.shock >= 40 and not org.incapacitated then
 			--DrawMotionBlur(0.1, 1., 0.01)
-			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 2, 0.5 )
+			lply:ScreenFade( SCREENFADE.OUT, Color(0,0,0, 254), 1, 0.5 )
+		elseif org.otrub then
+			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 1, 0.5 )
 		end
 
 		//if pain > 10 then
