@@ -20,7 +20,8 @@ local flavortextwallofdoom2 = {
 local flavortextwallofdoom3 = {
 	"Just don't forget...",
 	"Just know that you'll be a closed casket at the funeral if you have one.",
-	"Just remember that..."
+	"Just remember that...",
+	"Whoever you were, just realize this..."
 }
 
 local function randomtextplease()
@@ -76,7 +77,7 @@ local unconsciousblud = org.otrub
 		(brain >= 0.52 and random3 and plyguy:GetPlayerName() == "Unrecognizable") or
 		(brain >= 0.385 and "This is where it ends.") or
 		(brain >= 0.35 and "...") or
-		(brain >= 0.3 and random2) or
+		(brain >= 0.28 and random2) or
 		(brain >= 0.25 and "...") or
 		(brain >= 0.15 and random1) or
 		(brain >= 0.1 and "...") or
