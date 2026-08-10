@@ -11,10 +11,13 @@ local flavortextwallofdoom1 = {
 }
 
 local flavortextwallofdoom2 = {
-	"Ever heard of the butterfly effect? Do you think your choices would've changed this outcome?",
+	"Do you think your choices would've changed this outcome?",
 	"Do you see it? Your life flashing before your eyes?",
 	"It's terrifying I know but...",
-	"Is it really that time again?"
+	"Is it really that time again?",
+	"Was all of it for nothing?",
+	"Was there something you could've done..?",
+	"You were only preventing the inevitable."
 }
 
 local flavortextwallofdoom3 = {
@@ -75,9 +78,9 @@ local unconsciousblud = org.otrub
 		(brain >= 0.57 and "We'll meet again.") or
 		(brain >= 0.52 and "Farewell, "..plyguy:GetPlayerName()..".") or
 		(brain >= 0.52 and random3 and plyguy:GetPlayerName() == "Unrecognizable") or
-		(brain >= 0.385 and "This is where it ends.") or
-		(brain >= 0.35 and "...") or
-		(brain >= 0.28 and random2) or
+		(brain >= 0.39 and "Well... This is where it ends.") or
+		(brain >= 0.36 and "...") or
+		(brain >= 0.3 and random2) or
 		(brain >= 0.25 and "...") or
 		(brain >= 0.15 and random1) or
 		(brain >= 0.1 and "...") or
