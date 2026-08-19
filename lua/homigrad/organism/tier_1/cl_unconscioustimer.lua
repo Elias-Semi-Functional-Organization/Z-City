@@ -22,19 +22,28 @@ local flavortextwallofdoom2 = {
 
 local flavortextwallofdoom3 = {
 	"Just don't forget...",
-	"Just know that you'll be a closed casket at the funeral if you have one.",
 	"Just remember that...",
-	"Whoever you were, just realize this..."
+	"Whoever you were, just realize this...",
+	"Hope that you're aware that..."
+}
+
+local flavortextwallofdoom4 = {
+	"Oh..? Did you miss me?",
+	"You had it rough out there huh..?",
+	"What a shame...",
+	"Life comes at you fast... doesn't it..?",
+	"\"Wait... What happened?\""
 }
 
 local function randomtextplease()
 	local flavor1 = flavortextwallofdoom1[math.random(#flavortextwallofdoom1)]
 	local flavor2 = flavortextwallofdoom2[math.random(#flavortextwallofdoom2)]
 	local flavor3 = flavortextwallofdoom3[math.random(#flavortextwallofdoom3)]
-	return flavor1, flavor2, flavor3
+	local flavor4 = flavortextwallofdoom4[math.random(#flavortextwallofdoom4)]
+	return flavor1, flavor2, flavor3, flavor4
 end
 
-local random1, random2, random3 = randomtextplease()
+local random1, random2, random3, randomcritical = randomtextplease()
 
 hook.Add("HUDPaint", "UnconsciousTimer", function() // why didn't i make it a different file in the first place i'm dumb
 local plyguy = LocalPlayer()
@@ -76,15 +85,15 @@ local unconsciousblud = org.otrub
 			)
 		local textOtrub3 =
 		(brain >= 0.57 and "We'll meet again.") or
+		(brain >= 0.52 and plyguy:GetPlayerName() == "Unrecognizable" and random3) or
 		(brain >= 0.52 and "Farewell, "..plyguy:GetPlayerName()..".") or
-		(brain >= 0.52 and random3 and plyguy:GetPlayerName() == "Unrecognizable") or
 		(brain >= 0.39 and "Well... This is where it ends.") or
 		(brain >= 0.36 and "...") or
 		(brain >= 0.3 and random2) or
 		(brain >= 0.25 and "...") or
 		(brain >= 0.15 and random1) or
 		(brain >= 0.1 and "...") or
-		(brain < 0.1 and critical and "You might as well kill bind.") or
+		(brain < 0.1 and critical and randomcritical) or
 		(brain < 0.1 and incapacitated and "Well I'm not sure about you surviving now.") or
 		(brain < 0.1 and "You can still survive, at least for now.")
 
@@ -102,7 +111,7 @@ end)
 hook.Add("Player_Death", "randomizethestupidtextplease", function(ply)
 	if ply == LocalPlayer() then
 		timer.Simple(0.1, function()
-			random1, random2, random3 = randomtextplease()
+			random1, random2, random3, randomcritical = randomtextplease()
 		end)
 	end
 end)
