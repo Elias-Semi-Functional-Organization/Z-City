@@ -253,6 +253,11 @@ local lobotomy_mats = {
 	[8] = Material("overlays/tallflash3.png")
 }
 
+local conscioustypebeats = {
+	"sound/zbattle/end.ogg",
+	"sound/zbattle/unconscious_type_beat.ogg"
+}
+
 if GetConVar("hg_nostatic"):GetBool() then
 	painMat = Material( "null" )
 	noiseMat = Material( "null" )
@@ -632,7 +637,8 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		show_image_time = 0
 		lobotomy_index = 0
 	end
-	
+
+	local otrubtypebeats = conscioustypebeats[math.random(#conscioustypebeats)]
 
 	if O2Lerp > 1 then
 		render.UpdateScreenEffectTexture()
@@ -672,7 +678,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 20 and org.otrub then
 			if !IsValid(NoiseStation) or NoiseStation:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/unconscious_type_beat.ogg", "noblock noplay", function(station)
+				sound.PlayFile(otrubtypebeats, "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()
