@@ -148,6 +148,7 @@ local fov = hg_fov:GetFloat()
 local fov_mode_lerp = 0
 
 local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
+local hg_wepbase_postshake_mul = CreateConVar("hg_wepbase_postshake_mul", "0.02", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Mul post shake after shoot, new default = 0.02, old default = 0.05", 0, 1)
 
 local angZero = Angle(0,0,0)
 
@@ -297,9 +298,10 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	local shit = 0.2 * mulhuy / game.GetTimeScale()
 	local animpos3 = self:GetAnimShoot2(shit, true) / shit
 	local shit2 = (1 / self.weight) * (self.NumBullet or 3) / 3
-
+	
 	angZoom:Add(self.prankang or angle_zero)
-	posZoom:Add(VectorRand(-0.05, 0.05) * animpos3 * shit2)
+	local postshake_mul = hg_wepbase_postshake_mul:GetFloat()
+	posZoom:Add(VectorRand(-postshake_mul, postshake_mul) * animpos3 * shit2) -- Shot Shake
 
 	local fraction2 = math.ease.InCubic(self:GetAnimPos_Shoot2(self.lastShoot or 0, 1))
 	
@@ -360,10 +362,10 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	if isSettingZoom then
 		fov = -50
 	end
-	
+
 	view.origin = outputPos
 	view.angles = outputAng
-	
+
 	view.fov = math.max(40, view.fov + fov)
 
 	if LOW_RENDER then
