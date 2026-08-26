@@ -1,5 +1,4 @@
 local hg_unconscioustimer = CreateClientConVar("hg_unconscioustimer", "1", true, false, "Displays a timer till you're conscious while unconscious! (if you really dislike it that much because of realism you can disable it)")
-
 // wall of flavor text
 local flavortextwallofdoom1 = {
 	"\"Is my fate really sealed..?\"",
@@ -7,7 +6,7 @@ local flavortextwallofdoom1 = {
 	"\"I had to be at the wrong place at the wrong time...\"",
 	"\"Please let this be a bad dream...\"",
 	"\"I will wake up... I know I will...\"",
-	"You're only an human after all.",
+	"You're only a human after all.",
 }
 
 local flavortextwallofdoom2 = {
