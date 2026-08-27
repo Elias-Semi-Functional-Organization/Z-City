@@ -10,6 +10,7 @@ local combines = {
     "npc_hunter",
     "npc_strider",
     "npc_turret_floor",
+	"npc_combine_camera",
     "npc_manhack",
     "npc_cscanner",
     "npc_clawscanner"
@@ -92,6 +93,14 @@ local primary_weapons = {
     "weapon_osipr"
 }
 
+local primary_attachments = {
+    ["weapon_svd"] = function(ply, wep)
+        if IsValid(wep) then
+            hg.AddAttachmentForce(ply,wep,"optic11")
+        end
+    end,
+}
+
 local secondary_weapons = {
     "weapon_m9beretta",
     "weapon_browninghp",
@@ -109,6 +118,7 @@ local helmet_list = {
 
 local face_list = {
     "mask1",
+	"mask3",
     "nightvision1",
     "",
     "",
@@ -128,6 +138,10 @@ local rebel_subclasses = {
         give_fn = function(ply)
             local wep1 = ply:Give(primary_weapons[math.random(#primary_weapons)])
             ply:GiveAmmo(wep1:GetMaxClip1() * 3, wep1:GetPrimaryAmmoType(), true)
+
+            if isfunction(primary_attachments[wep1:GetClass()]) then
+                primary_attachments[wep1:GetClass()](ply, wep1)
+            end
 
             local wep2 = ply:Give(secondary_weapons[math.random(#secondary_weapons)])
             ply:GiveAmmo(wep2:GetMaxClip1() * 3, wep2:GetPrimaryAmmoType(), true)
@@ -174,7 +188,7 @@ local rebel_subclasses = {
 
     grenadier = {
         give_fn = function(ply)
-            ply:Give("weapon_hg_rpg")
+            ply:Give(math.random(0,1) == 1 and "weapon_hg_rebelrpg" or "weapon_hg_rpg")
             ply:Give("weapon_claymore")
             ply:Give("weapon_traitor_ied")
             ply:Give("weapon_hg_slam")
@@ -197,12 +211,11 @@ local function giveSubClassLoadout(ply, subClass)
     local randFace = face_list[math.random(#face_list)]
     local randHelmet = helmet_list[math.random(#helmet_list)]
 
-    if randVest ~= "" then ply.armors["torso"] = randVest end
-    if randHelmet ~= "" then ply.armors["head"] = randHelmet end
-    if randFace ~= "" then ply.armors["face"] = randFace end
+    if randVest ~= "" then hg.AddArmor(ply, randVest) end
+    if randHelmet ~= "" then hg.AddArmor(ply, randHelmet) end
+    if randFace ~= "" then hg.AddArmor(ply, randFace) end
 
     ply:SyncArmor()
-
 
     ply:Give("weapon_melee")
     ply:Give("weapon_walkie_talkie")
@@ -244,8 +257,9 @@ function CLASS.On(self, data)
 
     self.subClass = nil
 
-    zb.GiveRole(self, "Rebel", Color(0, 173, 43))
-
+    if zb and zb.GiveRole then
+        zb.GiveRole(self, "Rebel", Color(0, 173, 43))
+    end
 
     self:SetBodygroup(10, 1)                  
     self:SetBodygroup(8, math.random(0,15))   

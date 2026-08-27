@@ -38,6 +38,8 @@ SWEP.WorkWithFake = true
 SWEP.offsetVec = Vector(4, -3.5, 0)
 SWEP.offsetAng = Angle(90, 90, 0)
 
+local hg_healanims = CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+
 modelshuy = modelshuy or {}
 
 function SWEP:DrawWorldModel()
@@ -47,6 +49,10 @@ function SWEP:DrawWorldModel()
 end
 
 function SWEP:DrawWorldModel2(nodraw)
+	if self.Color then
+		render.SetColorModulation(self.Color.r/255,self.Color.g/255,self.Color.b/255)
+	end
+
 	local mdl = self.Model or self.WorldModel
 	modelshuy[mdl] = IsValid(modelshuy[mdl]) and modelshuy[mdl] or ClientsideModel(mdl)
 	modelshuy[mdl]:SetNoDraw(true)
@@ -55,7 +61,16 @@ function SWEP:DrawWorldModel2(nodraw)
 	owner = hg.GetCurrentCharacter(owner)
 	if not IsValid(WorldModel) then return end
 
-	WorldModel:SetModelScale(self.ModelScale or 1)
+	for i = 1, #self:GetBodyGroups() do
+		WorldModel:SetBodygroup(i, self:GetBodygroup(i))
+	end
+
+	if self.ModelScale then
+		WorldModel:SetModelScale(self.ModelScale or 1)
+	end
+	if self.Color then
+		WorldModel:SetColor(self.Color or color_white)
+	end
 	
 	if IsValid(owner) then
 		local offsetVec = self.offsetVec
@@ -80,6 +95,10 @@ function SWEP:DrawWorldModel2(nodraw)
 	end
 	
 	if not nodraw then WorldModel:DrawModel() end
+
+	if self.Color then
+		render.SetColorModulation(1,1,1)
+	end
 end
 
 function SWEP:OnRemove()
@@ -125,6 +144,10 @@ function SWEP:Think()
 		self.ModelScale = math.Clamp(self.modeValues[1] / (self.modeValuesdef[1][1] * 0.8), 0.5, 1)
 	end
 
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 12, 0))
+	end
+
 	--[[if self.modeValuesdef[self.mode][2] then
 		local time = CurTime()
 		local ply = self:GetOwner()
@@ -164,9 +187,7 @@ function SWEP:Think()
 end
 SWEP.net_cooldown2 = 0
 function SWEP:PrimaryAttack()
-	//self:SetHolding(math.min(self:GetHolding() + 9, 100))
 	if SERVER then--and not self.modeValuesdef[self.mode][2] then
-		//if self:GetHolding() < 100 then return end
 
 		self.healbuddy = self:GetOwner()
 		local done = self:Heal(self.healbuddy, self.mode)
@@ -183,20 +204,6 @@ function SWEP:PrimaryAttack()
 end
 
 if CLIENT then
-	surface.CreateFont("huyhuy", {
-		font = "CloseCaption_Normal", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-		extended = true,
-		size = ScreenScale(15),
-		weight = 500,
-		blursize = 0,
-		scanlines = 0,
-		antialias = false,
-		strikeout = false,
-		shadow = false,
-		outline = false,
-	})
-	
-
 	local colWhite = Color(255, 255, 255, 255)
 	local colGray = Color(200, 200, 200, 200)
 	local lerpthing = 1
@@ -295,6 +302,7 @@ end
 
 function SWEP:Initialize()
 	self:SetHold(self.HoldType)
+
 	self.modeValues = {
 		[1] = 40,
 	}
@@ -344,8 +352,8 @@ function SWEP:SecondaryAttack()
 		local ent = hg.eyeTrace(self:GetOwner()).Entity
 		self.healbuddy = ent
 		if !IsValid(self.healbuddy) then return end
+		if hg.GetCurrentCharacter(self.healbuddy) == hg.GetCurrentCharacter(self:GetOwner()) then return end
 		local done = self:Heal(self.healbuddy, self.mode)
-
 		if(done and self.PostHeal)then
 			self:PostHeal(self.healbuddy, self.mode)
 		end		
@@ -384,6 +392,76 @@ if CLIENT then
 		end
 	end)
 end
+
+local function PhysCallback(ent, data)
+	if data.DeltaTime < 0.2 then return end
+	ent:EmitSound(Sound(ent.FallSnd))
+end
+
+local ents_Create, gamemod, clr_garbage = ents.Create, engine.ActiveGamemode(), Color(200, 200, 200)
+local gibRemoveTime = 60
+function SWEP:SpawnGarbage(mdl_custom, skin_custom, snd_custom, clr_custom, bgs_custom)
+	if CLIENT then return end
+
+	local owner = self:GetOwner()
+	if not IsValid(owner) then return end
+
+	local boneid
+	if IsValid(owner) then
+		if owner:IsPlayer() then
+			local chr = hg.GetCurrentCharacter(owner)
+			boneid = chr:LookupBone(((owner.organism and owner.organism.rarmamputated) or (owner.zmanipstart ~= nil and owner.zmanipseq == "interact" and not owner.organism.larmamputated)) and "ValveBiped.Bip01_L_Hand" or "ValveBiped.Bip01_R_Hand")
+		else
+			boneid = owner:LookupBone("ValveBiped.Bip01_R_Hand") or 1
+		end
+	end
+
+	if not boneid then return end
+	local matrix = owner:GetBoneMatrix(boneid)
+	if not matrix then return end
+
+	local ent = ents_Create("prop_physics")
+	ent:SetModel(Model((mdl_custom and mdl_custom ~= "" and mdl_custom ~= nil and isstring(mdl_custom)) and mdl_custom or self.WorldModel))
+
+	if skin_custom and skin_custom ~= nil and isnumber(skin_custom) then
+		ent:SetSkin(skin_custom or 0)
+	end
+
+	ent:SetPos(matrix:GetTranslation())
+	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+	ent:SetAngles(AngleRand(-180, 180))
+	ent:Activate()
+	ent:Spawn()
+	ent:SetOwner(owner)
+	if snd_custom or self.FallSnd then
+		ent.FallSnd = Sound((snd_custom and snd_custom ~= nil) and snd_custom or self.FallSnd)
+	end
+
+	if clr_custom and clr_custom ~= nil and IsColor(clr_custom) then
+		ent:SetColor(clr_custom)
+	else
+		ent:SetColor(clr_garbage)
+	end
+
+	if bgs_custom and bgs_custom ~= nil and isstring(bgs_custom) then
+		ent:SetBodyGroups(bgs_custom)
+	end
+
+	local phys = ent:GetPhysicsObject()
+	if IsValid(phys) then
+		phys:SetVelocity(self:GetVelocity() + (owner:GetAimVector() * 200) + VectorRand(-50, 50))
+		phys:AddAngleVelocity(VectorRand(-100, 100))
+	end
+
+	ent:AddCallback("PhysicsCollide", PhysCallback)
+
+	if zb.CROUND and zb.CROUND ~= "hmcd" or gamemod == "sandbox" then
+		ent:DrawShadow(false)
+		ent:SetModelScale(0.5, gibRemoveTime)
+		SafeRemoveEntityDelayed(ent, gibRemoveTime)
+	end
+end
+
 -- WoundTBL = {dmgBlood / 2, localPos, localAng, bone, time}
 SWEP.ShouldDeleteOnFullUse = true
 if SERVER then
@@ -534,12 +612,23 @@ if SERVER then
 	end
 
 	function SWEP:Heal(ent, mode, bone)
+		if ent:IsNPC() then
+			self:NPCHeal(ent, 0.15, "snd_jack_hmcd_bandage.wav")
+		end
+
 		local org = ent.organism
 		if not org then return end
+	
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 10, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
 
 		local done = self:Bandage(ent, bone)
 		if self.modeValues[1] <= 0 and self.ShouldDeleteOnFullUse then
-			self:GetOwner():SelectWeapon("weapon_hands_sh")
+			owner:SelectWeapon("weapon_hands_sh")
 			self:Remove()
 		end
 		
@@ -548,11 +637,8 @@ if SERVER then
 	
 	function SWEP:PostHeal(ent, mode)
 		local org = ent.organism
-		if not zb then return end 
-		if not zb.modes then return end
-		local mode_hmcd = zb.modes["hmcd"]
 		
-		if(org and IsValid(org.owner) and mode_hmcd)then
+		if(org and IsValid(org.owner))then
 			local organism_owner = org.owner
 			
 			if(organism_owner.SubRole == "traitor_chemist")then
@@ -561,13 +647,13 @@ if SERVER then
 				end
 				
 				if((self.ConsumePoisoned_KCN or 0) > 0)then
-					local ply_kcn_accumulated = mode_hmcd.AddChemicalToPlayer(organism_owner, "KCN", 50 * (self.ConsumePoisoned_KCN or 0))
+					local ply_kcn_accumulated = AddChemicalToPlayer(organism_owner, "KCN", 50 * (self.ConsumePoisoned_KCN or 0))
 					
 					if(ply_kcn_accumulated > 100)then
 						self:PoisonKCNOrganism(org)
 					end
 					
-					mode_hmcd.NetworkChemicalResistanceOfPlayer(organism_owner)
+					MODE.NetworkChemicalResistanceOfPlayer(organism_owner)
 					
 					organism_owner.PassiveAbility_ChemicalAccumulation_NextNetworkTime = CurTime() + 1
 				end
@@ -1049,10 +1135,46 @@ function SWEP:Holster(wep)
 	return true
 end
 
+function SWEP:NPCHeal(npc, mul, snd)
+	if not npc then
+		npc = self:GetOwner()
+	end
+
+	if npc:IsNPC() then
+		self:SetHold("melee")
+		if not mul then
+			mul = 0.3
+		end
+		npc:SetHealth(math.Clamp(npc:Health() + (npc:GetMaxHealth() * 1 * mul), 0, npc:GetMaxHealth() * math.Clamp(2 * mul, 2, 100)))
+		npc:EmitSound(snd or "snd_jack_hmcd_bandage.wav", 75, math.random(95, 105))
+
+		if SERVER then
+			self:Remove()
+		end
+	end
+end
+
+function SWEP:OwnerChanged()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsNPC() then
+		self:NPCHeal(owner, 0.15, "snd_jack_hmcd_bandage.wav")
+	end
+end
+
 function SWEP:Deploy()
 	if SERVER or CLIENT and self:IsLocal() then
 		self:EmitSound(self.DeploySnd, 50, math.random(90, 110))
 	end
 
+	if self.DeployAdd then self:DeployAdd() end
+
 	return true
+end
+
+function SWEP:CanBePickedUpByNPCs()
+	return true
+end
+
+function SWEP:GetNPCRestTimes()
+	return 0.1, 0.1
 end

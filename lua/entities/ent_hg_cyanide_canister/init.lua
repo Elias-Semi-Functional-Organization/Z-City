@@ -57,17 +57,17 @@ function ENT:Think()
 			if util.TraceLine({start = pos,endpos = ent:GetPos(),filter = {self,ent},mask = MASK_SOLID_BRUSHONLY}).Hit then continue end
 			
 			if (ent.organism.owner.armors["face"] != "mask2") and ent.PlayerClassName ~= "Combine" and (math.random(2) == 1) then
-				local mode_hmcd = zb.modes["hmcd"]
+				local mode_hmcd = (zb and zb.modes) and zb.modes["hmcd"]
 				
-				if(mode_hmcd)then
+				if mode_hmcd then
 					if(ent.SubRole == "traitor_chemist")then
-						local ply_cyanide_accumulated = mode_hmcd.AddChemicalToPlayer(ent, "HCN", 10)
+						local ply_cyanide_accumulated = AddChemicalToPlayer(ent, "HCN", 10)
 						
 						if(ply_cyanide_accumulated > 100)then
 							ent.organism.poison3 = CurTime()
 						end
 						
-						mode_hmcd.NetworkChemicalResistanceOfPlayer(ent)
+						MODE.NetworkChemicalResistanceOfPlayer(ent)
 						
 						ent.PassiveAbility_ChemicalAccumulation_NextNetworkTime = CurTime() + 1
 						

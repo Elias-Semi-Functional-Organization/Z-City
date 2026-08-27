@@ -163,6 +163,45 @@ AddTrack(
             --["snare_lead"]        = { volume = 1 },
             --["synth"]        = { volume = 3 },
         },
+        [3] = {
+            ["bass"]        = { volume = 1 },
+            ["cymbal"]        = { volume = 1 },
+            ["hat"]        = { volume = 1 },
+            ["hat_lead"]        = { volume = 1 },
+            --["high_snare"]        = { volume = 1 },
+            ["kick"]        = { volume = 3 },
+            ["percusion"]        = { volume = 1 },
+            ["snare"]        = { volume = 1 },
+            --["snare_hat"]        = { volume = 1 },
+            --["snare_lead"]        = { volume = 1 },
+            --["synth"]        = { volume = 3 },
+        },
+        [4] = {
+            ["bass"]        = { volume = 1 },
+            ["cymbal"]        = { volume = 1 },
+            ["hat"]        = { volume = 1 },
+            ["hat_lead"]        = { volume = 1 },
+            ["high_snare"]        = { volume = 1 },
+            ["kick"]        = { volume = 3 },
+            --["percusion"]        = { volume = 1 },
+            ["snare"]        = { volume = 1 },
+            --["snare_hat"]        = { volume = 1 },
+            --["snare_lead"]        = { volume = 1 },
+            --["synth"]        = { volume = 3 },
+        },
+        [5] = {
+            ["bass"]        = { volume = 1 },
+            ["cymbal"]        = { volume = 1 },
+            ["hat"]        = { volume = 1 },
+            ["hat_lead"]        = { volume = 1 },
+            --["high_snare"]        = { volume = 1 },
+            ["kick"]        = { volume = 3 },
+            ["percusion"]        = { volume = 1 },
+            ["snare"]        = { volume = 1 },
+            --["snare_hat"]        = { volume = 1 },
+            --["snare_lead"]        = { volume = 1 },
+            ["synth"]        = { volume = 3 },
+        },
     },
     { -- Layers
         ["bass"] = "zcity_ost/mrpoint/breakaleg/bass_sidechained.ogg",
@@ -180,16 +219,24 @@ AddTrack(
     function(ply)
         local intens = 0
         local org = ply.organism
-        if !org or !ply:Alive() then return 0 end
+        if (!org or org.otrub) or !ply:Alive() then return -1 end
+        if org.fear > 0.1 then
+            intens = intens + 1
+        end
+
+        if org.fear > 0.6 then
+            intens = intens + 1
+        end
+
         if org.adrenaline > 0.1 then
             intens = intens + 1
         end
 
-        if ply:GetVelocity():Length() > 50 then
+        if org.adrenaline > 1.5 then
             intens = intens + 1
         end
 
-        if ply:GetVelocity():Length() > 150 then
+        if org.adrenaline > 2.5 then
             intens = intens + 1
         end
 
@@ -203,32 +250,46 @@ AddTrack(
     "overdose",
     { -- Presets
         [0] = {
-            ["kick"]        = { volume = 2 },
-            ["perc"]        = { volume = 1 },
-            --["synth_bass"]        = { volume = 2 },
+            --["kick"]        = { volume = 2 },
+            --["perc"]        = { volume = 1 },
+            --["synth_bass"]        = { volume = 0.5 },
             --["synth_keys"]        = { volume = 2 },
             --["weird"]        = { volume = 2 },
         },
         [1] = {
-            ["kick"]        = { volume = 2 },
-            ["perc"]        = { volume = 1 },
-            ["synth_bass"]        = { volume = 1 },
+            --["kick"]        = { volume = 1 },
+            --["perc"]        = { volume = 0.5 },
+            ["synth_bass"]        = { volume = 0.5 },
             --["synth_keys"]        = { volume = 2 },
             --["weird"]        = { volume = 2 },
         },
         [2] = {
             ["kick"]        = { volume = 1 },
-            ["perc"]        = { volume = 1 },
-            ["synth_bass"]        = { volume = 1 },
+            ["perc"]        = { volume = 0.5 },
+            ["synth_bass"]        = { volume = 0.7 },
             --["synth_keys"]        = { volume = 1 },
-            ["weird"]        = { volume = 1 },
+            --["weird"]        = { volume = 1 },
         },
         [3] = {
             ["kick"]        = { volume = 1 },
             ["perc"]        = { volume = 1 },
-            ["synth_bass"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
+            --["synth_keys"]        = { volume = 1 },
+            ["weird"]        = { volume = 0.5 },
+        },
+        [4] = {
+            ["kick"]        = { volume = 1 },
+            ["perc"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
             ["synth_keys"]        = { volume = 1 },
-            ["weird"]        = { volume = 1 },
+            ["weird"]        = { volume = 2 },
+        },
+        [5] = {
+            ["kick"]        = { volume = 2 },
+            ["perc"]        = { volume = 1 },
+            ["synth_bass"]        = { volume = 2 },
+            ["synth_keys"]        = { volume = 1 },
+            ["weird"]        = { volume = 2 },
         },
     },
     { -- Layers
@@ -242,15 +303,30 @@ AddTrack(
         local intens = 0
         local org = ply.organism
         if (!org or org.otrub) or !ply:Alive() then return -1 end
+
+        if org.noradrenaline and org.noradrenaline > 0 then
+            local timediff = SysTime() - hg.noradrenalineStartTime
+            local add = hg.GetCurrentCharacter(ply):GetVelocity():LengthSqr() > 650 * 650 and 1 or 0
+            return math.min(5, (org.noradrenaline > 1.5 and 5 or (timediff < 3) and 1 or timediff < 8 and 2 or (org.noradrenaline > 0.6 and 3 or org.noradrenaline > 0.3 and 2 or org.noradrenaline > 0.1 and 1 or 0)) + add)
+        end
+
+        if org.fear > 0.1 then
+            intens = intens + 1
+        end
+
+        if org.fear > 0.6 then
+            intens = intens + 1
+        end
+
         if org.adrenaline > 0.1 then
             intens = intens + 1
         end
 
-        if ply:GetVelocity():Length() > 50 then
+        if org.adrenaline > 1.5 then
             intens = intens + 1
         end
 
-        if ply:GetVelocity():Length() > 150 then
+        if org.adrenaline > 2.5 then
             intens = intens + 1
         end
         
@@ -315,19 +391,8 @@ AddTrack(
         local intens = 0
         local org = ply.organism
         if (!org or org.otrub) or !ply:Alive() then return -1 end
-        if org.adrenaline > 0.1 then
-            intens = intens + 1
-        end
-
-        if ply:GetVelocity():Length() > 50 then
-            intens = intens + 1
-        end
-
-        if ply:GetVelocity():Length() > 150 then
-            intens = intens + 1
-        end
         
-        return intens
+        return 2
     end,
     "uzelezz",
     "Final Heartbeat",

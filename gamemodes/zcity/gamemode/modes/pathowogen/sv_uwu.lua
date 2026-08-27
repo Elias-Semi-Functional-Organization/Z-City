@@ -309,8 +309,10 @@ function MODE:RoundStart()
 	self.saved.PlayerCount = 0
 	self.saved.Players = {}
 
-	self.saved.furamount = math.max(math.Round(#player.GetAll() / 4), 1)
-	for i, ply in RandomPairs(player.GetAll()) do
+	local players = player.GetAll()
+
+	self.saved.furamount = math.max(math.Round(#players / 4), 1)
+	for i, ply in RandomPairs(players) do
 		if self.saved.furs[ply] or ply:Team() == TEAM_SPECTATOR then continue end
 
 		self.saved.furs[ply] = true
@@ -320,8 +322,8 @@ function MODE:RoundStart()
 		end
 	end
 
-	self.traitoramount = ((#player.GetAll() >= 10) and 1) or 0
-	for i, ply in RandomPairs(player.GetAll()) do
+	self.traitoramount = ((#players >= 10) and 1) or 0
+	for i, ply in RandomPairs(players) do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 
 		if table.Count(self.saved.traitors) >= self.traitoramount then
@@ -828,7 +830,7 @@ function MODE:PlayerDeath(ply, inflictor, att)
 		if last_attacker then
 			if math.random(1, 3) == 1 then
 				if last_attacker.PlayerClassName != "furry" then
-					last_attacker:Notify(table.Random(killfurries))
+					last_attacker:Notify(killfurries[math.random(#killfurries)])
 				end
 			end
 		end

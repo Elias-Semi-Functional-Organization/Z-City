@@ -11,21 +11,24 @@ if CLIENT then
 	end)
 
 	concommand.Add("hg_change_ammotype", function(ply, cmd, args)
-		local wep = ply:GetActiveWeapon()
-		local type_ = math.Round(args[1])
-		if wep and ishgweapon(wep) and wep:Clip1() == 0 or wep.AllwaysChangeAmmo and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
-			--wep:ApplyAmmoChanges(type_)
-			ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
-			net.Start("changeAmmoType")
-			net.WriteEntity(wep)
-			net.WriteInt(type_, 4)
-			net.SendToServer()
-		end
+	    local wep = ply:GetActiveWeapon()
+	    local type_ = math.Round(args[1])
+	    if wep and ishgweapon(wep) and (wep:Clip1() == 0 or wep.AllwaysChangeAmmo) and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then
+	        ply:ChatPrint("Changed ammotype to: " .. wep.AmmoTypes[type_][1])
+	        net.Start("changeAmmoType")
+	        net.WriteEntity(wep)
+	        net.WriteInt(type_, 4)
+	        net.SendToServer()
+	    end
 	end)
 
 	net.Receive("unload_ammo",function()
 		local wep = net.ReadEntity()
-
+		if wep.AnimList["unload"] then
+			wep:PlayAnim("unload", wep.UnloadAnimTime)
+		else
+			wep:AttachAnim()
+		end
 		if wep.Unload then
 			wep:Unload()
 		end
@@ -52,26 +55,33 @@ else
 	end)
 
 	net.Receive("changeAmmoType", function(len, ply)
-		local wep = net.ReadEntity()
-		local type_ = net.ReadInt(4)
-		if wep and ishgweapon(wep) and wep:Clip1() == 0 or wep.AllwaysChangeAmmo and wep:CanUse() and wep.AmmoTypes and wep.AmmoTypes[type_] then wep:ApplyAmmoChanges(type_) end
+	    local wep = net.ReadEntity()
+	    local type_ = net.ReadInt(4)
+	    if not IsValid(wep) then return end
+	    if wep:GetOwner() ~= ply then return end
+	    if not ishgweapon(wep) then return end
+	    if not wep:CanUse() then return end
+	    if not wep.AmmoTypes or not wep.AmmoTypes[type_] then return end
+	    if not wep.AllwaysChangeAmmo and wep:Clip1() ~= 0 then return end
+	    wep:ApplyAmmoChanges(type_)
 	end)
 end
 
+hg.postures = {
+    [0] = "Regular hold",
+    [1] = "Hipfire",
+    [2] = "Left shoulder",
+    [3] = "High ready",
+    [4] = "Low ready",
+    [5] = "Point shooting",
+    [6] = "Shooting from cover",
+    [7] = {"Gangsta",isPistolOnly = true},
+    [8] = {"One-handed",isPistolOnly = true},
+	[9] = "Somalian",
+}
+
 if CLIENT then
 	local printed
-
-    hg.postures = {
-        [0] = "Regular hold",
-        [1] = "Hipfire",
-        [2] = "Left shoulder",
-        [3] = "High ready",
-        [4] = "Low ready",
-        [5] = "Point shooting",
-        [6] = "Shooting from cover",
-        [7] = "Gangsta",
-        [8] = "One-handed",
-    }
 
 	concommand.Add("hg_change_posture", function(ply, cmd, args)
 		if not args[1] and not isnumber(args[1]) and not printed then print([[Change your gun posture:
@@ -82,8 +92,9 @@ if CLIENT then
 4 - low ready
 5 - point shooting
 6 - shooting from cover
-7 - one-handed shooting (gangsta)
+7 - gangsta shooting
 8 - one-handed shooting
+9 - somalian shooting
 ]]) printed = true end
 		local pos = math.Round(args[1] or -1)
 		net.Start("change_posture")
@@ -105,16 +116,21 @@ else
 		if (ply.change_posture_cooldown or 0) > CurTime() then return end
 		ply.change_posture_cooldown = CurTime() + 0.1
 
-		if pos ~= -1 then 
+		local gun = ply:GetActiveWeapon()
+		if IsValid(gun) and ishgweapon(gun) then
+			ply:EmitSound("weapons/zmirli/shared/foley_light" .. math.random(1,4) .. ".wav", 45, math.random(95,105))
+		end
+
+		if pos ~= -1 then
 			if pos == ply.posture then
 				ply.posture = 0
 				pos = 0
 			else
-				ply.posture = pos 
+				ply.posture = pos
 			end
 		else
 			ply.posture = ply.posture or 0
-			ply.posture = (ply.posture + 1) >= 9 and 0 or ply.posture + 1
+			ply.posture = (ply.posture + 1) > #hg.postures and 0 or ply.posture + 1
 		end
 		net.Start("change_posture")
 		net.WriteEntity(ply)
@@ -177,12 +193,15 @@ if CLIENT then
                         local tbl2 = {}
 
                         for i, str in pairs(hg.postures) do -- DO. NOT. CHANGE. TO. IPAIRS. kthxbye
+							if istable(str) then
+								if str.isPistolOnly and !wep:IsPistolHoldType() then continue end
+							end
                             tbl2[#tbl2 + 1] = {
                                 [1] = function()
                                     RunConsoleCommand("hg_change_posture", i)
 
                                 end,
-                                [2] = str
+                                [2] = istable(str) and str[1] or str
                             }
                         end
 
@@ -191,7 +210,7 @@ if CLIENT then
 
                     return -1
                 end,
-                [2] = "Change Posture\n(MOUSE2 to select)" 
+                [2] = "Change Posture\nRMB - Menu"
             },
             [2] = {
                 [1] = function()
@@ -277,7 +296,7 @@ if CLIENT then
 
                 return -1
             end,
-            [2] = "Weapon Manipulations Menu"
+            [2] = "Weapon Menu"
         }
     end)
 end

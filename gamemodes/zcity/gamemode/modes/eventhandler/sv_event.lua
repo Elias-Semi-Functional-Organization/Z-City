@@ -32,7 +32,7 @@ end
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
@@ -50,7 +50,7 @@ end
 
 function MODE:CheckAlivePlayers()
 	local AlivePlyTbl = {}
-	for _, ply in ipairs(player.GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if ply.organism and ply.organism.incapacitated then continue end
 		AlivePlyTbl[#AlivePlyTbl + 1] = ply
@@ -82,7 +82,7 @@ end
 
 function MODE:RoundStart()
     self.EventersList = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             self.EventersList[ply:SteamID()] = true
         end
@@ -274,7 +274,7 @@ net.Receive("event_loot_add", function(len, ply)
     MODE:SaveLootTable()
     
     local recipients = {}
-    for _, p in ipairs(player.GetAll()) do
+    for _, p in player.Iterator() do
         if p:IsAdmin() or MODE.EventersList[p:SteamID()] then
             table.insert(recipients, p)
         end
@@ -300,7 +300,7 @@ net.Receive("event_loot_remove", function(len, ply)
     MODE:SaveLootTable()
     
     local recipients = {}
-    for _, p in ipairs(player.GetAll()) do
+    for _, p in player.Iterator() do
         if p:IsAdmin() or MODE.EventersList[p:SteamID()] then
             table.insert(recipients, p)
         end
@@ -323,7 +323,7 @@ concommand.Add("zb_event_loot_reset", function(ply, _, _, _)
     MODE:SaveLootTable()
     
     local recipients = {}
-    for _, p in ipairs(player.GetAll()) do
+    for _, p in player.Iterator() do
         if p:IsAdmin() or MODE.EventersList[ply:SteamID()] then
             table.insert(recipients, p)
         end
@@ -407,10 +407,10 @@ hook.Add("PlayerInitialSpawn", "ZB_EventLootSync", function(ply)
     end)
 end)
 
-hook.Add("PlayerSay", "ZB_EventLootCommand", function(ply, text)
+hook.Add("HG_PlayerSay", "ZB_EventLootCommand", function(ply, txtTbl, text)
     if string.lower(text) == "!eventloot" and (ply:IsAdmin() or MODE.EventersList[ply:SteamID()]) then
         ply:ConCommand("zb_event_loot_menu")
-        return ""
+        txtTbl[1] = ""
     end
 end)
 

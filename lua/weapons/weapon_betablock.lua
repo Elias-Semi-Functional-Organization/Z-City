@@ -29,7 +29,8 @@ SWEP.modeNames = {
 }
 
 function SWEP:InitializeAdd()
-    self:SetHold(self.HoldType)
+	self:SetHold(self.HoldType)
+
     self.modeValues = {
         [1] = 1
     }
@@ -44,29 +45,72 @@ SWEP.FallSnd = "snd_jack_hmcd_pillsbounce.wav"
 
 SWEP.showstats = false
 
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+
+function SWEP:Think()
+	self:SetBodyGroups("111")
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 4, 0))
+	end
+end
+
 local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
 function SWEP:Animation()
-    if (self:GetOwner().zmanipstart ~= nil and not self:GetOwner().organism.larmamputated) then return end
-    local hold = self:GetHolding()
-    self:BoneSet("r_upperarm", vector_origin, Angle(0, -10 - hold / 2, 10))
-    self:BoneSet("r_forearm", vector_origin, Angle(-5, -hold / 2.5, -hold / 1.5))
+	local owner = self:GetOwner()
+	if (owner.zmanipstart ~= nil and not owner.organism.larmamputated) then return end
+
+	local aimvec = owner:GetAimVector()
+	if not aimvec then return end
+
+	local hold = self:GetHolding()
+
+	if owner:IsFlagSet(FL_DUCKING) or owner:GetVelocity():LengthSqr() >= 17000 then
+		aimvec[3] = -2
+		hold = hold / 2
+	end
+
+	local ducking = owner:IsFlagSet(FL_ANIMDUCKING)
+
+    self:BoneSet("r_upperarm", vector_origin, Angle(30 + 10 * aimvec[3], (-50 - hold) + 10 * aimvec[3] * (ducking and -4 or -2) + hold / 2, 10 - hold / 3))
+    self:BoneSet("r_forearm", vector_origin, Angle(-10, -hold, -hold))
 
     self:BoneSet("l_upperarm", vector_origin, lang1)
     self:BoneSet("l_forearm", vector_origin, lang2)
 end
 
+function SWEP:OwnerChanged()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsNPC() then
+		self:NPCHeal(owner, 0.1, "snd_jack_hmcd_pillsuse.wav")
+	end
+end
+
 if SERVER then
-    function SWEP:Heal(ent, mode)
+	function SWEP:Heal(ent, mode)
+		if ent:IsNPC() then
+			self:SpawnGarbage(nil, nil, "snd_jack_hmcd_foodbounce.wav")
+			self:NPCHeal(ent, 0.1, "snd_jack_hmcd_pillsuse.wav")
+		end
+
         local org = ent.organism
         if not org then return end
-        self:SetBodygroup(1, 1)
-        local owner = self:GetOwner()
+
+		local owner = self:GetOwner()
+		if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+			self:SetHolding(math.min(self:GetHolding() + 4, 100))
+
+			if self:GetHolding() < 100 then return end
+		end
+
         local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or owner
         entOwner:EmitSound("snd_jack_hmcd_pillsuse.wav", 60, math.random(95, 105))
+
         org.adrenalineAdd = math.Approach(org.adrenalineAdd, -4, self.modeValues[1] * 2)
+
         self.modeValues[1] = 0
         if self.modeValues[1] == 0 then
             owner:SelectWeapon("weapon_hands_sh")
+			self:SpawnGarbage(nil, nil, "snd_jack_hmcd_foodbounce.wav")
             self:Remove()
         end
     end

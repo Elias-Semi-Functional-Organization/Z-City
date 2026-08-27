@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_pist_px4.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_usp.mdl"
 SWEP.WorldModelFake = "models/weapons/zcity/salat/c_px4.mdl" --https://steamcommunity.com/sharedfiles/filedetails/?id=3544105055
 //PrintBones(Entity(1):GetActiveWeapon():GetWM())
 --uncomment for funny
@@ -18,20 +18,18 @@ SWEP.AttachmentPos = Vector(0,0,0)
 SWEP.AttachmentAng = Angle(0,0,0)
 SWEP.FakeAttachment = "1"
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 6
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeReloadSounds = {
 	[0.2] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.65] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.8] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
 	[0.2] = "zcitysnd/sound/weapons/m9/handling/m9_magout.wav",
-	--[0.34] = "weapons/ak74/ak74_magout_rattle.wav",
+
 	[0.8] = "zcitysnd/sound/weapons/m9/handling/m9_magin.wav",
 	[0.87] = "zcitysnd/sound/weapons/m9/handling/m9_maghit.wav",
 	[1.07] = "zcitysnd/sound/weapons/m9/handling/m9_boltrelease.wav",
@@ -71,7 +69,7 @@ SWEP.AnimList = {
 	["reload"] = "reload",
 	["reload_empty"] = "reload_empty",
 }
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.FakeViewBobBone = "ValveBiped.Bip01_R_Hand"
@@ -98,7 +96,7 @@ SWEP.Primary.Ammo = "9x19 mm Parabellum"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 23
 SWEP.Primary.Sound = {"zcitysnd/sound/weapons/firearms/hndg_beretta92fs/beretta92_fire1.wav", 75, 90, 100}
-SWEP.SupressedSound = {"zcitysnd/sound/weapons/m45/m45_suppressed_fp.wav", 75, 90, 100}
+SWEP.SupressedSound = {"zcitysnd/sound/weapons/m45/m45_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 23
 SWEP.Primary.Wait = PISTOLS_WAIT

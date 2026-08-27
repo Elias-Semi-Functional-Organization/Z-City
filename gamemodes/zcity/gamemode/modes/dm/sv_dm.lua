@@ -1,5 +1,7 @@
 local MODE = MODE
 
+local deathmatch_nozone = ConVarExists("deathmatch_nozone") and GetConVar("deathmatch_nozone") or CreateConVar("deathmatch_nozone", 0, FCVAR_REPLICATED, "Allows to disable deathmatch mode zone.", 0, 1)
+
 MODE.name = "dm"
 MODE.PrintName = "Deathmatch"
 MODE.LootSpawn = false
@@ -24,7 +26,7 @@ function MODE:Intermission()
 	game.CleanUpMap()
 
 	local poses = {}
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
@@ -60,7 +62,7 @@ end
 function MODE:CheckAlivePlayers()
 	local AlivePlyTbl = {
 	}
-	for _, ply in ipairs(player.GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if ply.organism and ply.organism.incapacitated then continue end
 		AlivePlyTbl[#AlivePlyTbl + 1] = ply
@@ -223,6 +225,7 @@ hook.Add("Think","bober",function(ply)
 	if not rnd or rnd.name != "dm" then return end
 	if (zb.ROUND_START or CurTime()) + 20 > CurTime() then return end
 	if cooldown > CurTime() then return end
+	if deathmatch_nozone:GetBool() then return end
 	cooldown = CurTime() + 0.5
 
 	local pos = zonepoint

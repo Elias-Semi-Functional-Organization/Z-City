@@ -3,7 +3,7 @@ hg.AdminSystem = hg.AdminSystem or {}
 
 local AS = hg.AdminSystem
 
-AS.Version = "2.0" --;; 1488
+AS.Version = "2.0"
 AS.Modules = AS.Modules or {}
 AS.PlayerData = AS.PlayerData or {}
 
@@ -78,14 +78,8 @@ function AS:Notify(ply, message, notifyType)
 end
 
 function AS:GetCurrentMode()
-	if zb then
-		if zb.CROUND_MAIN then
-			return string.lower(zb.CROUND_MAIN)
-		elseif zb.CROUND then
-			return string.lower(zb.CROUND)
-		end
-	end
-	return "unknown"
+	local mode = zb and (zb.CROUND_MAIN or zb.CROUND)
+	return mode and string.lower(mode) or "unknown"
 end
 
 hook.Add("InitPostEntity", "AdminSystem_Init", function()

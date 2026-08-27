@@ -13,6 +13,7 @@ function ENT:Initialize()
 	self:DrawShadow(true)
 	self:SetBodygroup(1, 1)
 	self.Safety = CurTime() + 3
+	self:SetNWFloat("Safety", self.Safety)
 
 	local phys = self:GetPhysicsObject()
 	if IsValid(phys) then
@@ -106,8 +107,8 @@ function ENT:ActivateExplosive()
 	end)
 
 	net.Start("projectileFarSound")
-		net.WriteString(table.Random(self.Sound))
-		net.WriteString(table.Random(self.SoundFar))
+		net.WriteString(self.Sound[math.random(#self.Sound)])
+		net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 		net.WriteVector(selfPos)
 		net.WriteEntity(self)
 		net.WriteBool(self:WaterLevel() > 0)

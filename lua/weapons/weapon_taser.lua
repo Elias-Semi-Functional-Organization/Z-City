@@ -6,10 +6,9 @@ SWEP.Author = "Taser"
 SWEP.Instructions = "A TASER is a conducted energy device (CED) primarily used to incapacitate people, allowing them to be approached and handled in an unresisting and thus less-lethal manner."
 SWEP.Category = "Weapons - Other"
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/realistic_police/taser/w_taser.mdl"
+SWEP.WorldModel = "models/weapons/w_pistol.mdl"
 SWEP.WorldModelFake = "models/realistic_police/taser/c_taser.mdl"
-//SWEP.FakeScale = 1.2
-//SWEP.ZoomPos = Vector(0, -0.0027, 4.6866)
+
 SWEP.FakePos = Vector(-14.4, 2, 5.8)
 SWEP.FakeAng = Angle(0, 14, 0)
 SWEP.AttachmentPos = Vector(0,-0.1,0)
@@ -125,6 +124,7 @@ function SWEP:Shoot(override)
 		primary.Automatic = false
 		return false
 	end
+
 	local owner = self:GetOwner()
 	local gun = self:GetWeaponEntity()
 	
@@ -147,14 +147,30 @@ function SWEP:Shoot(override)
 	if SERVER then
 		local dir = ang:Forward()
 		
-		self:GetOwner():LagCompensation(true)
-        local tr = util.TraceLine( {
-            start = pos,
-            endpos = pos + dir * 220,
-            filter = {self},
-            mask = MASK_SHOT
-        } )
-		self:GetOwner():LagCompensation(false)
+		local tr
+		if owner:IsPlayer() then
+			owner:LagCompensation(true)
+
+			tr = util.TraceLine({
+				start = pos,
+				endpos = pos + dir * 220,
+				filter = {self},
+				mask = MASK_SHOT
+			})
+		else
+			self.Primary.Wait = 0.5
+
+			tr = util.TraceLine({
+				start = pos,
+				endpos = pos + dir * 220,
+				filter = {self, owner},
+				mask = MASK_SHOT
+			})
+		end
+
+		if owner:IsPlayer() then
+			owner:LagCompensation(true)
+		end
 
 		if tr.Entity then
             local ent = tr.Entity
@@ -162,10 +178,10 @@ function SWEP:Shoot(override)
 			if not ent:IsPlayer() and not ent:IsRagdoll() then return end
             if IsValid(ent.FakeRagdoll) then return end
             
-			//if ent == hg.GetCurrentCharacter( self:GetOwner() ) then return end
+			//if ent == hg.GetCurrentCharacter( owner ) then return end
 			local d = DamageInfo()
 			d:SetDamage(5)
-			d:SetAttacker(self:GetOwner())
+			d:SetAttacker(owner)
 			d:SetInflictor(self)
 			d:SetDamageType(DMG_SLASH) 
 			d:SetDamagePosition(tr.HitPos)
@@ -178,6 +194,10 @@ function SWEP:Shoot(override)
                 ply = hg.RagdollOwner(ent) or ent
             end
 
+			if ply:InVehicle() then
+				ply:ExitVehicle()
+			end
+
 			local drugged = ply.organism and ply.organism.analgesia > 0.5
 
             local time = math.random(5,7) * (drugged and 0.2 or 1)
@@ -189,10 +209,13 @@ function SWEP:Shoot(override)
                 org.tasered = CurTime() + time
             end
 
-            ent:EmitSound("tazer.wav")
             local ragdoll = (IsValid(ply) and ply:Alive()) and ply.FakeRagdoll or ent
             local tasered =  CurTime() + time
 			local cons1, cons2
+            ragdoll:EmitSound("tazer.wav")
+			ragdoll:CallOnRemove("stoptazersnd", function(ent)
+				ent:StopSound("tazer.wav")
+			end)
 			timer.Simple(0.1,function()
 				for i = 0, 1 do
 					if not IsValid(ent) then return end
@@ -224,10 +247,10 @@ function SWEP:Shoot(override)
 					end)
 				end
 			end)
+
 			--чзх добавить возможность тазерить мощнее при нажатии лкм
 			local i = 1
 			local max = math.Round(time * 80)
-			local owner = self:GetOwner()
 			timer.Create("Tasering"..ent:EntIndex(), 0.01, max,function()
 				i = i + 1
 				
@@ -288,8 +311,6 @@ function SWEP:Shoot(override)
                     if IsValid(ragdoll) then
                         ragdoll:StopSound("tazer.wav")
                     end
-
-                    ent:StopSound("tazer.wav")
                 end
             end)
             return

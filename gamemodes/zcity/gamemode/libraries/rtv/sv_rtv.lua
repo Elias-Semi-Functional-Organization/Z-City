@@ -105,7 +105,7 @@ local function getmaps()
     for _, map in ipairs(maps) do
         map = map:sub(1, -5)
         local mapstr = map:Split("_")
-        if allowedPrefix[mapstr[1]] and not blacklist[map] then
+        if (allowedPrefix[mapstr[1]] or not string.find(map, "_")) and not blacklist[map] then
             table.insert(mappull, map)
         end
     end
@@ -148,16 +148,18 @@ net.Receive("ZB_RockTheVote_vote", function(len, ply)
     cooldown[ply:EntIndex()] = CurTime() + 1
 
     local playerIdx = ply:EntIndex()
-    
+
     if playervote[playerIdx] and votes[playervote[playerIdx]] then
         votes[playervote[playerIdx]] = votes[playervote[playerIdx]] - (playerVoteWeight[playerIdx] or 1)
     end
 
     local map = net.ReadString()
+    if not map or map == "" then return end
+    if map ~= "random" and not table.HasValue(mappull, map) then return end
     playervote[playerIdx] = map
 
     playerVoteWeight[playerIdx] = 1
-    
+
     votes[map] = (votes[map] or 0) + playerVoteWeight[playerIdx]
 
     net.Start("ZB_RockTheVote_voteCLreg")
@@ -165,13 +167,16 @@ net.Receive("ZB_RockTheVote_vote", function(len, ply)
     net.Broadcast()
 end)
 
+
 local endStarted = false
 
 function zb.EndRTV()
     if endStarted then return end
 
     local winmap = table.GetWinningKey(votes)
-    if not winmap then return end
+    if not winmap then
+		winmap = "random"
+	end
 
     if winmap == "random" then
         winmap = mappull[math.random(#mappull)]
@@ -470,7 +475,7 @@ function zb.CheckRTVVotes(needPrint)
     
     if votes >= votesNeeded then
         if needPrint then
-            for _, v in pairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 v:ChatPrint("Enough votes to change the map. RTV will be on next round.")
             end
         end
@@ -480,8 +485,7 @@ function zb.CheckRTVVotes(needPrint)
     
     return false
 end
-
-COMMANDS.rtv = {function(ply, args)
+local function rtv(ply, args)
     --print(zb.votestarted)
 	if zb.votestarted then
 		zb.RTVMenu(ply)
@@ -536,8 +540,11 @@ COMMANDS.rtv = {function(ply, args)
 
     if zb.CheckRTVVotes(true) then
         return
-    end
-end, 0}
+    end 
+end
+
+COMMANDS.rtv = {rtv, 0}
+COMMANDS.кем = {rtv, 0}
 
 hook.Add("ShutDown", "ResetRTVVotesOnMapChange", zb.ClearRTVVotes)
 hook.Add("PostGamemodeLoaded", "InitializeRTVSystem", function()

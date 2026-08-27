@@ -122,7 +122,7 @@ local function funca(ply, txt)
 	return txt
 end
 
-local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "enable furcity", 0, 1)
+local hg_furcity = ConVarExists("hg_furcity") and GetConVar("hg_furcity") or CreateConVar("hg_furcity", 0, bit.bor(FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_LUA_SERVER), "Toggle phrase furryfier :3", 0, 1)
 
 hook.Add("HG_PlayerSay", "huy", function(ply, txt)
 	local text = txt[1]
@@ -142,6 +142,21 @@ end)
 
 hook.Add("HG_PlayerCanHearPlayersVoice","BrainDamage", function(listener, speaker)
 	if speaker.organism.brain > 0.05 then return false, false end
+end)
+
+local braindeadphrase_male = {
+	"vo/episode_1/npc/male01/cit_behindyousfx01.wav",
+	"vo/episode_1/npc/male01/cit_behindyousfx02.wav",
+}
+local braindeadphrase_female = {
+	"vo/episode_1/npc/female01/cit_behindyousfx01.wav",
+	"vo/episode_1/npc/female01/cit_behindyousfx02.wav",
+}
+hook.Add("HG_ReplacePhrase", "BraindeadPhrase", function(ply, phrase, muffed, pitch)
+	if IsValid(ply) and ply.organism and ply.organism.brain >= 0.1 then
+		local phr = ThatPlyIsFemale(ply) and braindeadphrase_female[math.random(#braindeadphrase_female)] or braindeadphrase_male[math.random(#braindeadphrase_male)]
+		return ply, phr, muffed, pitch
+	end
 end)
 
 hook.Add("PlayerCanHearPlayersVoice", "RealisticVoice", function(listener,speaker)

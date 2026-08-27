@@ -78,7 +78,7 @@ bloodparticles_hook[1] = function(anim_pos, mul)
 	--render.OverrideBlend( false )
 end
 
-local hg_new_blood = ConVarExists("hg_new_blood") and GetConVar("hg_new_blood") or CreateClientConVar("hg_new_blood", 0, true, false, "new decals, or old", 0, 1)
+local hg_old_blood = ConVarExists("hg_old_blood") and GetConVar("hg_old_blood") or CreateClientConVar("hg_old_blood", 0, true, false, "new decals, or old", 0, 1)
 
 hg.bloodpositions = hg.bloodpositions or {}
 hg.bloodcount = hg.bloodcount or 0
@@ -95,7 +95,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 	-- я не знаю насколько большой можно делать такие таблицы... надеюсь, что это не так страшно выйдет
 
 	if artery then
-		if hg_new_blood:GetBool() then
+		if !hg_old_blood:GetBool() then
 			local howmuch = 1
 			
 			//timer.Simple(0.1, function()
@@ -116,7 +116,7 @@ local function decalBlood(pos, normal, tr, artery, owner)
 			end
 		end
 	else
-		if hg_new_blood:GetBool() then
+		if !hg_old_blood:GetBool() then
 			local howmuch = 1
 			
 			//timer.Simple(0.1, function()
@@ -176,9 +176,9 @@ bloodparticles_hook[2] = function(mul)
 		local pos = part[1]
 		local posSet = part[2]
 
-		tr.start = posSet + vector_up * 0.0
+		tr.start = posSet
 		tr.endpos = tr.start + part[3] * mul
-		tr.collisiongroup = COLLISION_GROUP_NONE
+		tr.collisiongroup = part.kishki and COLLISION_GROUP_WORLD or COLLISION_GROUP_NONE
 
 		result = util_TraceLine(tr)
 		local hitPos = result.HitPos
@@ -209,6 +209,18 @@ bloodparticles_hook[2] = function(mul)
 			
 			continue
 		else
+			local ph = 0
+			local shouldhit = true
+			if IsValid(result.Entity) then
+				ph = result.Entity:TranslatePhysBoneToBone(result.PhysicsBone)
+				ph = ph != -1 and ph or 0
+				local nam = result.Entity:GetBoneName(ph)
+				
+				shouldhit = !(result.Entity.organism and hg.amputatedlimbs2[nam] and result.Entity.organism[hg.amputatedlimbs2[nam].."amputated"])
+			end
+			
+			result.Hit = result.Hit and shouldhit
+
 			if result.Hit then
 				--local down = vecDown * mul * (math.max(0, grav))
 				local down = result.HitNormal
@@ -222,31 +234,36 @@ bloodparticles_hook[2] = function(mul)
 
 				local insolid = result.StartSolid and IsValid(result.Entity)
 				if insolid then
-					local ph = result.Entity:TranslatePhysBoneToBone(result.PhysicsBone)
-					ph = ph != -1 and ph or 0
+					if result.Entity:IsVehicle() then
+						table_remove(hg.bloodparticles1, i)
+					
+						continue
+					end
+
 					local center = result.Entity:GetBoneMatrix(ph)
 					local len = result.Entity:BoneLength(ph + 1)
-					
+
 					if center then
 						center = center:GetTranslation() + (len and center:GetAngles():Forward() * len or vector_origin) * 0.5
-						nextpos = -(center - hitPos + vecDown * 0):GetNormalized() * 5
+						nextpos = -(center - hitPos - vecDown * 1):GetNormalized() * 5
 					end
 				end
+
 				local pulldown = (-vector_up * (grav / 600)):Cross(-result.HitNormal:Angle():Right())
 				nextpos:Add(pulldown)
-				part.lerpedmove = LerpVector(1, part.lerpedmove or part[3] * mul, nextpos * mul * 1)
+				part.lerpedmove = LerpVector(1, part.lerpedmove or part[3] * mul, nextpos * mul * 2)
+				
 				if part.lerpedmove:LengthSqr() < 0.1 * mul then
 					decalBlood(result.HitPos, result.HitNormal, result, part.artery, part.owner)
 					
 					table_remove(hg.bloodparticles1, i)
+					
+					continue
 				end
-				--part.lerpedmove[3] = 0
+
 				pos:Set(posSet + part.start_velocity * mul)
 				posSet:Set(hitPos + part.lerpedmove + part.start_velocity * mul)
 				part.hashitsomething = true
-				--part[3]:Set(vecDown * 0.01)
-				--part[3]:Zero()
-				--part[3]:Set(part.lerpedmove)
 			else
 				if part.hashitsomething then
 					part.hashitsomething = nil
@@ -257,7 +274,7 @@ bloodparticles_hook[2] = function(mul)
 					posSet:Set(posSet)
 				else
 					pos:Set(posSet + part.start_velocity * mul)
-					posSet:Set(hitPos + part.start_velocity * mul)
+					posSet:Set(tr.start + part[3] * mul + part.start_velocity * mul)
 				end
 			end
 

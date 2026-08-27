@@ -8,9 +8,9 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_fnp45.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_elite_single.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ur_m1911.mdl"
-SWEP.GetDebug = false
+-- SWEP.GetDebug = false
 
 SWEP.WepSelectIcon2 = Material("entities/arc9_eft_m1911.png")
 SWEP.IconOverride = "entities/arc9_eft_m1911.png"
@@ -60,7 +60,7 @@ SWEP.Primary.Ammo = ".45 ACP"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 25
 SWEP.Primary.Sound = {"weapons/newakm/akmm_fp.wav", 75, 90, 100}
-SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 55, 90, 100}
+SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/m1911/handling/m1911_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 25
 SWEP.Primary.Wait = PISTOLS_WAIT
@@ -81,9 +81,11 @@ SWEP.FakeEmptyReloadSounds = {
 	[0.85] = "weapons/m45/m45_boltrelease.wav",
 }
 
+local vecfull = Vector(1,1,1)
+
 local function HideMag(model, unhide)
 	if !IsValid(model) then return end
-	local vec = unhide and Vector(1,1,1) or vector_origin
+	local vec = unhide and vecfull or vector_origin
 	model:ManipulateBoneScale(56, vec)
 	model:ManipulateBoneScale(57, vec)
 
@@ -95,7 +97,7 @@ end
 
 local function HideMag2(model, unhide)
 	if !IsValid(model) then return end
-	local vec = unhide and Vector(1,1,1) or vector_origin
+	local vec = unhide and vecfull or vector_origin
 	model:ManipulateBoneScale(54, vec)
 	model:ManipulateBoneScale(55, vec)
 

@@ -1,7 +1,6 @@
 local hide = {
 	["CHudHealth"] = true,
 	["CHudBattery"] = true,
-	["CHudAmmo"] = false,
 	["CHudSecondaryAmmo"] = true,
 	["CHudCrosshair"] = true,
 	["CHudDamageIndicator"] = true,
@@ -14,12 +13,17 @@ local hide = {
 	["CHudHistoryResource"] = true,
 }
 
+local gordon_hide = {
+	["CHudHealth"] = true,
+	["CHudBattery"] = true,
+	["CHudSecondaryAmmo"] = true,
+	["CHudCrosshair"] = true,
+	["CHudSuitPower"] = true,
+}
+
 hook.Add("HUDShouldDraw", "homigrad", function(name)
-	if hide[name] then
+	if hide[name] or lply.PlayerClassName and lply.PlayerClassName == "Gordon" and gordon_hide[name] then
 		return false
-	end
-	if IsValid(lply) and lply.PlayerClassName == "Gordon" and name == "CHudHistoryResource" then
-		return true
 	end
 end)
 hook.Add("HUDDrawTargetID", "homigrad", function()
@@ -30,8 +34,46 @@ hook.Add("DrawDeathNotice", "homigrad", function()
 	return false
 end)
 
+hook.Add("HUDWeaponPickedUp", "HidePickedStuff", function(wep)
+	--if not IsValid(lply) or not lply:Alive() then return end
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	--[[if not IsValid(wep) then return end
+	if not wep.GetPrintName then return end
+	
+	lply:Notify("+ " .. wep:GetPrintName(), 0)]]
+
+	return false
+end)
+
+hook.Add("HUDAmmoPickedUp", "HidePickedStuff", function(ammoname, amt)
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	return false
+end)
+
+hook.Add("HUDItemPickedUp", "HidePickedStuff", function(itemname)
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	return false
+end)
+
+hook.Add("HUDDrawPickupHistory", "HidePickedStuff", function()
+	if IsValid(lply) and lply.PlayerClassName and lply.PlayerClassName == "Gordon" then
+		return
+	end
+
+	return false
+end)
+
 --local hg_coolvetica = ConVarExists("hg_coolvetica") and GetConVar("hg_coolvetica") or CreateClientConVar("hg_coolvetica", "0", true, false, "changes every text to coolvetica because its good", 0, 1)
-local hg_font = ConVarExists("hg_font") and GetConVar("hg_font") or CreateClientConVar("hg_font", "Bahnschrift", true, false, "change every text font to selected because ui customization is cool")
+local hg_font = ConVarExists("hg_font") and GetConVar("hg_font") or CreateClientConVar("hg_font", "Bahnschrift", true, false, "Change UI text font")
 local font = function() -- hg_coolvetica:GetBool() and "Coolvetica" or "Bahnschrift"
     local usefont = "Bahnschrift"
 
@@ -162,7 +204,8 @@ local taitorCol = Color(155,0,0)
 local menuPanel
 
 local colBack = Color(0,0,0)
-local function CreateRadialMenu(options_arg)
+local surface, draw, hook, IsColor, IsValid, math, input = surface, draw, hook, IsColor, IsValid, math, input
+local function CreateRadialMenu(options_arg, bAutoClose)
 	local sizeX, sizeY = ScrW(), ScrH()
 	hg.radialOptions = {}
 	local paining = lply.organism and lply.organism.pain and (lply.organism.pain > 100 or lply.organism.brain > 0.2) or false
@@ -184,14 +227,17 @@ local function CreateRadialMenu(options_arg)
 		MENUPANELHUYHUY = nil
 	end
 
+	local scrH, scrW = ScrH(), ScrW()
+
 	MENUPANELHUYHUY = vgui.Create("DPanel")
 	menuPanel = MENUPANELHUYHUY
-	menuPanel:SetPos(ScrW() / 2 - sizeX / 2, ScrH() / 2 - sizeY / 2)
+	menuPanel:SetPos(scrW / 2 - sizeX / 2, scrH / 2 - sizeY / 2)
 	menuPanel:SetSize(sizeX, sizeY)
 	menuPanel:MakePopup()
 	menuPanel:SetKeyBoardInputEnabled(false)
 	menuPanel:SetAlpha(0)
 	menuPanel:AlphaTo(255,0.2)
+	menuPanel.bAutoClose = bAutoClose
 	if !options_arg then input.SetCursorPos(sizeX / 2, sizeY / 2) end
 
 	function menuPanel:Close()
@@ -243,8 +289,8 @@ local function CreateRadialMenu(options_arg)
 		local viewLerp = Lerp(math.ease.OutExpo(sizePan),0,1)
 		for num, option in ipairs(options) do
 			local num = num - 1
-			
-			local r = ScrH() * (options_arg ~= nil and 0.4 or 0.45) * viewLerp
+
+			local r = scrH * (options_arg ~= nil and 0.4 or 0.45) * viewLerp
 			local partDeg = 360 / #options
 			local sqrt = math.sqrt(x ^ 2 + y ^ 2)
 			isMouseOnRadial = sqrt <= r and sqrt > 4
@@ -254,8 +300,8 @@ local function CreateRadialMenu(options_arg)
 
 			optionSelected[num] = optionSelected[num] or 0
 			optionSelected[num] = LerpFT(0.1, optionSelected[num], isMouseIntersecting and 1 or 0)
-			
-			if option[3] then
+
+			if option[3] then --// Multibutton
 				surface.SetMaterial(matHuy)
 				surface.SetDrawColor(isMouseIntersecting and colBlack or colBlack)
 				draw.CirclePart(w / 2, h / 2, r, 40, #options, num)
@@ -278,35 +324,65 @@ local function CreateRadialMenu(options_arg)
 						math.randomseed(os.time())
 					end
 
-					draw.DrawText(opt, "HomigradFont", ScrW() / 2 + math.sin(a) * r * (i / count - 0.5 / count), ScrH() / 2 + math.cos(a) * r * (i / count - 0.5 / count), colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.DrawText(opt, "HomigradFont", scrW / 2 + math.sin(a) * r * (i / count - 0.5 / count), scrH / 2 + math.cos(a) * r * (i / count - 0.5 / count), colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				end
 
 				continue
 			end
 			
 			--print(options_arg ~= nil and true or false)
-			surface.SetMaterial(matHuy)	
-			surface.SetDrawColor(colWhiteTransparent:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+			surface.SetMaterial(matHuy)
+			if option[6] and IsColor(option[6]) then --// Custom color
+				if option[7] and IsColor(option[7]) then --// Custom select color
+					surface.SetDrawColor(option[7]:Lerp(option[6], 1 - optionSelected[num]))
+				else
+					surface.SetDrawColor(colWhiteTransparent:Lerp(option[6], 1 - optionSelected[num]))
+				end
+			else
+				if option[7] and IsColor(option[7]) then --// Custom select color
+					surface.SetDrawColor(option[7]:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+				else
+					surface.SetDrawColor(colWhiteTransparent:Lerp(options_arg ~= nil and colOption or colBlack, 1 - optionSelected[num]))
+				end
+			end
+
 			draw.CirclePart(w / 2, h / 2, r * (1 + 0.1 * optionSelected[num]), 30, #options, num)
 			local a = -partDeg * num - partDeg / 2
 			a = math.rad(a) + math.pi
-			local txt = option[2]
-			if txt and !options_old then return end
-			if paining then
-				math.randomseed(math.Round(CurTime() / 5 + num, 0))
-				txt = hg.get_status_message(ply)
-				math.randomseed(os.time())
-			end
-			draw.DrawText(txt, "HomigradFont", ScrW() / 2 + math.sin(a) * r * 0.75, ScrH() / 2 + math.cos(a) * r * 0.75, colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-			if !(paining) then
-				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",ScrW() * 0.0215* viewLerp,ScrH() * 0.042, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,ScrW() * 0.0215 * viewLerp,ScrH() * 0.098, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			--PrintTable(option)
+			if option[5] then --// Icon
+				local a = -partDeg * num - partDeg / 2
+				a = math.rad(a) + math.pi
 
-				local col = lply:GetPlayerColor():ToColor()
-				draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",ScrW() * 0.02 * viewLerp,ScrH() * 0.04, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-				draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,ScrW() * 0.02 * viewLerp,ScrH() * 0.095, lply.role and lply.role.color or incoentCol, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				surface.SetMaterial(option[5])
+				surface.SetDrawColor(color_white)
+				local sizeW = scrW / 2.25 + math.sin(a) * r * 0.7
+				local sizeH = scrH / 2.2 + math.cos(a) * r * 0.7
+		
+				surface.DrawTexturedRect(sizeW, sizeH, scrW * 0.1, scrH * 0.1)
+			else
+				local txt = option[2] --// Text
+				if txt and !options_old then return end
+				if paining then
+					math.randomseed(math.Round(CurTime() / 5 + num, 0))
+					txt = hg.get_status_message(ply)
+					math.randomseed(os.time())
+				end
+				draw.DrawText(txt, "HomigradFont", scrW / 2 + math.sin(a) * r * 0.75, scrH / 2 + math.cos(a) * r * 0.75, colWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
+		end
+		if !paining then
+			draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",scrW * 0.0215* viewLerp,scrH * 0.042, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,scrW * 0.0215 * viewLerp,scrH * 0.098, colBack, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+			local col = lply:GetPlayerColor():ToColor()
+			draw.SimpleText(lply:GetPlayerName(),"HomigradFontGigantoNormous",scrW * 0.02 * viewLerp,scrH * 0.04, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			draw.SimpleText( ( (lply.role and lply.role.name) or ""),"HomigradFontGigantoNormous" ,scrW * 0.02 * viewLerp,scrH * 0.095, lply.role and lply.role.color or incoentCol, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			-- какой же тут говнокод все же...
+			-- local walkBtn = input.LookupBinding("+walk") or "BIND YOUR +WALK KEY PLEASE. WRITE \"bind alt +walk\" IN CONSOLE FOR THE LOVE OF GOD"
+			-- draw.SimpleText(walkBtn .. " | Misc", "HomigradFont", scrW * (0.981 + (0.04 * (1-viewLerp))),scrH * 0.9615, colBack, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			-- draw.SimpleText(walkBtn .. " | Misc", "HomigradFont", scrW * (0.98 + (0.04 * (1-viewLerp))),scrH * 0.96, colWhite, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		end
 	end
 end
@@ -332,7 +408,7 @@ local function PressRadialMenu(mouseClick)
 		if isfunction(func) then needed_mouseclick = func(mouseClick, current_option_select) end
 	end
 
-	if needed_mouseclick != -1 and IsValid(menuPanel) and mouseClick != (needed_mouseclick or 2) then
+	if needed_mouseclick != -1 and IsValid(menuPanel) and mouseClick != (needed_mouseclick or 2) and not menuPanel.bAutoClose then
 		menuPanel:Close()
 	end
 end
@@ -468,18 +544,19 @@ local randomGestures = {
 	{"thumb_up", function() RunConsoleCommand("hg_hand_gesture" , "thumb_up") end},
 }
 
-concommand.Add("hg_randomgesture",function()
-	randomGesture()
-end)
-
 hook.Add("radialOptions", "7", function()
     local ply = LocalPlayer()
     local organism = ply.organism or {}
 
     if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply then
-        local tbl = {function(mouseClick)
+        if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures ~= nil and not ply:GetPlayerClass().CanUseGestures then return end
+		local tbl = {function(mouseClick)
 			if mouseClick == 1 then
 				RunConsoleCommand("act", randomGestures[math.random(#randomGestures)])
+				if (ply.NextFoley or 0) < CurTime() then
+					ply:EmitSound("player/clothes_generic_foley_0" .. math.random(5) .. ".wav", 55)
+					ply.NextFoley = CurTime() + 1
+				end
 			else
 				local commands = {}
 				for i, str in ipairs(randomGestures) do
@@ -489,6 +566,10 @@ hook.Add("radialOptions", "7", function()
 								str[2]()
 							else
 								RunConsoleCommand("act", str)
+								if (ply.NextFoley or 0) < CurTime() then
+									ply:EmitSound("player/clothes_generic_foley_0" .. math.random(5) .. ".wav", 55)
+									ply.NextFoley = CurTime() + 1
+								end
 							end
 						end,
 						[2] = string.NiceName(istable(str) and str[1] or str)
@@ -587,7 +668,7 @@ function scare()
 end
 
 local hint
-local hg_hints = ConVarExists("hg_hints") and GetConVar("hg_hints") or CreateClientConVar("hg_hints", "1", true, false, "Enable\\Disable hints.")
+local hg_hints = ConVarExists("hg_hints") and GetConVar("hg_hints") or CreateClientConVar("hg_hints", "1", true, false, "Toggle UI hints")
 
 local HintBackgroundColor = Color( 0, 0, 0, 200 )
 
@@ -657,8 +738,12 @@ hook.Add("HUDPaint","afflictionlist",function()
 		end
 	end--]]
 end)
+
+-- Now playable :steamhappy:
+-- No. fuc kyouy
 if game.SinglePlayer() then
 	hook.Add("HUDPaint","Exit the singleplayer",function()
-		draw.SimpleText("Z-City is not for SINGLEPLAYER server, in map select change green SINGLEPLAYER to 2 players or any.", "HomigradFontMedium",ScrW()/2,ScrH()/2,nil,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleText("Z-City is not meant to be played in singleplayer, in map selection menu change SINGLEPLAYER (green button top right corner) to 2 players or any.", "HomigradFontMedium", ScrW() / 2,ScrH() / 2, nil, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("A lot of stuff won't work and we won't provide any fixes to singleplayer EVER", "HomigradFontMedium", ScrW() / 2,ScrH() * 7 / 12, nil,TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end)
 end

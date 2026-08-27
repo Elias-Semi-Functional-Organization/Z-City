@@ -212,7 +212,9 @@ local function spine(org, bone, dmg, dmgInfo, number, boneindex, dir, hit, ricoc
 
 	if org[name] >= hg.organism[name2] and org.isPly then
 		org.owner:EmitSound("bones/bone"..math.random(8)..".mp3", 75, 100, 1, CHAN_AUTO)
-		org.owner:Notify(huyasd[name], true, name, 2)
+		if org.owner:IsPlayer() then
+			org.owner:Notify(huyasd[name], true, name, 2)
+		end
 		org.painadd = org.painadd + 25
 	end
 	
@@ -314,7 +316,19 @@ input_list.skull = function(org, bone, dmg, dmgInfo, boneindex, dir, hit, ricoch
 	end
 
 	if org.brain >= 0.01 and math.random(3) == 1 and (rnd or (org.skull - oldDmg) > 0.6) then
-		hg.applyFencingToPlayer(org.owner, org)
+		--hg.applyFencingToPlayer(org.owner, org)
+		org.shock = 70
+
+		timer.Simple(0.1, function()
+			local rag = hg.GetCurrentCharacter(org.owner)
+
+			if IsValid(rag) and rag:IsRagdoll() then
+				hg.applyFencingToPlayer(org.owner, org)
+				--local stype = "rigor"--hg.getRandomSpasm()
+				--hg.applySpasm(rag, stype)
+				--if rag.organism then rag.organism.spasm, rag.organism.spasmType = true, stype end
+			end
+		end)
 	end
 
 	if dmg > 0.4 then

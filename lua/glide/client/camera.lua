@@ -22,7 +22,6 @@ function Glide.GetCameraAimPos()
 end
 
 local Config = Glide.Config
-
 function Camera:Activate( vehicle, seatIndex )
     Config = Glide.Config
 
@@ -53,16 +52,16 @@ function Camera:Activate( vehicle, seatIndex )
         if self.isActive then return self:Think() end
     end )
 
-    hook.Add( "HG_CalcView", "GlideCamera.CalcView", function()
-        //if self.isActive then return self:CalcView() end
+    hook.Add( "PostPostHGCalcView", "GlideCamera.CalcView", function()
+        if hg.NoCameraInCar(self.vehicle) and !self.isInFirstPerson then return self:CalcView() end
     end, HOOK_HIGH )
 
     hook.Add( "CreateMove", "GlideCamera.CreateMove", function( cmd )
         if self.isActive then return self:CreateMove( cmd ) end
     end, HOOK_HIGH )
 
-    hook.Add( "HG.InputMouseApply", "GlideCamera.InputMouseApply", function( tbl )
-        self:InputMouseApply( tbl )
+    hook.Add( "InputMouseApply", "GlideCamera.InputMouseApply", function( tbl, x, y, ang )
+        if hg.NoCameraInCar(self.vehicle) then self:InputMouseApply( {x = x,y = y} ) end
     end, HOOK_HIGH )
 
     hook.Add( "PlayerBindPress", "GlideCamera.PlayerBindPress", function( ply, bind )
@@ -86,9 +85,9 @@ function Camera:Deactivate()
     timer.Remove( "GlideCamera.CheckState" )
 
     hook.Remove( "Think", "GlideCamera.Think" )
-    hook.Remove( "CalcView", "GlideCamera.CalcView" )
+    hook.Remove( "PostPostHGCalcView", "GlideCamera.CalcView" )
     hook.Remove( "CreateMove", "GlideCamera.CreateMove" )
-    hook.Remove( "HG.InputMouseApply", "GlideCamera.InputMouseApply" )
+    hook.Remove( "InputMouseApply", "GlideCamera.InputMouseApply" )
     hook.Remove( "PlayerBindPress", "GlideCamera.PlayerBindPress" )
 
     if IsValid( self.vehicle ) then

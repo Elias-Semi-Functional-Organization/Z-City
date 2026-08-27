@@ -43,6 +43,7 @@ SWEP.modeNames = {
 
 function SWEP:InitializeAdd()
 	self:SetHold(self.HoldType)
+
 	self.modeValues = {
 		[1] = 1,
 	}
@@ -54,21 +55,49 @@ SWEP.modeValuesdef = {
 	[1] = 1,
 }
 
-local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
-function SWEP:Animation()
-	if (self:GetOwner().zmanipstart ~= nil and not self:GetOwner().organism.larmamputated) then return end
-	local aimvec = self:GetOwner():GetAimVector()
-	local hold = self:GetHolding()
-    self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 2, -20 + hold / 2 + 20 * aimvec[3], 5 - hold / 4))
-    self:BoneSet("r_forearm", vector_origin, Angle(0, -hold / 2.5, 35 -hold/1.5))
 
-    self:BoneSet("l_upperarm", vector_origin, lang1)
-    self:BoneSet("l_forearm", vector_origin, lang2)
+local hg_healanims = ConVarExists("hg_healanims") and GetConVar("hg_healanims") or CreateConVar("hg_healanims", 0, FCVAR_REPLICATED + FCVAR_ARCHIVE, "Toggle heal/food animations", 0, 1)
+
+function SWEP:Think()
+	if not self:GetOwner():KeyDown(IN_ATTACK) and hg_healanims:GetBool() then
+		self:SetHolding(math.max(self:GetHolding() - 12, 0))
+	end
 end
 
+local lang1, lang2 = Angle(0, -10, 0), Angle(0, 10, 0)
+function SWEP:Animation()
+	local owner = self:GetOwner()
+	local aimvec = self:GetOwner():GetAimVector()
+	local hold = self:GetHolding()
+	if (owner.zmanipstart ~= nil and not owner.organism.larmamputated) then return end
+	self:BoneSet("r_upperarm", vector_origin, Angle(30 - hold / 4, -30 + hold / 2 + 20 * aimvec[3], 5 - hold / 3.5))
+    self:BoneSet("r_forearm", vector_origin, Angle(hold / 10, -hold / 2.5, 35 -hold/1.5))
+end
 
-function SWEP:Heal(ent, mode, bone)
+function SWEP:OwnerChanged()
+	local owner = self:GetOwner()
+	if IsValid(owner) and owner:IsNPC() then
+		self:NPCHeal(owner, 0.25, "snd_jack_hmcd_bandage.wav")
+	end
+end
+
+function SWEP:Heal(ent, mode)
+	if ent:IsNPC() then
+		self:NPCHeal(ent, 0.25, "snd_jack_hmcd_bandage.wav")
+	end
+
+	local owner = self:GetOwner()
+	if ent == hg.GetCurrentCharacter(owner) and hg_healanims:GetBool() then
+		self:SetHolding(math.min(self:GetHolding() + 10, 100))
+
+		if self:GetHolding() < 100 then return end
+	end
+
 	local org = ent.organism
 	if not org then return end
-	if self:Tourniquet(ent, bone) then self.modeValues[1] = 0 self:GetOwner():SelectWeapon("weapon_hands_sh") self:Remove() end
+	if self:Tourniquet(ent, bone) then
+		self.modeValues[1] = 0
+		owner:SelectWeapon("weapon_hands_sh")
+		self:Remove()
+	end
 end

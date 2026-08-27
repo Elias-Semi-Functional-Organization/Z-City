@@ -27,7 +27,9 @@ function ENT:TakeByPlayer(activator)
 		if activator.inventory["Weapons"]["hg_brassknuckles"] then return end
 		activator.inventory["Weapons"]["hg_brassknuckles"] = true
 		activator:SetNetVar("Inventory",activator.inventory)
-		self:EmitSound("npc/footsteps/softshoe_generic6.wav", 75, math.random(90, 110), 1, CHAN_ITEM)
+		activator:ViewPunch(AngleRand(-1, 1))
+		self:EmitSound("snd_jack_tinyequip.wav", 65, math.random(95, 105), 1, CHAN_BODY)
+		self:EmitSound("physics/metal/metal_solid_impact_soft1.wav", 65, math.random(110, 120), 0.6, CHAN_ITEM)
 		self:Remove()
 	end
 end

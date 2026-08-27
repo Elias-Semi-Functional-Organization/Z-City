@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_cz75.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_p228.mdl"
 SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_cz75a.mdl"
 
 SWEP.FakePos = Vector(-24, 2.9, 8.65)
@@ -16,8 +16,8 @@ SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(-1.5,-0.01,1.08)
 SWEP.AttachmentAng = Angle(0,0,90)
 SWEP.MagIndex = 53
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
+
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
 	["idle"] = "base_idle",
@@ -138,7 +138,7 @@ SWEP.Primary.Ammo = "9x19 mm Parabellum"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 25
 SWEP.Primary.Sound = {"zcitysnd/sound/weapons/firearms/hndg_mkiii/mkiii_fire_01.wav", 75, 90, 100}
-SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 55, 90, 100}
+SWEP.SupressedSound = {"m9/m9_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 25
 SWEP.Primary.Wait = PISTOLS_WAIT

@@ -2,7 +2,8 @@ hg.bloodparticles2 = hg.bloodparticles2 or {}
 bloodparticles_hook = bloodparticles_hook or {}
 
 local tr = {
-	filter = function(ent) return not ent:IsPlayer() and not ent:IsRagdoll() end
+    mask = MASK_SOLID_BRUSHONLY,
+	--filter = function(ent) return not ent:IsPlayer() and not ent:IsRagdoll() end
 }
 
 local vecZero = Vector(0,0,0)
@@ -22,7 +23,7 @@ local color = Color(90,0,0,122)
 bloodparticles_hook[3] = function(anim_pos)
     local time = CurTime()
 
-    for i = 1,#hg.bloodparticles2 do
+    for i = 1, #hg.bloodparticles2 do
         local part = hg.bloodparticles2[i]
         if not part then continue end
         local animpos = math.max((part[7] - time) / part[8], 0)

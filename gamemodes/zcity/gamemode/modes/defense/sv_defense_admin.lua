@@ -47,7 +47,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
     end
     
 
-    for _, player in ipairs(player.GetAll()) do
+    for _, player in player.Iterator() do
         player:ChatPrint("Fatass " .. ply:Nick() .. " switch wave to " .. targetWave)
     end
     
@@ -64,7 +64,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
     end
     
 
-    for _, ent in pairs(ents.GetAll()) do
+    for _, ent in ents.Iterator() do
         if IsValid(ent) and (ent:IsNPC() or 
             string.find(tostring(ent:GetClass() or ""), "npc_vj_") or
             string.find(tostring(ent:GetClass() or ""), "sent_vj_") or
@@ -84,7 +84,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
     MODE.WaveCompleted = false
     
 
-    for _, player in ipairs(player.GetAll()) do
+    for _, player in player.Iterator() do
         if player:Alive() and player:Team() ~= TEAM_SPECTATOR then
             player:SetHealth(player:GetMaxHealth())
             
@@ -101,7 +101,7 @@ net.Receive("defense_admin_wave_skip", function(len, ply)
     end
     
 
-    for _, player in ipairs(player.GetAll()) do
+    for _, player in player.Iterator() do
         if player:GetNWString("PlayerRole") == "Commander" then
             local currentPoints = player:GetNWInt("CommanderPoints", 0)
             player:SetNWInt("CommanderPoints", currentPoints + 500)

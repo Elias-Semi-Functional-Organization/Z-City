@@ -21,9 +21,9 @@ SWEP.SuicideSound = "player/flesh/flesh_bullet_impact_03.wav"
 SWEP.CanSuicide = true
 SWEP.SuicideNoLH = true
 SWEP.SuicidePunchAng = Angle(5, -15, 0)
-SWEP.WorldModel = "models/weapons/w_jjife_t.mdl"
+SWEP.WorldModel = "models/weapons/zcity/w_hammer.mdl"
 SWEP.WorldModelReal = "models/weapons/tfa_nmrih/v_me_hatchet.mdl"
-SWEP.WorldModelExchange = "models/weapons/w_jjife_t.mdl"
+SWEP.WorldModelExchange = "models/weapons/zcity/w_hammer.mdl"
 SWEP.DontChangeDropped = false
 SWEP.ViewModel = ""
 SWEP.HoldType = "melee"
@@ -74,7 +74,7 @@ function hgCheckBindObjects(ent1)
 end
 
 function SWEP:CanPrimaryAttack()
-	return not hg.KeyDown(self:GetOwner(), IN_RELOAD)
+	return not hg.KeyDown(self:GetOwner(), IN_RELOAD) and self:GetNextPrimaryFire() < CurTime()
 end
 
 SWEP.DamageType = DMG_CLUB
@@ -83,6 +83,10 @@ SWEP.MaxPenLen = 1
 SWEP.PainMultiplier = 1.65
 SWEP.PenetrationSizePrimary = 1
 SWEP.StaminaPrimary = 25
+
+local setmodevpang = Angle(0, 0, 5)
+
+local weppos1, wepang1, weppos2, wepang2 = Vector(-2, 4.5, -11), Angle(14, -90, 90), Vector(0.7, -0.5, -12), Angle(-15, 90, 96)
 function SWEP:ThinkAdd()
 	local ply = self:GetOwner()
 	if SERVER and ply.suiciding then
@@ -92,8 +96,8 @@ function SWEP:ThinkAdd()
 	if self:GetNetVar("AttackMode", 1) == 1 then
 		self.DamagePrimary = 15
 		self.DamageType = DMG_CLUB
-		self.weaponPos = Vector(0, 4, -3)
-		self.weaponAng = Angle(-5, -90, 0)
+		self.weaponPos = LerpFT(0.4, self.weaponPos, weppos1)
+		self.weaponAng = LerpFT(0.3, self.weaponAng, wepang1)
 		self.PenetrationPrimary = 2
 		self.MaxPenLen = 1
 		self.PainMultiplier = 1.65
@@ -102,8 +106,8 @@ function SWEP:ThinkAdd()
 	else
 		self.DamagePrimary = 15
 		self.DamageType = DMG_SLASH
-		self.weaponPos = Vector(-0.5, -3, -6.5)
-		self.weaponAng = Angle(-55, 90, 0)
+		self.weaponPos = LerpFT(0.4, self.weaponPos, weppos2)
+		self.weaponAng = LerpFT(0.3, self.weaponAng, wepang2)
 		self.PenetrationPrimary = 4
 		self.PainMultiplier = 1
 		self.MaxPenLen = 4
@@ -111,12 +115,18 @@ function SWEP:ThinkAdd()
 		self.StaminaPrimary = 25
 	end
 
-	if CLIENT then return end
+	--if CLIENT then return end
 	if IsValid(ply) then
-		if hg.KeyDown(ply, IN_ATTACK) and hg.KeyDown(ply, IN_RELOAD) then
+		if hg.KeyDown(ply, IN_ATTACK) and hg.KeyDown(ply, IN_RELOAD) and self:GetNextPrimaryFire() < CurTime() and not self:GetInAttack() and (self:GetAttackTime() - CurTime()) < 0 and ((self:GetLastBlocked() + 3) < CurTime()) then
 			if not self.setmode then
 				local int = self:GetNetVar("AttackMode", 1)
-				self:SetNetVar("AttackMode", int >= 2 and 1 or (int + 1))
+				if SERVER then
+					self:SetNetVar("AttackMode", int >= 2 and 1 or (int + 1))
+				elseif CLIENT and lply == ply then
+					ViewPunch2(Angle(1, int >= 2 and -2 or 2, -1))
+				end
+				ply:EmitSound("player/clothes_generic_foley_0"..math.random(5)..".wav", 55, math.random(110, 120), 0.3, CHAN_BODY)
+				self:SetNextPrimaryFire(CurTime() + 0.5)
 				self.setmode = true
 			end
 		else
@@ -325,6 +335,8 @@ function SWEP:SecondaryAttack()
 							Owner:PrintMessage(HUD_PRINTCENTER, "Door Sealed")
 							Owner:ViewPunch(vpang)
 							Owner:SetAnimation(PLAYER_ATTACK1)
+							self:SetNextSecondaryFire(CurTime() + 2.5)
+							self:SetNextPrimaryFire(CurTime() + 2.5)
 						else
 							Owner:PrintMessage(HUD_PRINTCENTER, "Need at least "..tostring((Owner.Profession and Owner.Profession == "builder") and 2 or 3).." nails to seal door.")
 						end
@@ -363,12 +375,13 @@ function SWEP:SecondaryAttack()
 						Owner:ChatPrint("Bond strength: " .. tostring(Strength))
 						Owner:ViewPunch(vpang)
 						self:PlayAnim("attack", 0.6, false, nil, false, true)
+						
+						self:SetNextSecondaryFire(CurTime() + 2.5)
+						self:SetNextPrimaryFire(CurTime() + 2.5)
+						self:SetLastBlocked(CurTime())
 					end
 				end
 			end
-
-			self:SetNextSecondaryFire(CurTime() + 2.5)
-			self:SetNextPrimaryFire(CurTime() + 2.5)
 		end
 	end
 end

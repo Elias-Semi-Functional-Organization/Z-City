@@ -35,11 +35,11 @@ SWEP.sprint_ang = Angle(15,0,0)
 
 SWEP.basebone = 94
 
-SWEP.weaponPos = Vector(1.5,0,-15)
-SWEP.weaponAng = Angle(180,0,0)
+SWEP.weaponPos = Vector(0,1,-10)
+SWEP.weaponAng = Angle(180,90,-2)
 
-SWEP.DamageType = DMG_SLASH
-SWEP.DamagePrimary = 25
+SWEP.DamageType = DMG_CLUB
+SWEP.DamagePrimary = 18
 SWEP.DamageSecondary = 10
 
 SWEP.PenetrationPrimary = 5
@@ -47,11 +47,11 @@ SWEP.PenetrationSecondary = 7
 
 SWEP.MaxPenLen = 6
 
-SWEP.PenetrationSizePrimary = 3
+SWEP.PenetrationSizePrimary = 2
 SWEP.PenetrationSizeSecondary = 1.25
 
-SWEP.StaminaPrimary = 30
-SWEP.StaminaSecondary = 35
+SWEP.StaminaPrimary = 40
+SWEP.StaminaSecondary = 28
 
 SWEP.AttackLen1 = 75
 SWEP.AttackLen2 = 45
@@ -73,6 +73,8 @@ SWEP.setlh = true
 SWEP.setrh = true
 SWEP.TwoHanded = true
 
+SWEP.AnimAlwaysBack = true
+
 SWEP.AttackHit = "SolidMetal.ImpactHard"
 SWEP.Attack2Hit = "SolidMetal.ImpactHard"
 SWEP.AttackHitFlesh = "Flesh.ImpactHard"
@@ -87,7 +89,7 @@ function SWEP:CanSecondaryAttack()
 end
 
 function SWEP:CanPrimaryAttack()
-    self.DamageType = DMG_SLASH
+    self.DamageType = DMG_CLUB
     return true
 end
 

@@ -1,7 +1,9 @@
 local getBloodColor = FindMetaTable( "Entity" ).GetBloodColor
 local isBulletDamage = FindMetaTable( "CTakeDamageInfo" ).IsBulletDamage
 
-local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "ragdoll combat", 0, 1)
+hg.ConVars = hg.ConVars or {}
+
+local hg_legacycam = ConVarExists("hg_legacycam") and GetConVar("hg_legacycam") or CreateConVar("hg_legacycam", 0, FCVAR_REPLICATED, "Toggle legacy first-person view camera", 0, 1)
 
 local host_timescale = game.GetTimeScale
 
@@ -356,7 +358,7 @@ net.Receive("LookAway",function(len,ply)
 	net.Send(rf)
 end)
 
-local hg = hg or {}
+hg = hg or {}
 -- С помощью этой функции можно пугать неписей.. Либо наоборот приманивать туда куда надо, мгс5 режим можно устроить
 function hg.EmitAISound(pos, vol, dur, typ) -- https://developer.valvesoftware.com/wiki/Ai_sound
 	local snd = ents.Create("ai_sound")
@@ -387,7 +389,7 @@ hook.Add("KeyRelease", "huy-hg2", function(ply, key)
 	net.SendPVS(ply:GetPos())
 end)
 
-local realismMode = CreateConVar( "hg_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "huy", 0, 1 )
+local realismMode = CreateConVar( "hg_fullrealismmode", "1", FCVAR_SERVER_CAN_EXECUTE, "Toggle first-person camera view", 0, 1 )
 
 cvars.AddChangeCallback("hg_fullrealismmode", function(convar_name, value_old, value_new)
 	SetGlobalBool("FullRealismMode",realismMode:GetBool())
@@ -409,7 +411,11 @@ hook.Add("Player Think", "homigrad-dropholstered", function(ply)
 	if ply.organism and ply.organism.allowholster then return end
 
 	local activewep = ply:GetActiveWeapon()
-	for i,wep in ipairs(ply:GetWeapons()) do
+	local weps = ply:GetWeapons()
+	local wep
+	for i = 1, #weps do
+		wep = weps[i]
+		
 		if wep.NoHolster and activewep ~= wep and wep.picked then 
 			ply:DropWeapon(wep)
 		end
@@ -419,7 +425,7 @@ end)
 util.AddNetworkString( "DoPlayerFlinch" )
 
 hook.Add( "ScalePlayerDamage", "FlinchPlayersOnHit", function(ply, grp)
-	if ply:IsPlayer() then
+	if IsValid(ply) and ply:Alive() then
 		--could maybe return end,
 		--but would that override other Scale hooks? -- no.
 		local group = nil
@@ -461,6 +467,7 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 	local tr = bullet.Trace
 	local dmg = bullet.Damage
 	if ent == Entity(0) then return end
+	if !IsValid(ent) then return end
 	for i,ply in player.Iterator() do--five pebbles
 		if (IsValid(ent:GetOwner()) and ply == ent:GetOwner()) or ent == ply then continue end
 		if !ply:Alive() then continue end
@@ -481,14 +488,15 @@ hook.Add("PostEntityFireBullets","bulletsuppression",function(ent,bullet)
 
 		if dist > 120 then continue end
 
-		if shooterdist < 500 and !IsLookingAt(ent:GetOwner(),eyePos) then continue end
+		if shooterdist < 200 and !IsLookingAt(ent:GetOwner(),eyePos) then continue end
 
 		if ent:GetOwner():IsPlayer() then
 			hg.DynaMusic:AddPanic(ent:GetOwner(),0.5)
 		end
 
 		if !org.otrub then
-			ent:AddNaturalAdrenaline(0.05 * dmg / math.max(dist / 2,10) / 1)
+			--print(1 * dmg / math.max(dist / 2,10) / 1)
+			ply:AddNaturalAdrenaline(0.05 * dmg / math.max(dist / 2,10) / 1)
 			org.fearadd = org.fearadd + 0.2
 		end
 	end
@@ -688,41 +696,65 @@ function hgWreckBuildings(blaster, pos, power, range, ignoreVisChecks) -- taken 
 	local masMassToLoosen = 30 * power
 	local allProps = ents.FindInSphere(pos, maxRange)
 
-	for k, prop in pairs(allProps) do
-		if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
-			local physObj = prop:GetPhysicsObject()
-			local propPos = prop:LocalToWorld(prop:OBBCenter())
-			local DistFrac = 1 - propPos:Distance(pos) / maxRange
-			local myDestroyThreshold = DistFrac * maxMassToDestroy
-			local myLoosenThreshold = DistFrac * masMassToLoosen
+	local co = coroutine.create(function()
 
-			if DistFrac >= .85 then
-				myDestroyThreshold = myDestroyThreshold * 7
-				myLoosenThreshold = myLoosenThreshold * 7
-			end
+		local LastProcess = SysTime()
 
-			if (prop ~= blaster) and physObj:IsValid() then
-				local mass, proceed = physObj:GetMass(), ignoreVisChecks
+		for k, prop in ipairs(allProps) do
+			LastProcess = SysTime()
+			if not (table.HasValue(WreckBlacklist, prop:GetClass()) or hook.Run("hg_CanDestroyProp", prop, blaster, pos, power, range, ignore) == false or prop.ExplProof == true) then
+				local physObj = prop:GetPhysicsObject()
+				local propPos = prop:LocalToWorld(prop:OBBCenter())
+				local DistFrac = 1 - propPos:Distance(pos) / maxRange
+				local myDestroyThreshold = DistFrac * maxMassToDestroy
+				local myLoosenThreshold = DistFrac * masMassToLoosen
 
-				if not proceed then
-					local tr = util.QuickTrace(pos, propPos - pos, blaster)
-					proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+				if DistFrac >= .85 then
+					myDestroyThreshold = myDestroyThreshold * 7
+					myLoosenThreshold = myLoosenThreshold * 7
 				end
 
-				if proceed then
-					if mass <= myDestroyThreshold then
-						SafeRemoveEntity(prop)
-					elseif mass <= myLoosenThreshold then
-						physObj:EnableMotion(true)
-						constraint.RemoveAll(prop)
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 1000 * DistFrac * power * mass, propPos + VectorRand() * 10)
-					else
-						physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+				if (prop ~= blaster) and physObj:IsValid() then
+					local mass, proceed = physObj:GetMass(), ignoreVisChecks
+
+					if not proceed then
+						local tr = util.QuickTrace(pos, propPos - pos, blaster)
+						proceed = IsValid(tr.Entity) and (tr.Entity == prop)
+					end
+
+					if proceed then
+                        if mass <= myDestroyThreshold then
+                            if prop:GetClass() == "prop_ragdoll" or prop:IsNPC() then
+                                physObj:EnableMotion(true)
+                            else
+                                SafeRemoveEntity(prop)
+                            end
+						elseif mass <= myLoosenThreshold then
+							physObj:EnableMotion(true)
+							constraint.RemoveAll(prop)
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * power * mass, propPos + VectorRand() * 10)
+						else
+							physObj:ApplyForceOffset((propPos - pos):GetNormalized() * 200 * DistFrac * origPower * mass, propPos + VectorRand() * 10)
+						end
 					end
 				end
 			end
+
+			LastProcess = SysTime() - LastProcess
+
+			if LastProcess > 0.001 then
+				coroutine.yield()
+			end
 		end
-	end
+	end)
+	local index = blaster:EntIndex()
+	timer.Create("ProcessCheck_" .. index, 0, 0, function()
+		if coroutine.status( co ) == "dead" then
+			timer.Remove("ProcessCheck_" .. index)
+		end
+		--print("Yes yelid", coroutine.status( co ))
+		coroutine.resume(co)
+	end)
 end
 
 function hgIsDoor(ent)
@@ -841,6 +873,7 @@ hook.Add( "OnEntityCreated", "VechicleChairs", function( ent )
 			
 			ent:SetModel("models/props_junk/PopCan01a.mdl")
 			ent:SetAngles(ent:LocalToWorldAngles(UwU and Angle(0, -1, 0) or Angle(0,90,0)))
+			ent:SetPos(ent:GetPos() + vector_up * 1)
 		end
 	end)
 	
@@ -1007,7 +1040,7 @@ end)
 
 hook.Add( "Move", "hg_RagdollIntoWalls", function( ply, mv)
 	local vel = mv:GetVelocity()
-	if ply:GetMoveType() == MOVETYPE_WALK and vel:Length() > 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() then
+	if ply:GetMoveType() == MOVETYPE_WALK and vel:LengthSqr() > 750 * 750 and not hg.GetCurrentCharacter(ply):IsRagdoll() and !(ply.IsStimulated and ply:IsStimulated()) then
 		local tr = util.TraceLine({
 			start = ply:GetPos(),
 			endpos = ply:GetPos() + vel:Angle():Forward() * 100,
@@ -1044,10 +1077,14 @@ hook.Add( "Move", "hg_RagdollIntoWalls", function( ply, mv)
 end)
 
 if util.IsBinaryModuleInstalled("eightbit") then
+	if system.IsLinux() then
+		print("If the eightbit module doesn't work, you should update the 32-bit glibc library (and C/C++ related 32-bit libraries in general)")
+	end
+
 	require("eightbit")
 
 	if eightbit.SetDamp1 then
-		eightbit.SetDamp1(0.96)
+		eightbit.SetDamp1(0.85)
 	end
 
 	if eightbit.SetProotCutoff then
@@ -1257,25 +1294,32 @@ hook.Add( "OnEntityCreated", "ReplaceEnt", function( ent )
 end )
 
 -- https://www.youtube.com/watch?v=HvtIwUgJgjA
--- Death
-local reasons = {
-	"Goodbye.",
-    "Better luck next time.",
-    "Error",
-    "Something wrong"
-}
+--\\ Kick on death
+	local reasons = {
+		"Goodbye.",
+		"Better luck next time.",
+		"Error",
+		"Something wrong"
+	}
 
-local plymeta = FindMetaTable("Player")
+	local plymeta = FindMetaTable("Player")
 
-local flags = bit.bor(FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_NEVER_AS_STRING)
-local hg_sync = CreateConVar("hg_sync", 0, flags, "Enable death sync", 0, 1)
+	local flags = bit.bor(FCVAR_REPLICATED, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_NEVER_AS_STRING)
+	local hg_sync = CreateConVar("hg_sync", 0, flags, "Toggle death synchronized (kick player on death)", 0, 1)
 
-function plymeta:SyncDeath()
-	local SyncLastMessage = table.Random(reasons)
-	if !self:IsSuperAdmin() then
-		self:Kick(SyncLastMessage)
+	function plymeta:SyncDeath()
+		local SyncLastMessage = table.Random(reasons)
+		if !self:IsSuperAdmin() then
+			self:Kick(SyncLastMessage)
+		end
 	end
-end
+
+	hook.Add("PlayerDeath","I_Feel_Death",function(ply)
+		if hg_sync:GetBool() then
+			ply:SyncDeath()
+		end
+	end)
+--//
 
 oldGetUseEntity = oldGetUseEntity or plymeta.GetUseEntity
 
@@ -1285,26 +1329,44 @@ function plymeta:GetUseEntity()
 	return ent
 end
 
-hook.Add("PlayerDeath","I_Feel_Death",function(ply)
-	if hg_sync:GetBool() then
-		ply:SyncDeath()
-	end
-end)
+--\\ Get shards/table legs on break
+	local string_find = string.find
+	hook.Add("PropBreak", "FurnitureLegs", function(ply, ent)
+		if IsValid(ent) and string_find(ent:GetModel(), "furniture", 1, "%a") and math.random(3) == 2 then
+			if string_find(ent:GetModel(), "table", 1, "%a") or string_find(ent:GetModel(), "drawer", 1, "%a") or string_find(ent:GetModel(), "desk", 1, "%a") then
+				local leg = ents.Create("weapon_table_leg")
+				leg:SetPos(ent:GetPos())
+				leg:SetAngles(AngleRand(-180, 180))
+				leg:Spawn()
+				leg.IsSpawned = true
+				leg.init = true
+			elseif string_find(ent:GetModel(), "chair", 1, "%a") or string_find(ent:GetModel(), "vanity", 1, "%a") then
+				local leg = ents.Create("weapon_chair_leg")
+				leg:SetPos(ent:GetPos())
+				leg:SetAngles(AngleRand(-180, 180))
+				leg:Spawn()
+				leg.IsSpawned = true
+				leg.init = true
+			end
+		end
+	end)
 
-hook.Add("PostEntityTakeDamage", "GlassShards", function(ent, dmginfo)
-	if ent:GetClass() ~= "func_breakable_surf" then return end
-	if math.random(10) == 5 then
-		local glass = ents.Create("weapon_hg_glassshard")
-		local inf = dmginfo:GetInflictor()
-		glass:SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
-		glass:SetAngles(AngleRand(-180, 180))
-		glass:Spawn()
-		glass.IsSpawned = true
-		glass.init = true
-		--Player(2):SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
-		--print(ent, glass) -- bro im spawned and etc.
-	end
-end)
+	hook.Add("PostEntityTakeDamage", "GlassShards", function(ent, dmginfo)
+		if IsValid(ent) and math.random(4) == 2 then
+			if ent:GetClass() == "func_breakable_surf" or (ent:GetClass() == "func_breakable" and ent:GetMaterialType() == MAT_GLASS) then
+				local glass = ents.Create("weapon_hg_glassshard")
+				local inf = dmginfo:GetInflictor()
+				glass:SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
+				glass:SetAngles(AngleRand(-180, 180))
+				glass:Spawn()
+				glass.IsSpawned = true
+				glass.init = true
+				--Player(2):SetPos(IsValid(inf) and inf:GetPos() or dmginfo:GetAttacker():GetPos())
+				--print(ent, glass) -- bro im spawned and etc.
+			end
+		end
+	end)
+--//
 
 local entMeta = FindMetaTable( "Entity" )
 
@@ -1449,7 +1511,6 @@ function entMeta:SDOIsDoor()
 end
 
 hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
-
 	if inp == "Use" and ent:SDOIsDoor() then
 		local func = ((ply:KeyDown( IN_SPEED ) and "FastOpenDoor") or ( ply:KeyDown( IN_WALK ) and "StealthOpenDoor") or "NormalOpenDoor")
 		ent[func](ent,ply)
@@ -1468,13 +1529,30 @@ hook.Add( "AcceptInput", "StealthOpenDoors", function( ent, inp, act, ply, val )
 			ent:GetInternalVariable( "m_hMaster" )[func](ent:GetInternalVariable( "m_hMaster" ),ply)
 		end
 	end
-
 end )
+
+hook.Add("PlayerUse", "DoorClose", function(ply, ent)
+	local getdoor = ply:GetUseEntity()
+	if string_find(tostring(getdoor), "prop_door_rotating") and getdoor:GetInternalVariable("m_eDoorState") == 2 then
+		if getdoor:GetInternalVariable("m_hMaster") != NULL then
+			getdoor:GetInternalVariable("m_hMaster"):Fire("close")
+			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+
+			return false
+		else
+			getdoor:Fire("close")
+			hg.RunZManipAnim(ply, "door_open_back", nil, 2, {self})
+
+			return false
+		end
+	end	
+end)
 
 hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
 	if IsValid(ply.FakeRagdoll) then return end
 	ply.SnowBallPickupCD = ply.SnowBallPickupCD or 0
 	if ply.SnowBallPickupCD > CurTime() then return end
+
 	if ( key == IN_USE ) then
 		local tr = hg.eyeTrace(ply, 120)
 		if tr.MatType == MAT_SNOW then
@@ -1486,12 +1564,12 @@ hook.Add( "KeyPress", "snowballs_pickup", function( ply, key )
 end )
 
 local warmingEnts = {
-	["env_sprite"] = 1,
-	["env_fire"] = 2,
-	["vfire"] = 15,
+	["env_sprite"] = 0.0,
+	["env_fire"] = 0.5,
+	["vfire"] = function(ent) return ent:GetFireState() end,
 }
 
-hg.ColdMapsTemp = {
+hg.MapTemps = {
 	["gm_wintertown"] = -10,
 	["cs_drugbust_winter"] = -10,
 	["cs_office"] = -10,
@@ -1505,62 +1583,147 @@ hg.ColdMapsTemp = {
 	["mu_riverside_snow"] = -10,
 	["gm_fork_north"] = -16,
 	["gm_fork_north_day"] = -21,
-	["gm_ijm_boreas"] = -40
+	["gm_ijm_boreas"] = -40,
+	["gm_construct"] = 20 -- тест температуры
 }
 
-hook.Add("Org Think", "ColdMaps", function(owner, org, timeValue)
+function hg.TranslateToBodyTemp(temp, org)
+	return math.Remap(temp, -20, 20, 27, org and org.needed_temp or 36.7) -- math.Remap doesn't clamp
+end
+
+local hg_temperaturesystem = CreateConVar("hg_temperaturesystem", 1, FCVAR_ARCHIVE + FCVAR_REPLICATED + FCVAR_NOTIFY, "Toggle temperature system", 0, 1)
+local sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
+
+hook.Add("StormFox2.PostEntityScan","load-stormfox-support",function()
+	sf2_get_temp = StormFox2 and StormFox2.Temperature and StormFox2.Temperature.Get or nil
+end)
+
+hook.Add("Org Think", "BodyTemperature", function(owner, org, timeValue) -- переделал систему температуры
 	if not owner:IsPlayer() or not owner:Alive() then return end
 	if owner.GetPlayerClass and owner:GetPlayerClass() and owner:GetPlayerClass().NoFreeze then return end
+	if !hg_temperaturesystem:GetBool() then return end
+	if (owner.CheckTemp or 0) > CurTime() then return end
+	owner.CheckTemp = CurTime() + 0.5--optimization update
 
-	if (owner.CheckCold or 0) > CurTime() then return end
-	owner.CheckCold = CurTime() + 0.5--optimization update
 	local timeValue = 0.5
 	local ent = hg.GetCurrentCharacter(owner)
+
 	local IsVisibleSkyBox = util.TraceLine( {
 		start = ent:GetPos() + vector_up * 15,
 		endpos = ent:GetPos() + vector_up * 999999,
 		mask = MASK_SOLID_BRUSHONLY
-	} ).HitSky and hg.ColdMaps[game.GetMap()]
+	} ).HitSky and !owner:InVehicle()
+
 	org.temperature = org.temperature or 36.7
+
 	local currentPulse = org.pulse or 70
 	local pulseHeat = 0
-	local temp = hg.ColdMapsTemp[game.GetMap()] or -10
+	local temp = sf2_get_temp and sf2_get_temp() or hg.MapTemps[game.GetMap()] or 20
 
 	if currentPulse > 80 then
 		local pulseMultiplier = math.min((currentPulse - 70) / 100, 1.2)
 		pulseHeat = timeValue / 50 * pulseMultiplier * 0.2
+	end -- unused
+
+	local warming = org.stamina.sub > 0 and 0.5 or 0
+	local ownerpos = owner:GetPos()
+	for i, ent in ipairs(ents.FindInSphere(ownerpos, 300)) do
+		local warmingent = warmingEnts[ent:GetClass()]
+		if warmingent and !ent:GetNoDraw() then
+			--org.temperature = org.temperature + timeValue * (warmingEnts[ent:GetClass()] / 50 * (1 - ent:GetPos():Distance(owner:GetPos()) / 200))
+			warming = warming + (isfunction(warmingent) and warmingent(ent) or warmingent)
+		end
 	end
 
-	if IsVisibleSkyBox and !owner:InVehicle() then
-		local freezeRate = timeValue / 1500
+	for i, tbl in ipairs(hg.gasolinePath) do
+		--tbl[2] -> true = burned, number = still burning, false = unignited
+		if tbl[2] and isnumber(tbl[2]) and (ownerpos - tbl[1]):LengthSqr() < 200 * 200 then
+			warming = warming + 0.5
+		end
+	end
 
-		org.freezing = true
-		org.temperature = Lerp(freezeRate, org.temperature, temp * 1)
-		org.FreezeSndCD = org.FreezeSndCD or CurTime() + 5
-		if org.FreezeSndCD < CurTime() and owner:Alive() and not org.otrub then
-			org.FreezeSndCD = CurTime() + math.random(30,55)
+	local changeRate = timeValue / 30 -- 1 degree every 1 minute
+
+	local temp = (IsVisibleSkyBox and temp or 20) + warming * 5
+	
+	local isFreezing = temp < 0
+	local isHeating = temp > 30
+
+	local MaxWarmMul = 1
+	local warmLoseMul = 1
+
+	if temp < -20 then
+		changeRate = changeRate * math.abs(temp) * 0.1
+	end
+	local result1,result2,result3 = hook.Run("ZC_BodyTemperature", owner, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+	if result1 and result2 and result3 then
+		changeRate = result1
+		MaxWarmMul = result2
+		warmLoseMul = result3
+	end
+
+	if temp > 25 then
+		changeRate = changeRate * math.Clamp(((org.heatbuff - 30) / 60), 1, 2)
+	end
+
+	org.tempchanging = changeRate
+
+	if org.heatbuff > 0 then
+		temp = math.max(20, temp)
+	end
+
+	if org.heatbuff < 30 and org.temperature < 30 then -- bro is NOT warming up
+		temp = math.min(-20, temp)
+	end
+
+	org.temperature = math.Approach(org.temperature, hg.TranslateToBodyTemp(temp, org), org.tempchanging)
+
+	-- При холоде
+	if owner:Alive() and not org.otrub and org.temperature < 36 then
+		org.FreezeSndCD = org.FreezeSndCD or CurTime() + math.random(5, 15)
+		
+		if org.FreezeSndCD < CurTime() then
+			org.FreezeSndCD = CurTime() + math.random(10, 35)
+
 			ent:EmitSound("zcitysnd/"..(ThatPlyIsFemale(ent) and "fe" or "").."male/freezing_"..math.random(1,8)..".mp3",65)
 		end
-		org.FreezeDMGCd = org.FreezeDMGCd or CurTime()
-		if org.temperature < 35 and org.temperature > 24 and org.FreezeDMGCd < CurTime()  then
-			org.painadd = org.painadd + math.Rand(0,1) * ((35 - org.temperature) / 35 * 4 + 1)
-			org.FreezeDMGCd = CurTime() + 0.5
-		end
-	else
-		org.freezing = false
+	end
+	
+	org.FreezeDMGCd = org.FreezeDMGCd or CurTime()
+	if org.temperature < 35 and org.FreezeDMGCd < CurTime() then
+		org.painadd = org.painadd + math.Rand(0, 1) * ((35 - org.temperature) / 35 * 4 + 1)
+		org.FreezeDMGCd = CurTime() + 0.5
 	end
 
-	for i, ent in ipairs(ents.FindInSphere(owner:GetPos(), 200)) do
-		if warmingEnts[ent:GetClass()] then
-			org.temperature = org.temperature + timeValue * (warmingEnts[ent:GetClass()] / 50 * (1 - ent:GetPos():Distance(owner:GetPos()) / 200))
+	-- При жаре
+	if owner:Alive() and org.temperature > 40 then
+		org.VomitCD = org.VomitCD or CurTime() + math.random(35, 75)
+		
+		if org.VomitCD < CurTime() then
+			org.VomitCD = CurTime() + math.random(35, 75)
+			owner:Notify(hg.get_phraselist(owner, "heatvomit"), 1, "phrase", 1, nil, Color(255, 85, 85, 255))
+			
+			timer.Simple(3, function()
+				hg.organism.Vomit(org.owner)
+			end)
 		end
 	end
+
+	org.HeatDMGCd = org.HeatDMGCd or CurTime()
+	if org.temperature > 38 and org.HeatDMGCd < CurTime() and not org.otrub then
+		org.painadd = org.painadd + math.Rand(0.5, 1) * ((org.temperature - 38) / 38 * 6 + 1)
+		org.HeatDMGCd = CurTime() + 0.5
+	end
+
+	org.heatbuff = math.Approach(org.heatbuff, isFreezing and -30 or 30 * MaxWarmMul, (timeValue * 1) * warmLoseMul)
+
+	org.heatbuff = math.Approach(org.heatbuff, 120 * MaxWarmMul, timeValue * math.Clamp(warming * 1, 0, 4))
+
 	//PrintTable(ents.FindInSphere(org.owner:GetPos(), 128))
 	--мб сделать тепло от env_sprite?
 	--hz...
 	--дороговато
 end)
-
 
 hook.Add("SetupMove","hg_FallSound",function(ply)
 	--if not ply then return end
@@ -1617,7 +1780,7 @@ hook.Add("SetupMove", "bm_force_foosteps", function(ply, mv)
 	end
 end)
 
-local hg_fallonsideland = CreateConVar("hg_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Enable fall from side landing")
+local hg_fallonsideland = CreateConVar("hg_fallonsideland", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED},"Toggle fall from side landing (if player land direction != player eye direction)")
 hook.Add("Move", "CP_detectland", function(ply)
 	if !hg_fallonsideland:GetBool() then return end
 	local vel = ply:GetVelocity()
@@ -1668,6 +1831,15 @@ end
 local hook_Run = hook.Run
 
 hook.Add("PlayerTick", "ilovefurries", function(ply)
+	ply.lastcall_tick = ply.lastcall_tick or SysTime() - 0.01
+	local dtime = SysTime() - ply.lastcall_tick
+
+	hook_Run("Player Think", ply, CurTime(), dtime)
+
+	ply.lastcall_tick = SysTime()
+end)
+
+hook.Add("VehicleMove", "ilovefurries", function(ply, veh, mv)
 	ply.lastcall_tick = ply.lastcall_tick or SysTime() - 0.01
 	local dtime = SysTime() - ply.lastcall_tick
 

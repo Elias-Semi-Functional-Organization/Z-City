@@ -116,13 +116,8 @@ function angle:AngIsEqualTo(otherAng, huy)
 	return self:IsEqualTol(otherAng, huy)
 end
 
-local hg_anims_draw_distance = ConVarExists("hg_anims_draw_distance") and GetConVar("hg_anims_draw_distance") or CreateClientConVar("hg_anims_draw_distance", 1024, true, nil, "distance to draw anims (0 = infinite)", 0, 4096)
-local hg_anim_fps = ConVarExists("hg_anim_fps") and GetConVar("hg_anim_fps") or CreateClientConVar("hg_anim_fps", 66, true, nil, "fps to draw anims (0 = maximum fps available)", 0, 250)
-
-local tolerance = 0.1
-
-local player_GetAll = player.GetAll
-local timeFrame = 0
+local hg_anims_draw_distance = ConVarExists("hg_anims_draw_distance") and GetConVar("hg_anims_draw_distance") or CreateClientConVar("hg_anims_draw_distance", 1024, true, nil, "Modify draw anims distance in hammer units (0 = infinite)", 0, 4096)
+local hg_anim_fps = ConVarExists("hg_anim_fps") and GetConVar("hg_anim_fps") or CreateClientConVar("hg_anim_fps", 66, true, nil, "Modify bone manipulate frames amount (not tpik) (0 = maximum fps available)", 0, 250)
 
 local function recursive_bones(ply, bone)
 	local children = ply:GetChildBones(bone)
@@ -189,13 +184,36 @@ function hg.HomigradBones(ply, dtime)
 		ply:ManipulateBoneAngles(boneID, tbl.Ang, false)
 	end--]]
 
+	--[[for i = 1, 10 do
+		print(ent:GetFlexName(i))
+	end--]]
+
+	--[[local ent = hg.GetCurrentCharacter(ply)
+	local blink = ent:GetFlexIDByName("blink")
+	local set = ply.suiciding and 1 or 0
+	if blink and ent:GetFlexWeight(blink) != set then
+		ent:SetFlexWeight(blink, set)
+	end--]]
+	
+	if ply.organism and ply.IsBerserk and ply:IsBerserk() and !IsValid(ply.FakeRagdoll) and ply.organism.llegamputated and ply.organism.rlegamputated then
+		hg.bone.Set(ply, 0, -vector_up * 15, angle_zero, "berserk", 0.01, dtime2)
+	end
+
+	--ent:SetFlexWeight()
+
 	if IsValid(ply.FakeRagdoll) then return end
 
 	if not ply.manipulated then reset(ply) return end
-
+	
 	for bone, tbl in pairs(ply.manipulated) do
 		for layer, tbl in pairs(tbl.layers) do
 			if (tbl.lastset != time) then
+				if tbl.Pos:IsEqualTol(vector_origin, 0.01) and tbl.Ang:IsEqualTol(angle_zero, 0.01) then
+					ply.manipulated[bone] = nil
+
+					continue
+				end
+
 				hg.bone.Set(ply, bone, vector_origin, angle_zero, layer, 0.01, dtime2, true)
 			end
 		end

@@ -14,6 +14,7 @@ local bashvpang = Angle(-8,0,0)
 function SWEP:PrimaryAttack()
 	if self.CurState == 0.5 then return end
 	local ply = self:GetOwner()
+	if not hg.CanUseLeftHand(ply) or not hg.CanUseRightHand(ply) then return end
 
 	if self.CurState == 1 and ply:GetAmmoCount("Arrow") > 0 then
 		self.CurState = 0.5
@@ -107,7 +108,8 @@ function SWEP:ThinkAdd()
 		self:PlayAnim("deploy_empty")
 	end
 
-	if hg.KeyDown(ply, IN_ATTACK2) and not ply:IsSprinting() and not wallblock then
+	local handscheck = hg.CanUseLeftHand(ply) and hg.CanUseRightHand(ply)
+	if hg.KeyDown(ply, IN_ATTACK2) and not ply:IsSprinting() and not wallblock and handscheck then
 		if self.CurState == -1 and self.CurState ~= 0.5 then
 			self.CurState = 0.5
 			self:PlayAnim(ply:GetAmmoCount("Arrow") == 0 and "idle_to_aim_empty" or "idle_to_aim")

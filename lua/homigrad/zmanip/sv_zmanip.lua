@@ -55,11 +55,13 @@ local gestures = {
 concommand.Add("hg_hand_gesture",function( ply, cmd, args )
 	ply.handGestureCD = ply.handGestureCD or 0
 	if ply.handGestureCD > CurTime() then return end
+
 	if args[1] and gestures[args[1]] then
 		hg.RunZManipAnim( ply, gestures[args[1]][1], gestures[args[1]][2] )
 	elseif not args[1] then
 		local gestur = table.Random(gestures)
 		hg.RunZManipAnim( ply, gestur[1], gestur[2] )
 	end
+
 	ply.handGestureCD = CurTime() + 2
 end)

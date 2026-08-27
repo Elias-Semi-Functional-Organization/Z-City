@@ -138,6 +138,11 @@ if CLIENT then
 		surface.DrawRect(x - 2.5, y - 25 * lerpthing * 0.1, 5, 50 * lerpthing * 0.1)
 
 		if IsValid(tr.Entity) and not tr.Entity:IsPlayer() and not tr.Entity:IsRagdoll() and not self:GetPlanted() then
+			local min, max = tr.Entity:GetModelBounds()
+			local minmaxs = (max - min)
+			local size = minmaxs[1] + minmaxs[2] + minmaxs[3]
+			if size <= 15 then return end
+
 			if tr.MatType == MAT_METAL then
 				draw.SimpleText( "It will explode with shrapnel.", "HomigradFont", toScreen.x+3, toScreen.y + 25 + 32, color_black, TEXT_ALIGN_CENTER )
 				draw.SimpleText( "It will explode with shrapnel.", "HomigradFont", toScreen.x, toScreen.y + 25 + 30, colblue, TEXT_ALIGN_CENTER )
@@ -178,7 +183,7 @@ end
 function SWEP:CreateFake() end
 
 local function ExplodeTheItem(self,ent)
-	if not IsValid(ent) then self:Remove() end
+	if not IsValid(ent) then self:Remove() return end
 
 	local ent = ent
 
@@ -192,8 +197,8 @@ local function ExplodeTheItem(self,ent)
 		if not IsValid(ent) then return end
 		timer.Simple(0.1,function()
 			net.Start("projectileFarSound")
-				net.WriteString(table.Random(self.Sound))
-				net.WriteString(table.Random(self.SoundFar))
+				net.WriteString(self.Sound[math.random(#self.Sound)])
+				net.WriteString(self.SoundFar[math.random(#self.SoundFar)])
 				net.WriteVector(EntPos)
 				net.WriteEntity(ent)
 				net.WriteBool(ent:WaterLevel() > 0)
@@ -266,9 +271,9 @@ local function ExplodeTheItem(self,ent)
 				phys:ApplyForceCenter(forceadd)
 			end
 
-			hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
+			--hgWreckBuildings(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
 			hgBlastDoors(ent, EntPos, BlastDamage / 400, BlastDis/8, false)
-			util.ScreenShake( EntPos, 35, 35, 1, 5000 )
+			util.ScreenShake( EntPos, 45, 225, 2.5, 3000 )
 
 			if FireEnts[ent:GetModel()] then
 				local Tr = util.QuickTrace(EntPos, -vector_up*500, {EntPos})
@@ -363,7 +368,7 @@ function SWEP:SecondaryAttack(calledFrom)
 
 			local bomb = ents.Create("prop_physics")
 			bomb:SetModel("models/props_junk/cardboard_jox004a.mdl")
-			bomb:SetPos(Tr.HitPos)
+			bomb:SetPos(Tr.HitPos + Tr.HitNormal * 4)
 			bomb:SetModelScale(0.4)
 			bomb:Spawn()
 			bomb:Activate()
@@ -430,6 +435,11 @@ if SERVER then
 			local Tr = self:GetEyeTrace()
 
 			if IsValid(Tr.Entity) and IsValid(Tr.Entity:GetPhysicsObject()) and Tr.Entity:GetPhysicsObject():GetMass() < 500 then
+				local min, max = Tr.Entity:GetModelBounds()
+				local minmaxs = (max - min)
+				local size = minmaxs[1] + minmaxs[2] + minmaxs[3]
+				if size <= 15 then return end
+
 				bomb = Tr.Entity
 				--bomb:GetPhysicsObject():SetMass(bomb:GetPhysicsObject():GetMass()+20)
 

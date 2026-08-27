@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_pist_px4.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_glock18.mdl"
 SWEP.WorldModelFake = "models/weapons/arc9/darsu_eft/c_pl15.mdl"
 SWEP.FakeScale = 1.07
 SWEP.FakePos = Vector(-17.5, 4.5, 6.5)
@@ -77,7 +77,7 @@ SWEP.AnimList = {
 	["reload"] = "reload",
 	["reload_empty"] = "reload_empty",
 }
---SWEP.ReloadHold = nil
+
 SWEP.FakeVPShouldUseHand = false
 
 SWEP.FakeViewBobBone = "Camera_animated"
@@ -106,7 +106,7 @@ SWEP.Primary.Ammo = "9x19 mm Parabellum"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 24
 SWEP.Primary.Sound = {"weapons/darsu_eft/pl15/pl_fire_indoor_distant.wav", 75, 90, 100}
-SWEP.SupressedSound = {"zcitysnd/sound/weapons/m9/m9_suppressed_fp.wav", 75, 90, 100}
+SWEP.SupressedSound = {"zcitysnd/sound/weapons/m9/m9_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 23
 SWEP.Primary.Wait = PISTOLS_WAIT

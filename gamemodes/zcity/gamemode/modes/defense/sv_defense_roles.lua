@@ -5,7 +5,7 @@ util.AddNetworkString("defense_commander_notification")
 util.AddNetworkString("defense_player_role_assigned")
 
 function MODE:ClearPlayerRoles()
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply:SetNWString("PlayerRole", "")
         ply:SetNWInt("CommanderPoints", 0)
     end
@@ -13,7 +13,7 @@ end
 
 
 function MODE:AddCommanderPoints(points)
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
             local currentPoints = ply:GetNWInt("CommanderPoints", 0)
             ply:SetNWInt("CommanderPoints", currentPoints + points)
@@ -54,7 +54,7 @@ function MODE:OnWaveComplete()
         pointsPerWave = pointsPerWave * 2
         
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetNWString("PlayerRole") == "Commander" and ply:Alive() then
                 local currentPoints = ply:GetNWInt("CommanderPoints", 0)
                 ply:SetNWInt("CommanderPoints", currentPoints + pointsPerWave)
@@ -73,7 +73,7 @@ end
 
 function MODE:AssignPlayerRoles()
     local players = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:Team() ~= TEAM_SPECTATOR and ply:Alive() then
             table.insert(players, ply)
         end
@@ -180,15 +180,27 @@ end
 
 function MODE:GetPlySpawn(ply)
     if self.SpawnPoints and #self.SpawnPoints > 0 then
-        ply:SetPos(self.SpawnPoints[#self.SpawnPoints].pos)
-        if #self.SpawnPoints > 1 then 
-            table.remove(self.SpawnPoints)
+        local spawnIndex = #self.SpawnPoints
+        local spawnPoint = self.SpawnPoints[spawnIndex]
+        local spawnPos = self.GetGroundedPlayerSpawn and self:GetGroundedPlayerSpawn(spawnPoint) or spawnPoint.pos
+
+        ply:SetPos(spawnPos)
+        ply:SetLocalVelocity(vector_origin)
+
+        if spawnPoint.ang then
+            ply:SetEyeAngles(Angle(0, spawnPoint.ang.y, 0))
         end
+
+        if #self.SpawnPoints > 1 then 
+            table.remove(self.SpawnPoints, spawnIndex)
+        end
+
+        return spawnPos
     end
 end
 
 function MODE:GiveEquipment()
-    self.SpawnPoints = zb.GetMapPoints("PLY_DEFENSE_SPAWN")
+    self.SpawnPoints = self.GetUsualPlayerSpawnPoints and self:GetUsualPlayerSpawnPoints() or {}
     if not self.SpawnPoints then
         self.SpawnPoints = {}
     end
@@ -197,7 +209,7 @@ function MODE:GiveEquipment()
         self:AssignPlayerRoles()
     end)
 
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then
             continue
         end

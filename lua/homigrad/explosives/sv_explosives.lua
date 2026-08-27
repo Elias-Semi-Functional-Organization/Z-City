@@ -95,9 +95,9 @@ local ExpTypes = {
 		end
 
 		if entsCount > 10 then
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
 		end
 
 		local bullet = {}
@@ -129,7 +129,7 @@ local ExpTypes = {
 			Ent.ShrapnelDone = true
 		end)
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+        util.ScreenShake(SelfPos,100,900,1,5000)
 
         coroutine.resume(co)
 
@@ -203,9 +203,9 @@ local ExpTypes = {
 		end
 
 		if entsCount > 10 then
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
 		end
 
 		local bullet = {}
@@ -237,7 +237,7 @@ local ExpTypes = {
 			Ent.ShrapnelDone = true
 		end)
 
-        util.ScreenShake(SelfPos,99999,99999,1,3000)
+         util.ScreenShake(SelfPos,100,900,1,5000)
 
         coroutine.resume(co)
 
@@ -310,13 +310,13 @@ local ExpTypes = {
 		end
 
 		if entsCount > 10 then
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
-			EmitSound(table.Random(DebrisSounds), Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
+			EmitSound(DebrisSounds[math.random(#DebrisSounds)], Ent:GetPos(), Ent:EntIndex(), CHAN_AUTO, 1, 80)
 		end
 
 		if not IsValid(Ent) then return end
-		util.ScreenShake(SelfPos,99999,99999,1,3000)
+		 util.ScreenShake(SelfPos,100,900,1,2000)
 		SafeRemoveEntity(Ent)
     end,
 }

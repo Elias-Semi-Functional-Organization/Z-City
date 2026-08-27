@@ -1,6 +1,12 @@
 hg.armor = {}
+local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 
+local vecAdjust2 = Vector(5, -6.3, -5)
 local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
+	if ply:GetNetVar("headcrab") then return end
+	if not ply:Alive() then return end
+	if ply.organism and ply.organism.otrub then return end
+
 	if not IsValid(ply.FirstPersonHelmetModel) then
 		ply.FirstPersonHelmetModel = ClientsideModel(strModel)
 		ply.FirstPersonHelmetModel:SetNoDraw(true)
@@ -37,13 +43,15 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 		mdl.matseted1 = false
 	end
 
+	local gp = hg_gopro:GetBool()
 	local view = render.GetViewSetup()
 	cam.Start3D(view.origin,view.angles,view.fov + fFov,nil,nil,nil,nil,1,10)
-		local viewpunching = GetViewPunchAngles()
+		--cam.IgnoreZ(true)
+		local viewpunching = GetViewPunchAngles() / 2
 		local ang = view.angles + viewpunching
-		mdl:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+		mdl:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
 		mdl:SetRenderAngles(ang)
-		mdl2:SetRenderOrigin(view.origin + ang:Forward() * vecAdjust.x + ang:Right() * vecAdjust.y + ang:Up() * vecAdjust.z)
+		mdl2:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
 		mdl2:SetRenderAngles(ang)
 		mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
 		render.SetColorModulation(1,1,1)
@@ -55,7 +63,7 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 			render.SetStencilFailOperation( STENCIL_KEEP )
 			render.SetStencilZFailOperation( STENCIL_KEEP )
 			render.ClearStencil()
-			
+
 			-- Enable stencils
 			render.SetStencilEnable( true )
 			-- Set everything up everything draws to the stencil buffer instead of the screen
@@ -67,12 +75,20 @@ local function DrawFirstPersonHelmet(ply, strModel, vecAdjust, fFov, setMat)
 			render.SetBlend(1)
 			render.SetStencilCompareFunction( STENCIL_EQUAL )
 			mdl:DrawModel()
-			DrawBokehDOF(8,0.9,15)
+			if not hg.ConVars.potatopc:GetBool() then
+				DrawBokehDOF(8,0.9,15)
+			end
 			-- Let everything render normally again
 			render.SetStencilEnable( false )
 		render.SetColorModulation(1,1,1)
+		--cam.IgnoreZ(false)
 	cam.End3D()
 end
+
+
+---------ПОИНТЫ ЗАЩИТЫ БРОНИ ДЛЯ МОДОДЕЛОВ----------
+---------II - 4 protection, IIIA - 8 protection, III - 12 protection, III+ - 16 protection, IV - 22 protection
+
 
 hg.armor.torso = {
 	["vest1"] = {
@@ -80,7 +96,7 @@ hg.armor.torso = {
 		"models/combataegis/body/ballisticvest_d.mdl",
 		Vector(19, 3, 0),
 		Angle(0, 90, 90),
-		protection = 14.5,
+		protection = 22,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/combataegis/body/ballisticvest.mdl",
 		femPos = Vector(-4, 0, 1),
@@ -96,7 +112,7 @@ hg.armor.torso = {
 		"models/eu_homicide/armor_prop.mdl",
 		Vector(-1, 2, 0),
 		Angle(0, 90, 90),
-		protection = 6.7,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/eu_homicide/armor_on.mdl",
 		femPos = Vector(-2.4, 0, 1.1),
@@ -109,12 +125,14 @@ hg.armor.torso = {
 	["vest3"] = {
 		"torso",
 		"models/jworld_equipment/kevlar.mdl",
-		Vector(-42, 3.2, 0),
+		Vector(-9, 3.2, 0),
 		Angle(0, 90, 90),
-		protection = 9.8,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Spine2",
-		model = "models/sal/acc/armor01.mdl",
-		material = "sal/acc/armor01",
+		model = "models/lightvest/lightvest.mdl",
+		material = {"models/lightvest/accs_diff_000_b_uni",
+		"models/lightvest/accs_diff_000_c_uni", "models/lightvest/accs_diff_000_c_uni",
+		"models/lightvest/accs_diff_000_d_uni", "sal/acc/armor01_4", "sal/acc/armor01_5"},
 		femPos = Vector(2.5, 0, 1),
 		scale = 0.88,
 		femscale = 0.8,
@@ -127,12 +145,14 @@ hg.armor.torso = {
 	["vest4"] = {
 		"torso",
 		"models/jworld_equipment/kevlar.mdl",
-		Vector(-42, 3.2, 0),
+		Vector(-9, 3.2, 0),
 		Angle(0, 90, 90),
-		protection = 13.5,
+		protection = 12,
 		bone = "ValveBiped.Bip01_Spine2",
-		model = "models/sal/acc/armor01.mdl",
-		material = "sal/acc/armor01_2",
+		model = "models/lightvest/lightvest.mdl",
+		material = {"models/lightvest/accs_diff_000_a_uni",
+		"models/lightvest/accs_diff_000_h_uni", "models/lightvest/accs_diff_000_f_uni",
+		"models/lightvest/accs_diff_000_e_uni", "sal/acc/armor01_3"},
 		femPos = Vector(2.5, 0, 1),
 		scale = 0.88,
 		femscale = 0.8,
@@ -147,7 +167,7 @@ hg.armor.torso = {
 		"models/eft_props/gear/armor/ar_6b13_flora.mdl",
 		Vector(0, 2.7, 0),
 		Angle(0, 90, 90),
-		protection = 13,
+		protection = 12,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/eft_props/gear/armor/ar_6b13_flora.mdl",
 		femPos = Vector(-1, 0, 1.2),
@@ -163,7 +183,7 @@ hg.armor.torso = {
 		"models/eft_props/gear/armor/ar_paca.mdl",
 		Vector(-0.4, 2.9, 0),
 		Angle(0, 92, 90),
-		protection = 9.9,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/eft_props/gear/armor/ar_paca.mdl",
 		femPos = Vector(-1.5, 0, 1.5),
@@ -180,7 +200,7 @@ hg.armor.torso = {
 		"models/eft_props/gear/armor/ar_untar.mdl",
 		Vector(-0.4, 2.9, 0),
 		Angle(0, 92, 90),
-		protection = 10.2,
+		protection = 12,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/eft_props/gear/armor/ar_untar.mdl",
 		femPos = Vector(-1.5, 0, 1.5),
@@ -196,7 +216,7 @@ hg.armor.torso = {
 		"models/monolithservers2/kerry/sswat_armor.mdl",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 12.5,
+		protection = 16,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/monolithservers2/kerry/sswat_armor.mdl",
 		femPos = Vector(0, 0, 0),
@@ -212,7 +232,7 @@ hg.armor.torso = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 16.5,
+		protection = 22,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -231,7 +251,7 @@ hg.armor.torso = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 8,
+		protection = 22,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -250,7 +270,7 @@ hg.armor.torso = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 5,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -267,16 +287,16 @@ hg.armor.torso = {
 	["ego_equalizer"] = {
 		"torso",
 		"models/monolithservers2/kerry/sswat_armor.mdl",
-		Vector(-9, 2.5, 0),
+		Vector(-8, 2.5, 0),
 		Angle(0, 92, 90),
 		protection = 0,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "models/monolithservers2/kerry/sswat_armor.mdl",
 		-- material = "models/shiny",
-		material = "models/props_c17/paper01",
+		material = "models/lightvest/accs_diff_000_d_uni", -- "models/props_c17/paper01"
 		femPos = Vector(0, 0, 0),
-		scale = 1,
-		femscale = 1,
+		scale = 0.95,
+		femscale = 0.95,
 		effect = "Impact",
 		surfaceprop = 67,
 		mass = 8,
@@ -285,11 +305,11 @@ hg.armor.torso = {
 	},
 }
 local vectors = {
-	[1] = Vector(-4,0,-2),
-	[2] = Vector(-4,0,0),
+	[1] = Vector(-2,0,-1.5),
+	[2] = Vector(-4,0,0.2),
 	[3] = Vector(-5,0,0),
 	[4] = Vector(-2,0,0),
-	[5] = Vector(-5,0,-2.2)
+	[5] = Vector(-4.5,0,-2)
 }
 hg.armor.head = {
 	["helmet1"] = {
@@ -297,11 +317,13 @@ hg.armor.head = {
 		"models/barney_helmet.mdl",
 		Vector(1, -2, 0),
 		Angle(180, 110, 90),
-		protection = 9.5,
+		protection = 12,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/barney_helmet.mdl",
 		femPos = Vector(-1, 0, 0),
-		material = "sal/hanker",
+		material = {"sal/hanker", "models/jacky_camouflage/digi",
+		"models/jacky_camouflage/digi2", "models/lightvest/accs_diff_000_g_uni",
+		"sal/acc/armor01_2", "sal/acc/armor01_3", "sal/acc/armor01_4", "sal/acc/armor01_5"},
 		norender = true,
 		customviewrender = function(ply)
 			DrawFirstPersonHelmet(ply, "models/barney_helmet.mdl", vectors[1], -40, "sal/hanker")
@@ -318,7 +340,7 @@ hg.armor.head = {
 		"models/dean/gtaiv/helmet.mdl",
 		Vector(2.6, 0, 0),
 		Angle(180, 110, 90),
-		protection = 4.2,
+		protection = 3,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/dean/gtaiv/helmet.mdl",
 		femPos = Vector(-1, 0, 0),
@@ -360,7 +382,7 @@ hg.armor.head = {
 		"models/props_interiors/pot02a.mdl",
 		Vector(7, -3.8, -3.8),
 		Angle(-45, -65, 90),
-		protection = 3,
+		protection = 2.4,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/props_interiors/pot02a.mdl",
 		femPos = Vector(-1.2, 0, 0.5),
@@ -376,7 +398,7 @@ hg.armor.head = {
 		"models/eft_props/gear/helmets/helmet_achhc_b.mdl",
 		Vector(2.2,-1, 0),
 		Angle(180, 100, 90),
-		protection = 11,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/eft_props/gear/helmets/helmet_achhc_b.mdl",
 		femPos = Vector(-1, 0, 0.1),
@@ -392,7 +414,7 @@ hg.armor.head = {
 		"models/monolithservers2/kerry/swat_hat.mdl",
 		Vector(0, 0, 0),
 		Angle(180, 100, 90),
-		protection = 11,
+		protection = 8,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/monolithservers2/kerry/swat_hat.mdl",
 		femPos = Vector(0, 0, 0),
@@ -412,7 +434,7 @@ hg.armor.head = {
 		"models/eft_props/gear/helmets/helmet_s_sh_68.mdl",
 		Vector(2.5, -0.8, 0),
 		Angle(180, 95, 90),
-		protection = 12,
+		protection = 3.5,
 		bone = "ValveBiped.Bip01_Head1",
 		model = "models/eft_props/gear/helmets/helmet_s_sh_68.mdl",
 		femPos = Vector(-0.6, 0, 0.3),
@@ -454,7 +476,7 @@ hg.armor.head = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 8,
+		protection = 12,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -473,7 +495,7 @@ hg.armor.head = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 7,
+		protection = 4,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -492,7 +514,7 @@ hg.armor.head = {
 		"",
 		Vector(-9, 2.5, 0),
 		Angle(0, 92, 90),
-		protection = 8,
+		protection = 4,
 		bone = "ValveBiped.Bip01_Spine2",
 		model = "",
 		femPos = Vector(0, 0, 0),
@@ -647,7 +669,7 @@ hg.armor.face = {
 	},
 	["mask3"] = {
 		"face", -- "face"
-		"models/props_c17/metalPot001a.mdl",
+		"models/props_silo/welding_helmet.mdl",
 		Vector(0, 0.3, 0),
 		Angle(-90, 180, 90),
 		protection = 7,
@@ -663,6 +685,9 @@ hg.armor.face = {
 		mass = 2,
 		ScrappersSlot = "Armor",
 		voice_change = true,
+		PhysModel = "models/hunter/blocks/cube025x025x025.mdl",
+		PhysPos = Vector(1, 0, 5),
+		PhysAng = Angle(0, 90, 0),
 	},
 	["nightvision1"] = {
 		"face", -- "face"

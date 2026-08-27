@@ -1,11 +1,4 @@
-
 local CLASS = player.RegClass("Combine")
-
-
-local combine_models = {
-    "models/player/combine_soldier.mdl"
-}
-
 
 local callsigns = {
     "Alfa","Bravo","Charlie","Delta","Echo",
@@ -91,7 +84,10 @@ local primary_weapons = {
 local combine_subclasses = {
     default = {
         color = Color(0,220,220),
-        models = combine_models,
+        models = Model("models/player/combine_soldier.mdl"),
+		mat = {
+			["models/combine_soldier/combinesoldiersheet_player"] = "models/combine_soldier/combinesoldiersheet"
+		},
         loadout = {
             {weapon = "weapon_melee"}, --;; ближний бой мясо кишки
             {
@@ -112,7 +108,11 @@ local combine_subclasses = {
 
     elite = {
         color = Color(246,13,13),
-        models = {"models/player/combine_super_soldier.mdl"},
+        models = Model("models/player/combine_super_soldier.mdl"),
+		mat = {
+			["models/combine_soldier/combine_elite_player"] = "models/combine_soldier/combine_elite",
+			["models/combine_soldier/combine_elite_player_head"] = "models/combine_soldier/combine_elite"
+		},
         loadout = {
             {weapon = "weapon_melee"},
             {
@@ -133,7 +133,7 @@ local combine_subclasses = {
 
     sniper = {
         color = Color(0,220,220),
-        models = combine_models,
+        models = Model("models/player/combine_soldier.mdl"),
         loadout = {
             {weapon = "weapon_melee"},
             {
@@ -153,8 +153,11 @@ local combine_subclasses = {
 
     shotgunner = {
         color = Color(220,0,0),
-        models = combine_models,
+        models = Model("models/player/combine_soldier.mdl"),
         skin = 1,
+		mat = {
+			["models/combine_soldier/combinesoldiersheet_player_shotgun"] = "models/combine_soldier/combinesoldiersheet_shotgun"
+		},
         loadout = {
             {weapon = "weapon_melee"},
             {
@@ -210,6 +213,11 @@ local rebels = {
 
 function CLASS.Off(self)
     if CLIENT then return end
+
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), 0)
+	end
+
     RemoveCombineFromSquad(self)
 
     for k,v in ipairs(ents.FindByClass("npc_*")) do
@@ -224,13 +232,17 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerName", self.oldname_cmb or self:GetNWString("PlayerName"))
     self.organism.CantCheckPulse = nil
     self.leader = nil
+	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
 
 CLASS.NoFreeze = true
+CLASS.CanEmitRNDSound = false
 
 local function giveSubClassLoadout(ply, subclass)
     local config = combine_subclasses[subclass] or combine_subclasses["default"]
+    ply:StripWeapons()
+    ply:Give("weapon_hands_sh")
     for _, item in ipairs(config.loadout or {}) do
         if item.weapon_random_pool then
             local randWep = item.weapon_random_pool[math.random(#item.weapon_random_pool)]
@@ -240,7 +252,7 @@ local function giveSubClassLoadout(ply, subclass)
             end
         else
             local wep = ply:Give(item.weapon)
-            if wep then
+            if IsValid(wep) then
                 --;; патрончики
                 if item.ammo_mult then
                     ply:GiveAmmo(wep:GetMaxClip1() * item.ammo_mult, wep:GetPrimaryAmmoType(), true)
@@ -259,6 +271,15 @@ end
 
 function CLASS.On(self, data)
     if CLIENT then return end
+
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), eightbit.EFF_PROOT) --!! placeholder
+	end
+
+    if IsValid(self.FakeRagdoll) then
+        hg.FakeUp(self, nil, nil, true)
+    end
+
     ApplyAppearance(self,nil,nil,nil,true)
     local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
@@ -266,7 +287,7 @@ function CLASS.On(self, data)
 
     local sub = self.subClass or "default"
     local cfg = combine_subclasses[sub] or combine_subclasses["default"]
-    local useModel = cfg.models[math.random(#cfg.models)]
+    local useModel = istable(cfg.models) and cfg.models[math.random(#cfg.models)] or cfg.models
     self:SetModel(useModel)
     self:SetSubMaterial()
     self:SetNetVar("Accessories", "")
@@ -274,6 +295,12 @@ function CLASS.On(self, data)
 
     if cfg.skin then
         self:SetSkin(cfg.skin)
+    end
+
+    if cfg.mat then
+		for k, v in pairs(cfg.mat) do
+        	self:SetSubMaterial(self:GetSubMaterialIdByName(k), v)
+		end
     end
 
     self.organism.CantCheckPulse = true
@@ -286,10 +313,6 @@ function CLASS.On(self, data)
 
     if not data.bNoEquipment then
         giveSubClassLoadout(self, sub)
-    end
-
-    if sub == "elite" then
-        self:SetModel("models/player/combine_super_soldier.mdl")
     end
 
     self.subClass = nil
@@ -351,6 +374,41 @@ function CLASS.PlayerDeath(self)
     hook.Remove( "OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
+if SERVER then
+	local cmb_phrases = {
+		"npc/combine_soldier/vo/reportingclear.wav",
+		"npc/combine_soldier/vo/ripcordripcord.wav",
+		"npc/combine_soldier/vo/reportallpositionsclear.wav",
+		"npc/combine_soldier/vo/readyweaponshostilesinbound.wav",
+		"npc/combine_soldier/vo/overwatchrequestreserveactivation.wav",
+		"npc/combine_soldier/vo/overwatchconfirmhvtcontained.wav",
+		"npc/combine_soldier/vo/onedown.wav",
+		"npc/combine_soldier/vo/heavyresistance.wav",
+		"npc/combine_soldier/vo/containmentproceeding.wav",
+		"npc/combine_soldier/vo/contactconfirmprosecuting.wav",
+		"npc/combine_soldier/vo/movein.wav",
+		"npc/combine_soldier/vo/overwatchteamisdown.wav",
+		"npc/combine_soldier/vo/prosecuting.wav",
+		"npc/combine_soldier/vo/stayalertreportsightlines.wav",
+		"npc/combine_soldier/vo/teamdeployedandscanning.wav",
+		"npc/combine_soldier/vo/copythat.wav",
+		"npc/combine_soldier/vo/engagedincleanup.wav",
+		"npc/combine_soldier/vo/executingfullresponse.wav",
+		"npc/combine_soldier/vo/goactiveintercept.wav",
+		"npc/combine_soldier/vo/necroticsinbound.wav",
+		"npc/combine_soldier/vo/standingby].wav",
+		"npc/combine_soldier/vo/stayalert.wav",
+		"npc/combine_soldier/vo/targetmyradial.wav",
+		"npc/combine_soldier/vo/weareinaninfestationzone.wav",
+		"npc/combine_soldier/vo/wehavenontaggedviromes.wav"
+	}
+
+	hook.Add("HG_ReplacePhrase", "combine_phrase", function(ply, phrase, muffed, pitch)
+		if IsValid(ply) and ply.PlayerClassName == "Combine" then
+			return ply, cmb_phrases[math.random(#cmb_phrases)], muffed, pitch
+		end
+	end)
+end
 
 if CLIENT then
     local color_hp = Color(0,255,255,220)
@@ -477,13 +535,13 @@ if CLIENT then
             )
         end
 
-        --;; Пульс
+        --;; Pulse
         do
             local pos, size = drawBGPanel(0.035,0.925)
             surface.SetFont("CMBFontSmall")
             local org = self.organism
             if not org or not org.pulse then return end
-            local pulse = org.pulse
+            local pulse = org.heartbeat
             pulse_txt = math.Round(math.min(pulse_txt + 1, pulse))
             local col_bg = bg_color
             col_bg.a = 225
@@ -514,7 +572,7 @@ if CLIENT then
             )
         end
 
-        --;; Выносливость
+        --;; Stamina
         do
             local pos, size = drawBGPanel(0.035,0.895)
             surface.SetFont("CMBFontSmall")
@@ -550,6 +608,7 @@ if CLIENT then
                 TEXT_ALIGN_LEFT
             )
         end
+
         --;; Silent mode
         do
             local pos, size = drawBGPanel(0.5,0.99)
@@ -572,7 +631,8 @@ if CLIENT then
                 TEXT_ALIGN_CENTER
             )
         end
-        --;; Боезапас
+
+        --;; Ammunition
         local wep = self:GetActiveWeapon()
         if IsValid(wep) and wep.Clip1 then
             ammolerp = Lerp(frt,ammolerp,(wep:Clip1() < 0) and 0 or 1)
@@ -649,6 +709,12 @@ if CLIENT then
     end)
 end
 
+hook.Add("HG_CanThoughts", "CombineCantDumat", function(ply)
+	if ply.PlayerClassName == "Combine" then
+		return false
+	end
+end)
+
 --;; Серверные хуки и звуки шагов/смерти
 if SERVER then
     hook.Add("HG_PlayerFootstep","Combine_footsteps",function(ply)
@@ -658,7 +724,7 @@ if SERVER then
             ply.CombineLerpedFootStep = LerpFT(0.5,ply.CombineLerpedFootStep or 60, (not ply:IsSprinting() and (ply:KeyDown(IN_DUCK) or ply:KeyDown(IN_WALK))) and 20 or 60)
             if IsValid(ply.FakeRagdoll) and ply:GetNetVar("lastFake") == 0 then return end
             chr:EmitSound("npc/combine_soldier/gear" .. math.random(1,6) .. ".wav",
-                ply.CombineLerpedFootStep
+                ply.CombineLerpedFootStep, math.random(92, 108), 0.7
             )
         end
     end)
@@ -710,7 +776,7 @@ if SERVER then
         end
     end)
 
-    hook.Add("HG_PlayerSay","CombineChatMessage",function(ply,text)
+    hook.Add("HG_PlayerSay","CombineChatMessage",function(ply, txtTbl, text)
         if ply.PlayerClassName == "Combine" and ply:Alive() and not ply.organism.otrub then
             ply:EmitSound("npc/metropolice/vo/on1.wav")
         end
@@ -819,6 +885,16 @@ if CLIENT then
             DrawColorModify(cc)
             DrawBloom(0.1,0.5,2,2,1,0.4,1,1,1)
         end
+    end)
+
+    hook.Add("ZC_DisableShootTinnitus","NoCombineTinnitus",function(lply)
+        if lply.PlayerClassName ~= "Combine" then return end
+        return true
+    end)
+
+    hook.Add("ZC_BodyTemperature","CombineSuitWarming",function(ply, org, timeValue, changeRate, MaxWarmMul, warmLoseMul)
+        if ply.PlayerClassName ~= "Combine" then return end
+        return changeRate, MaxWarmMul + 0.5, warmLoseMul - 0.4
     end)
 
     hook.Add("PreDrawHalos","PNV_Light",function()

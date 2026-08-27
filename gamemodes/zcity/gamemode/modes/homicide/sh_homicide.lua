@@ -11,8 +11,8 @@ MODE.ConVarName_SubRole_Traitor_SOE = "hmcd_subrole_traitor_soe"
 MODE.ConVarName_SubRole_Traitor = "hmcd_subrole_traitor"
 
 if(CLIENT)then
-	MODE.ConVar_SubRole_Traitor_SOE = CreateClientConVar(MODE.ConVarName_SubRole_Traitor_SOE, "traitor_default_soe", true, true, "Выбор роли трейтора в режиме SOE хомисайда")
-	MODE.ConVar_SubRole_Traitor = CreateClientConVar(MODE.ConVarName_SubRole_Traitor, "traitor_default", true, true, "Выбор роли трейтора в стандартном режиме хомисайда")
+	MODE.ConVar_SubRole_Traitor_SOE = CreateClientConVar(MODE.ConVarName_SubRole_Traitor_SOE, "traitor_default_soe", true, true, "Select traitor role in State of Emergency homicide mode")
+	MODE.ConVar_SubRole_Traitor = CreateClientConVar(MODE.ConVarName_SubRole_Traitor, "traitor_default", true, true, "Select murder role in Standard homicide modes")
 end
 
 --; TODO
@@ -154,10 +154,10 @@ For people who like to play checkers.]],
 			
 			ply.organism.recoilmul = 0.8
 			ply.organism.stamina.max = 300
-			-- local inv = ply:GetNetVar("Inventory", {})
-			-- inv["Weapons"]["hg_flashlight"] = true
+			--local inv = ply:GetNetVar("Inventory", {}) // WHY SOMEONE COMMENTED THIS
+			--inv["Weapons"]["hg_flashlight"] = true
 			
-			ply:SetNetVar("Inventory", inv)
+			--ply:SetNetVar("Inventory", inv) // BUT NOT THIS???
 		end,
 	},
 	["traitor_assasin_soe"] = {
@@ -179,10 +179,10 @@ For people who like to play checkers.]],
 			
 			ply.organism.recoilmul = 0.4
 			ply.organism.stamina.max = 300
-			--local inv = ply:GetNetVar("Inventory", {})
+			--local inv = ply:GetNetVar("Inventory", {}) // WHY SOMEONE COMMENTED THIS
 			--inv["Weapons"]["hg_flashlight"] = true
 			
-			ply:SetNetVar("Inventory", inv)
+			--ply:SetNetVar("Inventory", inv) // BUT NOT THIS???
 		end,
 	},
 	--==//
@@ -208,7 +208,7 @@ Can detect presence and potency of chemical agents in the air.]],
 			inv["Weapons"]["hg_flashlight"] = true
 			
 			ply:SetNetVar("Inventory", inv)
-			MODE.CleanChemicalsOfPlayer(ply)
+			CleanChemicalsOfPlayer(ply)
 		end,
 	},
 	--==//

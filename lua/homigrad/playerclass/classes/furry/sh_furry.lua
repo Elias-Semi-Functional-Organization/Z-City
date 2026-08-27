@@ -80,14 +80,6 @@ end
 
 CLASS.NoGloves = true
 local col1 = Color(121, 97, 217)
-if CLIENT then
-	surface.CreateFont("ZB_ProotOSChat", {
-		font = "Ari-W9500",
-		size = ScreenScale(4),
-		extended = true,
-		weight = 400,
-	})
-end
 
 function CLASS.On(self, data)
 	if SERVER then
@@ -917,11 +909,11 @@ if CLIENT then
         end
     end)
 
-    hook.Add("Think","PNV_ThinkFur",function()
-        local ply = LocalPlayer()
+    hook.Add("SetupMove","PNV_ThinkFur",function(ply, mv, cmd)
         if ply:Alive() and ply.PlayerClassName == "furry" then
-            if input.IsKeyDown(KEY_F) and not gui.IsGameUIVisible() and not IsValid(vgui.GetKeyboardFocus()) and (CurTime() > next_toggle_time) then
-                togglePNV()
+            --if input.IsKeyDown(KEY_F) and not gui.IsGameUIVisible() and not IsValid(vgui.GetKeyboardFocus()) and (CurTime() > next_toggle_time) then
+			if bit.band(cmd:GetImpulse(), 100) == 100 then
+				togglePNV()
                 next_toggle_time = CurTime() + toggle_cooldown
             end
         end

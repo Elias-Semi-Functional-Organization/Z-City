@@ -44,6 +44,8 @@ hook.Add("PostPlayerDeath", "homigrad-organism", function(ply)
 		newOrg.alive = false
 		newOrg.owner = ragdoll
 		ragdoll:CallOnRemove("organism", hg.organism.Remove, ragdoll)
+		newOrg.owner.fullsend = true
+		hg.send_bareinfo(newOrg)
 	end
 
 	hg.organism.Clear(ply.organism)
@@ -72,22 +74,17 @@ hook.Add("Think", "homigrad-organism", function()
 	mulTime = (SysTime() - start) * game.GetTimeScale()
 
 	start = SysTime()
-	for owner, org in pairs(hg.organism.list) do
+	for owner, org in pairs(hg.organism.list) do -- теперь ясно почему от трупов лагает...
+		--if org.godmode then continue end
 		hook_Run("Org Think", owner, org, mulTime)
 	end
 end)
 
+local lastcall = SysTime()
 hook.Add("Org Think Call", "homigrad-organism", function(owner, org)
-	time = CurTime()
-
-	if not start then
-		start = SysTime()
-		return
-	end
-
-	local mulTime = SysTime() - start
-	
-	hook_Run("Org Think", owner, org, mulTime)
+	if (SysTime() - lastcall) < tickrate then return end
+	lastcall = SysTime()
+	hook_Run("Org Think", owner, org, 0.00001)
 end)
 
 

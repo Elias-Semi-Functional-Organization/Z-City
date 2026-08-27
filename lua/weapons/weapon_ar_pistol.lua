@@ -3,12 +3,12 @@ SWEP.Spawnable = true
 SWEP.AdminOnly = false
 SWEP.PrintName = "AR-15"
 SWEP.Author = "Colt's Manufacturing Company"
-SWEP.Instructions = "This steel/polymer AR-15 semi-automatic pistol is in 5.56x45 caliber. With a barrel shorter than the 16-inch legal length for a rifle, and a pistol buffer tube or stabilizing brace in place of a stock, it provides a compact and powerful alternative to its longer-barreled counterparts. The pistol's compact size allows it to be used in small spaces, while its versatility and customizability have carved a niche for itself in the civilian market. A testament to the versatility of the AR platform, the AR-15 pistol symbolizes the balance between personal defense and recreational shooting.\n\nALT+E to change stance (+walk,+use)"
+SWEP.Instructions = "This steel/polymer AR-15 semi-automatic pistol is in 5.56x45 caliber. With a barrel shorter than the 16-inch legal length for a rifle, and a pistol buffer tube or stabilizing brace in place of a stock, it provides a compact and powerful alternative to its longer-barreled counterparts. The pistol's compact size allows it to be used in small spaces, while its versatility and customizability have carved a niche for itself in the civilian market. A testament to the versatility of the AR platform, the AR-15 pistol symbolizes the balance between personal defense and recreational shooting."
 SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/ar15/w_colt6149.mdl"
+SWEP.WorldModel = "models/weapons/w_smg_mac10.mdl"
 SWEP.WorldModelFake = "models/weapons/arccw/c_ud_m16.mdl"
 SWEP.WepSelectIcon2 = Material("entities/zcity/arpistol.png")
 SWEP.IconOverride = "entities/zcity/arpistol.png"
@@ -27,23 +27,22 @@ SWEP.FakeReloadSounds = {
 	[0.29] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.34] = "weapons/arccw_ud/m16/magout.ogg",
 	[0.38] = "weapons/ak74/ak74_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.64] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.64] = "weapons/arccw_ud/m16/magin.ogg",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.29] = "weapons/arccw_ud/m16/magout_empty.ogg",
 	[0.32] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.59] = "weapons/arccw_ud/m16/grab.ogg",
 	[0.62] = "weapons/arccw_ud/m16/magin.ogg",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.83] = "weapons/arccw_ud/m16/magtap.ogg",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
 }

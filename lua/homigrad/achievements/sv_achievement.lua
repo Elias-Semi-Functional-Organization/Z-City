@@ -54,7 +54,7 @@ hook.Add("DatabaseConnected", "AchievementsCreateData", function()
 
     print("Achievements SQL database connected.")
 
-    for i, ply in ipairs(player.GetAll()) do
+    for i, ply in player.Iterator() do
         updatePlayer(ply)
     end
 end)
@@ -134,7 +134,7 @@ end
 util.AddNetworkString("hg_NewAchievement")
 
 function hg.achievements.SetPlayerAchievement(ply, key, val)
-    print("Triggered achievement for player " .. ply:Name() .. " ; " .. ply:SteamID() .. ": " .. (key or "none") .. ", value " .. (val or "none"))
+    --print("Triggered achievement for player " .. ply:Name() .. " ; " .. ply:SteamID() .. ": " .. (key or "none") .. ", value " .. (val or "none"))
     local steamID = ply:SteamID64()
     hg.achievements.achievements_data.player_achievements[steamID] = hg.achievements.achievements_data.player_achievements[steamID] or {}
     local playerAchievements = hg.achievements.achievements_data.player_achievements[steamID]
@@ -177,7 +177,7 @@ end)
     -- TERMINATOR
     hg.achievements.CreateAchievementType("illbeback",3,0,"Get shot in the head and get up alive.","I'll be back", nil, true)
     -- kill everyone
-    hg.achievements.CreateAchievementType("killemall",1,0,"Kill everyone being a traitor and win the round, players on the server should be more than 9.","Kill Em All", nil, false)
+    hg.achievements.CreateAchievementType("killemall",1,0,"Kill everyone being a traitor and win the round\nplayers on the server should be more than 9.","Kill Em All", nil, false)
     -- russian roulette
     hg.achievements.CreateAchievementType("deadlygambling",10,0,"Survive 10 games of Russian roulette in one life.","Deadly Gambling", nil, true)
     -- lobotomized kill
@@ -286,7 +286,7 @@ local tblToFind_bking = {
     {"calm down","calm down"},
 	{"успокойтесь","calm down"}
 }
-hook.Add("PlayerSay","burgerking",function(ply, txt)
+hook.Add("HG_PlayerSay","burgerking",function(ply, txtTbl, txt)
     local bking = {
         ["sir"] = false,
         ["please"] = false,

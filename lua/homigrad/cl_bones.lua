@@ -17,14 +17,40 @@
 			return hg.SetModel(self, mdl)
 		end
 		
+		local function recursive_get_children(ent, bone, bones, endbone)
+			local children = ent:GetChildBones(bone)
+			-- this should stay local since this is a recursive function
+
+			if #children > 0 then
+				local id
+
+				for i = 1, #children do
+					id = children[i]
+
+					if id == endbone then continue end
+
+					recursive_get_children(ent, id, bones, endbone)
+
+					bones[#bones + 1] = id
+				end
+			end
+		end
+
+		hg.recursive_get_children = recursive_get_children
+		
 		local cached_children = hg.cached_children
-		function hg.get_children(ent, bone, endbone)
+		local mdl
+
+		function hg.get_children(ent, bone, endbone)		
+			bone = isstring(bone) and ent:LookupBone(bone) or bone
+			
+			if not bone or isstring(bone) or bone == -1 then return end
 			local bones = {}
 
-			local mdl = ent:GetModel()
+			mdl = ent:GetModel()
 			--if ((math.max(huytimer) + 1) < CurTime()) and cached_children[mdl] and cached_children[mdl][bone] then return cached_children[mdl][bone] end
 			
-			hg.recursive_get_children(ent, bone, bones, endbone)
+			recursive_get_children(ent, bone, bones, endbone)
 			
 			cached_children[mdl] = cached_children[mdl] or {}
 			cached_children[mdl][bone] = bones
@@ -32,42 +58,30 @@
 			return bones
 		end
 
-		function hg.recursive_get_children(ent, bone, bones, endbone)
-			local bone = isstring(bone) and ent:LookupBone(bone) or bone
-
-			if not bone or isstring(bone) or bone == -1 then return end
-			
-			local children = ent:GetChildBones(bone)
-			if #children > 0 then
-				local id
-				for i = 1, #children do
-					id = children[i]
-					if id == endbone then continue end
-					hg.recursive_get_children(ent, id, bones, endbone)
-					table.insert(bones, id)
-				end
-			end
-		end
-
 		function hg.bone_apply_matrix(ent, bone, new_matrix, endbone)
-			local bone = isstring(bone) and ent:LookupBone(bone) or bone
+			bone = isstring(bone) and ent:LookupBone(bone) or bone
 
 			if not bone or isstring(bone) or bone == -1 then return end
 
 			local matrix = ent:GetBoneMatrix(bone)
 			if not matrix then return end
 			local inv_matrix = matrix:GetInverse()
-			if not inv_matrix then return end 
+			if not inv_matrix then return end -- this is shit...
 
 			local children = hg.get_children(ent, bone, endbone)
-			//print(bone, ent:GetBoneName(bone))
-			//PrintTable(children)
+
 			local translate = new_matrix * inv_matrix
+
 			local id
-			for i = 1,#children do
+			local mat
+
+			for i = 1, #children do
 				id = children[i]
-				local mat = ent:GetBoneMatrix(id)
+
+				mat = ent:GetBoneMatrix(id)
+
 				if not mat then continue end
+
 				ent:SetBoneMatrix(id, translate * mat)
 			end
 
@@ -748,14 +762,23 @@
 		local hg_tpik_distance = ConVarExists("hg_tpik_distance") and GetConVar("hg_tpik_distance") or CreateClientConVar("hg_tpik_distance",1024,true,false,"The distance (in hammer units) at which the third person inverse kinematics enables, 0 = inf",0,2048)
 
 		local render_GetViewSetup = render.GetViewSetup
-		function hg.ShouldTPIK(ply,wpn)
+		function hg.ShouldTPIK(ply)
 			local time = CurTime()
 			if (ply.cachedtpik or 0) > time then return ply.cachedval end
 			ply.cachedtpik = time + 0.1
+
 			local int = hg_tpik_distance:GetInt()
-			if (int == 0 or ply == LocalPlayer() or ply == LocalPlayer():GetNWEntity("spect")) then ply.cachedval = true return true end
+			if (int == 0 or ply == lply or ply == lply:GetNWEntity("spect")) then
+				ply.cachedval = true
+				return true
+			end
+
 			local view = render.GetViewSetup(true)
-			if (ply:GetPos():DistToSqr(view.origin) > int*int) then ply.cachedval = false return false end
+			if (ply:GetPos():DistToSqr(view.origin) > int * int) then
+				ply.cachedval = false 
+				return false
+			end
+
 			ply.cachedval = true
 			return true
 		end

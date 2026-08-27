@@ -71,7 +71,7 @@ SWEP.StaminaSecondary = 10
 
 SWEP.AttackLen1 = 50
 SWEP.AttackLen2 = 35
-SWEP.weight = 1.2
+SWEP.weight = 1.4
 
 SWEP.AnimList = {
     ["idle"] = "Idle",
@@ -125,10 +125,10 @@ function SWEP:CanPrimaryAttack()
     return true
 end
 
-SWEP.AttackTimeLength = 0.15
+SWEP.AttackTimeLength = 0.1
 SWEP.Attack2TimeLength = 0.05
 
-SWEP.AttackRads = 65
+SWEP.AttackRads = 85
 SWEP.AttackRads2 = 35
 
 SWEP.SwingAng = -15

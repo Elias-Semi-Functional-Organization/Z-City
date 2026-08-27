@@ -1,9 +1,9 @@
 local MODE = MODE
 local mode_type = mode_type --; Watafucko ahhh
 
-MODE.FootStepsDrawDistanceSqr = 90
+MODE.FootStepsDrawDistanceSqr = 290
 MODE.FootStepsArrangementDistanceSqr = MODE.FootStepsDrawDistanceSqr + 100
-MODE.FootStepsDrawDistanceCrouchedSqr = 300
+MODE.FootStepsDrawDistanceCrouchedSqr = 800
 MODE.FootStepsArrangementDistanceCrouchedSqr = MODE.FootStepsDrawDistanceCrouchedSqr + 100
 MODE.FootStepsCurDrawDistanceSqr = MODE.FootStepsDrawDistanceSqr
 MODE.FootStepsCurArrangementDistanceSqr = MODE.FootStepsArrangementDistanceSqr
@@ -113,7 +113,7 @@ hook.Add("PostDrawTranslucentRenderables", "HMCD_Professions_Abilities", functio
 		else
 			MODE.FootStepsCurDrawDistanceSqr = Lerp(frame_time * 3, MODE.FootStepsCurDrawDistanceSqr, MODE.FootStepsDrawDistanceSqr)
 		end
-	
+		
 		cam.Start3D(ply_pos, ply_angs)
 			for footstep_key, footstep_info in ipairs(MODE.ArrangedFootSteps) do
 				local length = 20
@@ -191,7 +191,7 @@ hook.Add("radialOptions", "EngineerCraft", function()
 		local have_bottle = ply:HasWeapon("weapon_hg_bottle")
 		
 		for i, ent in ipairs(ents.FindInSphere(ply:GetPos(), 64)) do
-			if hg.gas_models[ent:GetModel()] then
+			if hg.gas_models[ent:GetModel()] and !ent:GetNWBool("EmptyBarrel", false) then
 				have_barrel_nearby = true
 				break
 			end

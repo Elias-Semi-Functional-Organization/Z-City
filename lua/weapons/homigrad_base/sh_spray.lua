@@ -21,11 +21,13 @@ SWEP.addSprayMul = 1
 SWEP.RecoilMul = 0.8
 
 local cos, sin, math_max, math_min = math.cos, math.sin, math.max, math.min
+
+local hg_recoilmul = CreateConVar("hg_recoilmul", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Multiply weapon physical recoil")
 function SWEP:GetPrimaryMul()
 	local owner = self:GetOwner()
 	local mul = ((0.5) + math_max(self.Primary.Force / 110 - 1, 0)) * (owner.Crouching and owner:Crouching() and self.CrouchMul or 1) * (self.attachments and self.attachments.barrel and self.attachments.barrel[1] ~= "empty" and 0.75 or 1)
 	self:ApplyForce(mul)
-	mul = (mul or 0) * (self.Supressor and 0.75 or 1) * (owner.organism and owner.organism.recoilmul or 1)
+	mul = ((mul or 0) * (self.Supressor and 0.75 or 1) * (owner.organism and owner.organism.recoilmul or 1)) * hg_recoilmul:GetFloat()
 	return mul
 end
 
@@ -33,6 +35,8 @@ SWEP.sprayAngles = Angle(0,0,0)
 
 SWEP.weaponSway = Angle(0,0,0)
 
+local hg_coolcamera = ConVarExists("hg_coolcamera") and GetConVar("hg_coolcamera") or CreateConVar("hg_coolcamera", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Cool camera movement", 0, 1)
+local hg_spreadmul = CreateConVar("hg_spreadmul", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Multiply weapon camera recoil, aka spread (spray)")
 function SWEP:PrimarySpread()
 	self.Primary.Force2 = (hg.ammotypeshuy[self.Primary.Ammo] and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings and hg.ammotypeshuy[self.Primary.Ammo].BulletSettings.Force) or self.Primary.Force
 	self:SetLastShootTime(CurTime())
@@ -81,7 +85,7 @@ function SWEP:PrimarySpread()
 		
 		local angranda = AngleRand(self.SprayRand[1], self.SprayRand[2])
 		angranda[3] = 0
-		spray = spray + angranda * self.addSprayMul * mul * (self.randmul or 1)
+		spray = (spray + angranda * self.addSprayMul * mul * (self.randmul or 1)) * hg_spreadmul:GetFloat()
 
 		local angrand2 = AngleRand(-force, force)
 		
@@ -100,7 +104,7 @@ function SWEP:PrimarySpread()
 			
 			local angpopa = angrand2 * mul
 			angpopa[3] = 0
-			ViewPunch(angpopa)-- ^ ((not self.Primary.Automatic and 0.5 or 1)))
+			ViewPunch(angpopa * (hg_coolcamera:GetBool() and 3 or 1))-- ^ ((not self.Primary.Automatic and 0.5 or 1)))
 			spray = spray + angRand * 2 * (self.randmul or 1)
 		end
 
@@ -114,11 +118,15 @@ function SWEP:PrimarySpread()
 		ViewPunch(Angle(-1 * math.Rand(1,2),-1 * math.Rand(-1,1),0) * mul / -2)
 		timer.Simple(0.01, function() ViewPunch2(Angle(-1 * math.Rand(1,2),1 * math.Rand(-1,1),0) * mul) end)
 		timer.Simple(0.02, function() ViewPunch2(Angle(1 * math.Rand(1,2.4),0,0) * mul) end)
-		
-		local sprayAng = spray * (self:IsResting() and 0.1 or 1) * 8 + angrand3 * self.addSprayMul
+
+		local eyeang = owner:EyeAngles()
+		local sprayAng = (spray * (self:IsResting() and 0.1 or 1) * 8 + angrand3 * self.addSprayMul) * (eyeang.z == 180 and -1 or 1)
 		sprayAng[3] = 0
 
-		owner:SetEyeAngles(owner:EyeAngles() + sprayAng * 3 * (organism.recoilmul or 1) * (owner.posture == 1 and not self:IsZoom() and 0.1 or 1) * 0.25)
+		sprayAng:RotateAroundAxis(angle_zero:Forward(), eyeang.roll)
+		sprayAng.roll = 0
+
+		owner:SetEyeAngles(eyeang + sprayAng * 3 * (organism.recoilmul or 1) * (owner.posture == 1 and not self:IsZoom() and 0.1 or 1) * 0.25)
 		
 		local rnd1, rnd2 = math.Rand(1,2), math.Rand(-1,1)
 		ViewPunch2(Angle(2 * rnd1,2 * rnd2,0) * mul * 0.5)
@@ -182,8 +190,12 @@ function SWEP:Step_Spray(time,dtime)
 	if self.Primary.Next + 0.3 < time then self.SprayI = 0 end
 	
 	if SERVER then return end
+
 	local eyeSpray = self.EyeSpray
-	self:GetOwner():SetEyeAngles(self:GetOwner():EyeAngles() + eyeSpray)
+	local owner = self:GetOwner()
+	local eyeang = owner:EyeAngles()
+
+	owner:SetEyeAngles(eyeang + (eyeSpray * (eyeang.z == 180 and -1 or 1)))
 	eyeSpray:Set(LerpAngle(hg.lerpFrameTime2(0.1,dtime), eyeSpray, angZero))
 end
 

@@ -67,7 +67,7 @@ SWEP.PenetrationSizeSecondary = 1
 SWEP.StaminaPrimary = 9
 SWEP.StaminaSecondary = 12
 
-SWEP.AttackLen1 = 42
+SWEP.AttackLen1 = 40
 SWEP.AttackLen2 = 35
 
 function SWEP:Reload()
@@ -120,10 +120,10 @@ SWEP.WaitTime2 = 0.4
 SWEP.AttackTimeLength = 0.15
 SWEP.Attack2TimeLength = 0.1
 
-SWEP.AttackRads = 80
+SWEP.AttackRads = 2
 SWEP.AttackRads2 = 55
 
-SWEP.SwingAng = -90
+SWEP.SwingAng = 90
 SWEP.SwingAng2 = 0
 
 SWEP.MultiDmg1 = false

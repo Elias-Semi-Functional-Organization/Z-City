@@ -59,8 +59,8 @@ local function PrecacheAccessoryModels()
     
     timer.Simple(0.1, function()
         if APmodule.PlayerModels then
-            for _, sexModels in pairs(APmodule.PlayerModels) do
-                for _, modelData in pairs(sexModels) do
+            for _, sexModels in SortedPairs(APmodule.PlayerModels) do
+                for _, modelData in SortedPairs(sexModels) do
                     if modelData.mdl then
                         util.PrecacheModel(modelData.mdl)
                     end
@@ -69,7 +69,7 @@ local function PrecacheAccessoryModels()
         end
         
         if hg.Accessories then
-            for _, accessory in pairs(hg.Accessories) do
+            for _, accessory in SortedPairs(hg.Accessories) do
                 if accessory.model then
                     util.PrecacheModel(accessory.model)
                 end
@@ -118,7 +118,7 @@ local function CreateStyledAccessoryMenu(parent, title)
     menu:SetPos(cx,cy)
     menu:MakePopup()
     menu:SetDraggable(false)
-    menu:ShowCloseButton(true)
+    menu:ShowCloseButton(false)
     
     menu.CurrentPreviewIcon = nil  
     
@@ -287,10 +287,12 @@ local gradient_r = Material("vgui/gradient-r")
 local sw, sh = ScrW(), ScrH()
 
 function PANEL:Paint(w,h)
-    surface.SetDrawColor(11, 11, 11, 255)
+
+
+    surface.SetDrawColor(28,28,28,255)
     surface.DrawRect(0, 0, w, h)
 
-    surface.SetDrawColor(155,15,15,15)
+    surface.SetDrawColor(107, 107, 107,20)
 
     for i = 1, (ybars + 1) do
         surface.DrawRect((sw / ybars) * i - (CurTime() * 30 % (sw / ybars)), 0, ScreenScale(1), sh)
@@ -300,23 +302,10 @@ function PANEL:Paint(w,h)
         surface.DrawRect(0, (sh / xbars) * (i - 1) + (CurTime() * 30 % (sh / xbars)), sw, ScreenScale(1))
     end
 
-    local border_size = ScreenScale(55)
-
-    surface.SetDrawColor(0, 0, 0)
-    surface.SetMaterial(gradient_d)
-    surface.DrawTexturedRect(0, sh - border_size + 1, sw, border_size)
-
-    surface.SetDrawColor(0, 0, 0)
-    surface.SetMaterial(gradient_u)
-    surface.DrawTexturedRect(0, 0, sw, border_size)
-
+    local border_size = 5
     surface.SetDrawColor(0, 0, 0)
     surface.SetMaterial(gradient_l)
     surface.DrawTexturedRect(0, 0, border_size, sh)
-
-    surface.SetDrawColor(0, 0, 0)
-    surface.SetMaterial(gradient_r)
-    surface.DrawTexturedRect(sw - border_size, 0, border_size, sh)
 end
 
 function PANEL:PostInit()
@@ -390,7 +379,7 @@ function PANEL:PostInit()
         --print(tMdl.mdl)
 
         local mats = Entity:GetMaterials()
-        for k, v in pairs(tMdl.submatSlots) do
+        for k, v in SortedPairs(tMdl.submatSlots) do
             local slot = 1
             for i = 1, #mats do
                 if mats[i] == v then slot = i-1 break end
@@ -405,7 +394,7 @@ function PANEL:PostInit()
         end
         local bodygroups = Entity:GetBodyGroups()
         tbl.ABodygroups = tbl.ABodygroups or {}
-        for k, v in ipairs(bodygroups) do
+        for k, v in SortedPairs(bodygroups) do
             if !tbl.ABodygroups[v.name] then continue end
             for i = 0, #v.submodels do
                 local b = v.submodels[i]
@@ -416,14 +405,14 @@ function PANEL:PostInit()
         end
 
         if IsValid(Entity) and Entity:LookupBone("ValveBiped.Bip01_Head1") then
-            funpos1x = lookX * 75
+            funpos1x = lookX * 25
             funpos3x = -lookX * 75
         end
     end
 
     function viewer:PostDrawModel(Entity)
         local tbl = main.AppearanceTable
-
+        Entity.PredictedAccessories = tbl.AAttachments
         for k,attach in ipairs(tbl.AAttachments) do
             DrawAccesories(Entity, Entity, attach, hg.Accessories[attach],false,true)
         end
@@ -439,7 +428,7 @@ function PANEL:PostInit()
 
     local upPanel = vgui.Create("DPanel",viewer)
     upPanel:Dock(TOP)
-    upPanel:DockMargin(ScreenScale(164),0,ScreenScale(164),0)
+    upPanel:DockMargin(ScreenScale(100),0,ScreenScale(100),0)
     upPanel:SetSize(1,ScreenScale(15))
     function upPanel:Paint(w,h)
         draw.RoundedBox(0,0,0,w,h,colors.secondary)
@@ -455,11 +444,11 @@ function PANEL:PostInit()
         main.AppearanceTable.AModel = str
     end
 
-    for k, v in pairs(APmodule.PlayerModels[1]) do
+    for k, v in SortedPairs(APmodule.PlayerModels[1]) do
         modelSelector:AddChoice(k)
     end
 
-    for k, v in pairs(APmodule.PlayerModels[2]) do
+    for k, v in SortedPairs(APmodule.PlayerModels[2]) do
         modelSelector:AddChoice(k)
     end
 
@@ -467,7 +456,7 @@ function PANEL:PostInit()
     local bottomContainer = vgui.Create("DPanel", viewer)
     bottomContainer:Dock(BOTTOM)
     bottomContainer:SetSize(1, ScreenScale(50))
-    bottomContainer:DockMargin(ScreenScale(100), 0, ScreenScale(100), ScreenScale(8))
+    bottomContainer:DockMargin(ScreenScale(50), 0, ScreenScale(50), ScreenScale(8))
     function bottomContainer:Paint(w, h) end
 
     -- Down panel (original controls)
@@ -505,7 +494,6 @@ function PANEL:PostInit()
         net.SendToServer()
 
         surface.PlaySound("pwb2/weapons/iron.wav")
-        main:Close()
     end
 
     function ApplyButton:Paint(w,h)
@@ -606,7 +594,7 @@ function PANEL:PostInit()
         scroll:Dock(FILL)
         scroll:DockMargin(ScreenScale(2), ScreenScale(2), ScreenScale(2), ScreenScale(2))
         
-        for _, presetName in ipairs(presetList) do
+        for _, presetName in SortedPairs(presetList) do
             local presetBtn = vgui.Create("DButton", scroll)
             presetBtn:Dock(TOP)
             presetBtn:DockMargin(2, 2, 2, 0)
@@ -712,7 +700,7 @@ function PANEL:PostInit()
     hatSelector:SetText("Hats")
     function hatSelector:Think()
         if funpos1x then
-            hatSelector:SetPos(sizeX * 0.2 + funpos1x, sizeY * 0.2)
+            hatSelector:SetPos(sizeX * 0.1 + funpos1x, sizeY * 0.2)
         end
     end
 
@@ -731,7 +719,7 @@ function PANEL:PostInit()
         hatSelectMenu = CreateStyledAccessoryMenu(nil, "Select Hat")
         table.insert(accessoryMenus, hatSelectMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "head" and v.placement != "ears" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -776,7 +764,7 @@ function PANEL:PostInit()
     faceSelector:SetText("Face")
     function faceSelector:Think()
         if funpos1x then
-            faceSelector:SetPos(sizeX * 0.2 + funpos1x, sizeY * 0.2 + ScreenScale(32))
+            faceSelector:SetPos(sizeX * 0.1 + funpos1x, sizeY * 0.2 + ScreenScale(32))
         end
     end
     function faceSelector:Paint(w,h)
@@ -794,7 +782,7 @@ function PANEL:PostInit()
         faceSelectorMenu = CreateStyledAccessoryMenu(nil, "Select Face Accessory")
         table.insert(accessoryMenus, faceSelectorMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "face" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -839,7 +827,7 @@ function PANEL:PostInit()
     bodySelector:SetText("Body")
     function bodySelector:Think()
         if funpos3x then
-            bodySelector:SetPos(sizeX * 0.2 - funpos3x, sizeY * 0.2 + ScreenScale(64))
+            bodySelector:SetPos(sizeX * 0.1 + funpos1x, sizeY * 0.2 + ScreenScale(64))
         end
     end
     function bodySelector:Paint(w,h)
@@ -847,7 +835,7 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    bodySelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    bodySelector:SetPos(sizeX * 0.1, sizeY * 0.5)
     
     function bodySelector:DoClick()
         main.modelPosID = "Torso"
@@ -858,7 +846,7 @@ function PANEL:PostInit()
         bodySelectorMenu = CreateStyledAccessoryMenu(nil, "Select Body Accessory")
         table.insert(accessoryMenus, bodySelectorMenu)
         
-        for k, v in pairs(hg.Accessories) do
+        for k, v in SortedPairs(hg.Accessories) do
             if v.placement != "torso" and v.placement != "spine" then continue end
             if not lply:PS_HasItem(k) and v.bPointShop and !hg.Appearance.GetAccessToAll(lply) then continue end
             
@@ -904,7 +892,7 @@ function PANEL:PostInit()
     bodyMatSelector:SetText("Jacket")
     function bodyMatSelector:Think()
         if funpos3x then
-            bodyMatSelector:SetPos(sizeX * 0.65 - funpos3x, sizeY * 0.2)
+            bodyMatSelector:SetPos(sizeX * 0.5 - funpos3x, sizeY * 0.2)
         end
     end
     function bodyMatSelector:Paint(w,h)
@@ -912,11 +900,11 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    bodyMatSelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    bodyMatSelector:SetPos(sizeX * 0.5, sizeY * 0.5)
     function bodyMatSelector:DoClick()
         main.modelPosID = "Torso"
         bodyMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bodyMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.main = k
@@ -948,7 +936,7 @@ function PANEL:PostInit()
     legsMatSelector:SetText("Pants")
     function legsMatSelector:Think()
         if funpos3x then
-            legsMatSelector:SetPos(sizeX * 0.65 - funpos3x, sizeY * 0.2 + ScreenScale(32))
+            legsMatSelector:SetPos(sizeX * 0.5 - funpos3x, sizeY * 0.2 + ScreenScale(32))
         end
     end
     function legsMatSelector:Paint(w,h)
@@ -956,11 +944,11 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    legsMatSelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    legsMatSelector:SetPos(sizeX * 0.5, sizeY * 0.5)
     function legsMatSelector:DoClick()
         main.modelPosID = "Legs"
         legsMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = legsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.pants = k
@@ -986,7 +974,7 @@ function PANEL:PostInit()
     bootsMatSelector:SetText("Boots")
     function bootsMatSelector:Think()
         if funpos3x then
-            bootsMatSelector:SetPos(sizeX * 0.65 - funpos3x, sizeY * 0.2 + ScreenScale(64))
+            bootsMatSelector:SetPos(sizeX * 0.5 - funpos3x, sizeY * 0.2 + ScreenScale(64))
         end
     end
     function bootsMatSelector:Paint(w,h)
@@ -994,11 +982,11 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    bootsMatSelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    bootsMatSelector:SetPos(sizeX * 0.5, sizeY * 0.5)
     function bootsMatSelector:DoClick()
         main.modelPosID = "Boots"
         bootsMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Clothes[tMdl.sex and 2 or 1]) do
             local mater = bootsMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AClothes.boots = k
@@ -1024,7 +1012,7 @@ function PANEL:PostInit()
     glovesSelector:SetText("Gloves")
     function glovesSelector:Think()
         if funpos3x then
-            glovesSelector:SetPos(sizeX * 0.65 - funpos3x, sizeY * 0.2 + ScreenScale(96))
+            glovesSelector:SetPos(sizeX * 0.5 - funpos3x, sizeY * 0.2 + ScreenScale(96))
         end
     end
     function glovesSelector:Paint(w,h)
@@ -1032,11 +1020,11 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    glovesSelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    glovesSelector:SetPos(sizeX * 0.5, sizeY * 0.5)
     function glovesSelector:DoClick()
         main.modelPosID = "Hands"
         glovesSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
+        for k, v in SortedPairs(hg.Appearance.Bodygroups["HANDS"][tMdl.sex and 2 or 1]) do
             if not lply:PS_HasItem(v["ID"]) and v[2] and !hg.Appearance.GetAccessToAll(lply) then continue end
             glovesSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
@@ -1056,7 +1044,7 @@ function PANEL:PostInit()
     faceMatSelector:SetText("Facemap")
     function faceMatSelector:Think()
         if funpos3x then
-            faceMatSelector:SetPos(sizeX * 0.65 - funpos3x, sizeY * 0.2 + ScreenScale(96 + 32))
+            faceMatSelector:SetPos(sizeX * 0.5 - funpos3x, sizeY * 0.2 + ScreenScale(96 + 32))
         end
     end
     function faceMatSelector:Paint(w,h)
@@ -1064,11 +1052,11 @@ function PANEL:PostInit()
         surface.SetDrawColor(colors.scrollbarBorder)
         surface.DrawOutlinedRect(0,0,w,h,1)
     end
-    faceMatSelector:SetPos(sizeX * 0.7, sizeY * 0.5)
+    faceMatSelector:SetPos(sizeX * 0.5, sizeY * 0.5)
     function faceMatSelector:DoClick()
         main.modelPosID = "Face"
         faceMatSelectorMenu = DermaMenu()
-        for k, v in pairs(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]]) do
+        for k, v in SortedPairs(hg.Appearance.FacemapsSlots[hg.Appearance.FacemapsModels[tMdl.mdl]]) do
             local mater = faceMatSelectorMenu:AddOption(k,function()
 				surface.PlaySound("player/weapon_draw_0"..math.random(2, 5)..".wav")
                 main.AppearanceTable.AFacemap = k
@@ -1092,17 +1080,21 @@ end
 vgui.Register( "HG_AppearanceMenu", PANEL, "ZFrame")
 
 concommand.Add("hg_appearance_menu",function()
+    print('use esc menu')
+end)
+
+function hg.CreateApperanceMenu(ParentPanel)
     if hg.Appearance.PrecacheModels then
         hg.Appearance.PrecacheModels()
     end
-    
+
     hg.PointShop:SendNET( "SendPointShopVars", nil, function( data )
         if IsValid(zpan) then
             zpan:Close()
         end
-        zpan = vgui.Create("HG_AppearanceMenu")
-        zpan:SetSize(sizeX,sizeY)
-        zpan:SetPos()
-        zpan:MakePopup()
+        zpan = vgui.Create("HG_AppearanceMenu",ParentPanel)
+        zpan:SetSize(ParentPanel:GetWide(),ParentPanel:GetTall())
+        zpan:SetPos(0,0)
     end)
-end)
+    
+end

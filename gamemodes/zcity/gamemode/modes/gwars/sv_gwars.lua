@@ -10,9 +10,10 @@ MODE.OverideSpawnPos = true
 MODE.LootSpawn = false
 
 function MODE:CanLaunch()
-	local points = zb.GetMapPoints( "HMCD_TDM_T" )
+	return true
+	--[[local points = zb.GetMapPoints( "HMCD_TDM_T" )
 	local points2 = zb.GetMapPoints( "HMCD_TDM_CT" )
-    return (#points > 0) and (#points2 > 0)
+    return (#points > 0) and (#points2 > 0)--]]
 end
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
@@ -28,7 +29,7 @@ function MODE:Intermission()
 	self.TPoints = {}
 	table.CopyFromTo(zb.GetMapPoints( "HMCD_TDM_T" ),self.TPoints)
 	
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
 	end
 
@@ -121,7 +122,7 @@ function MODE:GiveEquipment()
 	timer.Simple(0.1,function()
 		local teamArmorCount = { [0] = 0, [1] = 0 } 
 
-		for _, ply in ipairs(player.GetAll()) do
+		for _, ply in player.Iterator() do
 			if not ply:Alive() then continue end
 			ply:SetSuppressPickupNotices(true)
 			ply.noSound = true
@@ -165,7 +166,7 @@ function MODE:RoundThink()
     if not swatSpawned and (CurTime() - zb.ROUND_BEGIN) >= 120 then
         local deadPlayers = {}
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if not ply:Alive() and ply:Team() != TEAM_SPECTATOR then
                 table.insert(deadPlayers, ply)
             end

@@ -77,6 +77,10 @@ local rebels = {
 function CLASS.Off(self)
     if CLIENT then return end
 
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), 0)
+	end
+
     for k,v in ipairs(ents.FindByClass("npc_*")) do
         if table.HasValue(combines,v:GetClass()) then
             v:AddEntityRelationship( self, D_HT, 99 )
@@ -88,13 +92,17 @@ function CLASS.Off(self)
 	self:SetNWString("PlayerRole", nil)
     self.organism.CantCheckPulse = nil
     self.leader = nil
+	hook.Remove("OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
 
 CLASS.NoFreeze = true
+CLASS.CanEmitRNDSound = false
 
 local function giveSubClassLoadout(ply, subclass)
     local config = combine_subclasses[subclass] or combine_subclasses["default"]
+    ply:StripWeapons()
+    ply:Give("weapon_hands_sh")
     for _, item in ipairs(config.loadout or {}) do
         if item.weapon_random_pool then
             local randWep = item.weapon_random_pool[math.random(#item.weapon_random_pool)]
@@ -104,7 +112,7 @@ local function giveSubClassLoadout(ply, subclass)
             end
         else
             local wep = ply:Give(item.weapon)
-            if wep then
+            if IsValid(wep) then
                 --;; патрончики
                 if item.ammo_mult then
                     ply:GiveAmmo(wep:GetMaxClip1() * item.ammo_mult, wep:GetPrimaryAmmoType(), true)
@@ -123,6 +131,15 @@ end
 
 function CLASS.On(self, data)
     if CLIENT then return end
+
+	if eightbit and eightbit.EnableEffect and self.UserID then
+		eightbit.EnableEffect(self:UserID(), eightbit.EFF_PROOT) --!! placeholder
+	end
+
+    if IsValid(self.FakeRagdoll) then
+        hg.FakeUp(self, nil, nil, true)
+    end
+
     ApplyAppearance(self,nil,nil,nil,true)
     local Appearance = self.CurAppearance or hg.Appearance.GetRandomAppearance()
     Appearance.AAttachments = ""
@@ -162,7 +179,7 @@ function CLASS.On(self, data)
         callsign = table.Random(callsigns) .. "-" .. math.random(1,25)
     end
 
-    if zb.GiveRole then zb.GiveRole(self, "Oficcer", Color(89,230,255)) end
+    if zb.GiveRole then zb.GiveRole(self, "Officer", Color(89,230,255)) end
     self:SetNWString("PlayerName", callsign)
 
     for k,v in ipairs(ents.FindByClass("npc_*")) do
@@ -216,6 +233,31 @@ function CLASS.PlayerDeath(self)
     hook.Remove( "OnEntityCreated", "relation_shipdo"..self:EntIndex())
 end
 
+if SERVER then
+	local mtcop_phrases = {}
+	local files,_ = file.Find("sound/npc/metropolice/vo/*.wav","GAME")
+	for k,v in ipairs(files) do
+		mtcop_phrases[k] = "npc/metropolice/vo/" .. v
+	end
+
+	hook.Add("HG_ReplacePhrase", "metropolice_phrase", function(ply, phrase, muffed, pitch)
+		if IsValid(ply) and ply.PlayerClassName == "Metrocop" then
+			return ply, mtcop_phrases[math.random(#mtcop_phrases)], muffed, pitch
+		end
+	end)
+
+    hook.Add("HG_PlayerFootstep","metropolice_footsteps",function(ply)
+        local chr = hg.GetCurrentCharacter(ply)
+        if ply:Alive() and ply.PlayerClassName == "Metrocop" and ply:IsSprinting() then
+            --;; Если есть ragdoll и т.п.
+            ply.CombineLerpedFootStep = LerpFT(0.5,ply.CombineLerpedFootStep or 60, (not ply:IsSprinting() and (ply:KeyDown(IN_DUCK) or ply:KeyDown(IN_WALK))) and 20 or 60)
+            if IsValid(ply.FakeRagdoll) and ply:GetNetVar("lastFake") == 0 then return end
+            chr:EmitSound("npc/metropolice/gear" .. math.random(1,6) .. ".wav",
+                ply.CombineLerpedFootStep, math.random(92, 108), 0.7
+            )
+        end
+    end)
+end
 
 if CLIENT then
     local cmb_mat = Material("sprites/mat_jack_helmoverlay_r")

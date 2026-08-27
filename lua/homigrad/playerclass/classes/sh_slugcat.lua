@@ -39,6 +39,7 @@ local colors = {
 }
 
 CLASS.NoGloves = true
+CLASS.CanEmitRNDSound = false
 function CLASS.FallDmgFunc(self, speed, tr)
     if speed > 1000 then
         hg.LightStunPlayer(self)
@@ -184,4 +185,22 @@ function CLASS.PlayerDraw(self)
             render.DrawBeam(tr.StartPos - vector_up * 2,pos,2,0,10,collick)
         end
     end
+end
+
+if SERVER then
+	local slugy_phrases = {
+		"zcity/voice/slugcat_1/waw_1.mp3",
+		"zcity/voice/slugcat_1/waw_2.mp3",
+		"zcity/voice/slugcat_1/waw_3.mp3",
+		"zcity/voice/slugcat_1/waw_4.mp3"
+	}
+
+	hook.Add("HG_ReplacePhrase", "ScugPhrases", function(ply, phrase, muffed, pitch)
+		if IsValid(ply) then
+			local wawer = string.match(ply:GetModel(), "scug")
+			if wawer then
+				return ply, slugy_phrases[math.random(#slugy_phrases)], muffed, pitch
+			end
+		end
+	end)
 end

@@ -4,9 +4,9 @@ local VectorRand = VectorRand
 
 local CHANCE, FORCE, VIBRATION = 0.95, 1200, 150
 local extendDur, rigorDur, flexionDur = {4, 10}, {10, 20}, {6, 12}
-local RIGOR_DAMP, FLEXION_FORCE = 8, 800
+local RIGOR_DAMP, FLEXION_FORCE = 8, 400
 
-local spasmTypes = {{"extend", 35}, {"rigor", 40}, {"flexion", 25}} --;; Че хотите добавляйте изменяйте
+local spasmTypes = {[1] = {35, "extend"}, [2] = {25, "rigor"}, [3] = {15,"flexion"}} --;; Че хотите добавляйте изменяйте
 
 local extendBones = {
 	["ValveBiped.Bip01_R_Hand"] = true, ["ValveBiped.Bip01_L_Hand"] = true,
@@ -51,15 +51,12 @@ local fencingLegBones = {
 }
 
 local function getRandomSpasm()
-	local total = 0
-	for i = 1, #spasmTypes do total = total + spasmTypes[i][2] end
-	local roll, cur = math_random(1, total), 0
-	for i = 1, #spasmTypes do
-		cur = cur + spasmTypes[i][2]
-		if roll <= cur then return spasmTypes[i][1] end
-	end
-	return "extend"
+	local _, stype = hg.WeightedRandomSelect(spasmTypes, 1)
+
+	return stype
 end
+
+hg.getRandomSpasm = getRandomSpasm
 
 local function applySpasm(rag, stype)
 	if not IsValid(rag) then return end
@@ -74,6 +71,8 @@ local function applySpasm(rag, stype)
 	end
 	--rag:EmitSound("physics/body/body_medium_break" .. math_random(2, 4) .. ".wav", 60, math_random(70, 90), 0.4)
 end
+
+hg.applySpasm = applySpasm
 
 local function processExtend(rag, fade)
 	local force, pulse = rag.spasmForce or FORCE, 0.7 + math_sin(CurTime() * 8) * 0.3
@@ -100,8 +99,8 @@ local function processRigor(rag, fade)
 		if not bone then continue end
 		local phys = rag:GetPhysicsObjectNum(rag:TranslateBoneToPhysBone(bone))
 		if not IsValid(phys) then continue end
-		phys:SetDamping(damp, damp * 2)
-		if fade > 0.3 then phys:ApplyForceCenter(VectorRand(-15, 15) * fade) end
+		--phys:SetDamping(damp, damp * 2)
+		if fade > 0.3 then phys:ApplyForceCenter(VectorRand(-45, 45) * fade) end
 	end
 end
 
@@ -211,7 +210,7 @@ hook.Add("RagdollDeath", "BrainfuckStart", function(ply, rag)
 		local headshot = hadBrainDamage or hadSkullDamage or hadHeadDamage
 		
 		if headshot and math_random() < CHANCE then
-			local stype = getRandomSpasm()
+			local stype = "rigor"--getRandomSpasm()
 			applySpasm(rag, stype)
 			if rag.organism then rag.organism.spasm, rag.organism.spasmType = true, stype end
 		end
@@ -242,6 +241,7 @@ hook.Add("Org Think", "BrainfuckThink", function(owner)
 		else
 			local fade = math_clamp((deathRag.spasmEnd - CurTime()) / (deathRag.spasmDur or 5), 0.1, 1)
 			local stype = deathRag.spasmType or "extend"
+
 			if stype == "extend" then processExtend(deathRag, fade)
 			elseif stype == "rigor" then processRigor(deathRag, fade)
 			elseif stype == "flexion" then processFlexion(deathRag, fade) end

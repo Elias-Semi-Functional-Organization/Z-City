@@ -7,7 +7,7 @@ SWEP.Instructions = "An semi-automatic Russian pistol chambered in 9x18mm"
 SWEP.Category = "Weapons - Pistols"
 SWEP.ViewModel = ""
 
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_pm.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_p228.mdl"
 SWEP.WorldModelFake = "models/weapons/zcity/v_makarov.mdl"
 SWEP.FakeScale = 1.15
 
@@ -46,7 +46,7 @@ SWEP.Primary.Ammo = "9x18 mm"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 8
 SWEP.Primary.Sound = {"zcitysnd/sound/weapons/makarov/makarov_fp.wav", 75, 90, 100}
-SWEP.SupressedSound = {"zcitysnd/sound/weapons/makarov/makarov_suppressed_fp.wav", 55, 90, 100}
+SWEP.SupressedSound = {"zcitysnd/sound/weapons/makarov/makarov_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 20
 SWEP.ReloadTime = 4

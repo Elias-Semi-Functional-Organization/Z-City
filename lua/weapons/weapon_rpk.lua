@@ -8,10 +8,9 @@ SWEP.Category = "Weapons - Machineguns"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/tfa_ins2/akpack/w_ak74.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl" -- МОДЕЛЬ ГОВНА, НАЙТИ НОРМАЛЬНЫЙ КАЛАШ
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---uncomment for funny
+SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
+SWEP.WorldModelFake = "models/weapons/arccw/c_ur_ak.mdl"
+
 SWEP.FakePos = Vector(-11, 2.53, 5.55)
 SWEP.FakeAng = Angle(0, 0.3, 5.5)
 SWEP.AttachmentPos = Vector(3.8,2.1,-27.8)
@@ -24,29 +23,26 @@ SWEP.GunCamPos = Vector(4,-15,-6)
 SWEP.GunCamAng = Angle(190,-5,-100)
 
 SWEP.FakeEjectBrassATT = "2"
-//SWEP.MagIndex = 57
-//MagazineSwap
---Entity(1):GetActiveWeapon():GetWM():AddLayeredSequence(Entity(1):GetActiveWeapon():GetWM():LookupSequence("delta_foregrip"),1)
+
 SWEP.FakeViewBobBone = "CAM_Homefield"
 SWEP.FakeReloadSounds = {
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/ak74/ak74_magout.wav",
 	[0.38] = "weapons/ak74/ak74_magout_rattle.wav",
-	--[0.51] = "weapons/universal/uni_crawl_l_02.wav",
+
 	[0.62] = "weapons/ak74/ak74_magin.wav",
 	[0.81] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.99] = "weapons/universal/uni_crawl_l_04.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav"
+
 }
 
 SWEP.FakeEmptyReloadSounds = {
-	--[0.22] = "weapons/ak74/ak74_magrelease.wav",
+
 	[0.22] = "weapons/universal/uni_crawl_l_03.wav",
 	[0.34] = "weapons/ak74/ak74_magout.wav",
 	[0.4] = "weapons/ak74/ak74_magout_rattle.wav",
 	[0.62] = "weapons/ak74/ak74_magin.wav",
-	--[0.75] = "weapons/universal/uni_crawl_l_05.wav",
-	--[0.95] = "weapons/ak74/ak74_boltback.wav",
+
 	[0.83] = "weapons/ak74/ak74_boltback.wav",
 	[0.86] = "weapons/ak74/ak74_boltrelease.wav",
 	[1.01] = "weapons/universal/uni_crawl_l_04.wav",
@@ -63,6 +59,9 @@ SWEP.FakeViewBobBaseBone = "ValveBiped.Bip01_R_UpperArm"
 SWEP.ViewPunchDiv = 70
 
 SWEP.FakeMagDropBone = 57
+
+SWEP.RestPosition = Vector(30, -1, 6)
+SWEP.BipodOffset = Vector(5, 0, -7.5)
 
 SWEP.AnimList = {
 	["idle"] = "idle",
@@ -111,6 +110,22 @@ function SWEP:ModelCreated(model)
 	end
 end
 
+function SWEP:ThinkAdd()
+	-- local owner = self:GetOwner()
+	-- if not IsValid(owner) then return end
+
+	-- if CLIENT and self:IsResting() then
+	-- 	local wm = self:GetWM()
+	-- 	local bone = wm:LookupBone("bipod1")
+	-- 	local posa, anga = self:GetBipodPosAng()
+	-- 	wm:ManipulateBoneAngles(bone, Angle(anga[2] + 35, 0, -owner:EyeAngles()[3] - 90))
+
+	-- 	local bone = wm:LookupBone("bipod2")
+	-- 	local posa, anga = self:GetBipodPosAng()
+	-- 	wm:ManipulateBoneAngles(bone, Angle(anga[2] - 35, 0, -owner:EyeAngles()[3] - 90))
+	-- end
+end
+
 SWEP.ReloadHold = nil
 SWEP.FakeVPShouldUseHand = false
 
@@ -123,8 +138,7 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "5.45x39 mm"
 
 SWEP.CustomShell = "545x39"
---SWEP.EjectPos = Vector(1,5,3.5)
---SWEP.EjectAng = Angle(0,-90,0)
+
 
 SWEP.ScrappersSlot = "Primary"
 SWEP.Primary.Cone = 0
@@ -227,6 +241,16 @@ SWEP.LHPos = Vector(15,1,-3.3)
 SWEP.LHAng = Angle(-110,-180,0)
 
 local finger1 = Angle(25,0, 40)
+
+function SWEP:ThinkAdd()
+	if CLIENT and self:GetWM() and not isbool(self:GetWM()) and isstring(self.FakeBodyGroups) then
+		if self:HasAttachment("grip", "grip_akdong") then
+			self:GetWM():SetBodyGroups("02300051022")
+		else
+			self:GetWM():SetBodyGroups(self.FakeBodyGroups)
+		end
+	end
+end
 
 SWEP.ShootAnimMul = 3
 function SWEP:DrawPost()

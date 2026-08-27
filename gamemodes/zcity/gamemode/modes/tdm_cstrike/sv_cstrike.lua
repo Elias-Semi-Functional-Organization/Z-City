@@ -8,6 +8,28 @@ MODE.Rounds = 5
 
 MODE.ROUND_TIME = 240
 
+MODE.ForBigMaps = false -- if it can launch, then it doesn't really matter
+
+MODE.CooldownRounds = 5 -- 5 rounds of cs, 5 rounds without cs (at least 5)
+
+function MODE:ChanceFunction(info)
+    if info.rounds then
+        for i = #info.rounds, #info.rounds - self.CooldownRounds + 1, -1 do
+            if info.rounds[i] == self.name then
+                return 0
+            else
+                continue
+            end
+        end
+    end
+
+    return zb.ModesChances["cstrike"] or self.Chance
+end
+
+util.AddNetworkString("CS_Intermission")
+util.AddNetworkString("CS_Killfeed")
+util.AddNetworkString("CS_Roundover")
+
 function MODE:DontKillPlayer(ply)
     return zb.RoundsLeft and (zb.RoundsLeft != self.Rounds)
 end
@@ -49,10 +71,17 @@ function MODE:Intermission()
         zb.bombexploded = nil
         zb.bomb = nil
         --zb.rtype = zb.nextcsround or (math.random(2) == 1 and "bomb" or "hostage")
+        zb.rtype = (
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
         zb.nextcsround = nil
     end
-    
-    zb.rtype = (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and "bomb" or (zb.hostagepoints and #zb.hostagepoints > 0) and "hostage"
+
+    if !zb.rtype then
+        zb.rtype = (
+            (#zb.GetMapPoints( "BOMB_ZONE_A" ) > 0 or #zb.GetMapPoints( "BOMB_ZONE_B" ) > 0) and  "bomb") or 
+            (zb.hostagepoints and #zb.hostagepoints > 0 and "hostage")
+    end
 
     zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_A", false)
     zb.SendSpecificPointsToPly(nil, "BOMB_ZONE_B", false)
@@ -63,13 +92,17 @@ function MODE:Intermission()
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_T" ), self.TPoints)
 	table.CopyFromTo( zb.GetMapPoints( "HMCD_TDM_CT" ), self.CTPoints)
 
-	for i, ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		ply:SetupTeam(ply:Team())
         
         if self.GameStarted then
             ply:SetNWInt( "TDM_Money", self.StartMoney )
         end
-	end
+        net.Start("CS_Intermission")
+            net.WriteBool(ply:Team() == 0)
+            net.WriteInt(MODE.Rounds - zb.RoundsLeft or 0,6)
+            net.Send(ply)
+    end
 
     if zb.rtype == "bomb" then
         timer.Simple(3,function()
@@ -89,7 +122,6 @@ function MODE:Intermission()
             local team_t = team.GetPlayers(0)
             local ply = team_t[math.random(#team_t)]
 			--ent:SetModel("models/humans/group01/"..(math.random(2) == 1 and "fe" or "").."male_0"..math.random(9)..".mdl")
-            //ApplyAppearance(ent,nil,nil,nil,true)
             ent:SetModel("models/player/hostage/hostage_0"..math.random(4)..".mdl")
             ent:SetPos(ply:GetPos())
             ent:Spawn()
@@ -99,7 +131,6 @@ function MODE:Intermission()
             ent.organism.fakePlayer = true
 
             zb.hostage = ent
-            zb.hostageindex = ent:EntIndex()
 
             timer.Simple(1, function()
                 hg.handcuff(ent)
@@ -107,12 +138,10 @@ function MODE:Intermission()
         end)
     end
 
-    PrintMessage(HUD_PRINTTALK, "Round "..(self.Rounds + 1 - zb.RoundsLeft).." out of "..(self.Rounds)..".")
-
 	net.Start("tdm_start")
-        net.WriteString(zb.rtype)
-	net.Broadcast()
-
+        net.WriteString(zb.rtype or "bomb")
+        net.Broadcast()
+    
     self.GameStarted = nil
 end
 
@@ -124,7 +153,7 @@ concommand.Add("tdm_setrounds", function(ply, cmd, args)
     local played = oldRounds - oldLeft
     MODE.Rounds = math.max(tonumber(args[1]) or oldRounds, 1)
     zb.RoundsLeft = math.max(MODE.Rounds - played, 0)
-    PrintMessage(HUD_PRINTTALK, "TDM rounds set to "..(MODE.Rounds)..". Rounds left: "..zb.RoundsLeft)
+    PrintMessage(HUD_PRINTTALK, "TDM rounds set to "..MODE.Rounds..". Rounds left: "..zb.RoundsLeft)
 end)
 
 COMMANDS.nextcsround = {
@@ -132,15 +161,20 @@ COMMANDS.nextcsround = {
 		if not ply:IsAdmin() then ply:ChatPrint("You don't have access") return end
 		if string.lower(args[1]) == "bomb" then
             zb.nextcsround = "bomb"
+            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Bomb")
         end
 
         if string.lower(args[1]) == "hostage" then
             zb.nextcsround = "hostage"
+            PrintMessage(HUD_PRINTTALK, "Chosen CS round - Hostage")
         end
 	end,
 	0
 }
 
+function MODE:CanLaunch()
+    return true
+end
 
 function MODE:EndRound()
     zb.RoundsLeft = zb.RoundsLeft or self.Rounds
@@ -154,6 +188,8 @@ function MODE:EndRound()
     local winner = 3
 
 	local tbl = zb:CheckAliveTeams(true)
+    local tcount = #tbl[0]
+    local ctcount = #tbl[1]
 
     if zb.rtype == "bomb" then
         if not IsValid(zb.bomb) then
@@ -167,25 +203,25 @@ function MODE:EndRound()
             winner = 1
         end
 
-        if IsValid(zb.bomb) and #tbl[0] == 0 and not zb.bomb.active then
+        if IsValid(zb.bomb) and tcount == 0 and not zb.bombexploded then
             winner = 1
         end
 
-        if IsValid(zb.bomb) and #tbl[1] == 0 and #tbl[0] > 0 then
+        if IsValid(zb.bomb) and ctcount == 0 and tcount > 0 then
             winner = 0
         end
 
-        if IsValid(zb.bomb) and #tbl[1] == 0 and #tbl[0] == 0 and zb.bomb.active then
+        if IsValid(zb.bomb) and ctcount == 0 and tcount == 0 and zb.bombexploded then
             winner = 0
         end
 
-        if IsValid(zb.bomb) and #tbl[0] == 0 and #tbl[1] == 0 and not zb.bomb.active then
+        if IsValid(zb.bomb) and tcount == 0 and ctcount == 0 and not zb.bomb:GetNWBool("active") then
             winner = 1
         end
     elseif zb.rtype == "hostage" then
         if not IsValid(zb.hostage) then
             winner = 3
-
+            
             if IsValid(zb.hostageLastTouched) then
                 winner = zb.hostageLastTouched:Team() == 0 and 1 or 0
             end
@@ -193,8 +229,8 @@ function MODE:EndRound()
         
         if IsValid(zb.hostage) and not zb.hostage.organism.alive then
             local max, maxTeam = 0
-            if zb.HarmDoneDetailed[zb.hostageindex] then
-                for steamid, tbl in pairs(zb.HarmDone[zb.hostageindex]) do
+            if zb.HarmDoneDetailed[zb.hostage:EntIndex()] then
+                for steamid, tbl in pairs(zb.HarmDoneDetailed[zb.hostage:EntIndex()]) do
                     if tbl.harm > max then
                         max = tbl.harm
                         maxTeam = tbl.teamAttacker
@@ -202,15 +238,18 @@ function MODE:EndRound()
                 end
                 
                 winner = maxTeam == 0 and 1 or 0
-
-                PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " killed the hostage")
+                PrintMessage(HUD_PRINTTALK, (maxTeam == 0 and "Terrorists" or "Counter-Terrorists") .. " have killed the hostage")
             else
                 winner = 3
             end
         end
 
         if IsValid(zb.hostage) and zb.hostage.organism.alive then
-            winner = #tbl[0] == 0 and 1 or 0
+            winner = 0
+
+            if tcount == 0 then
+                winner = 1
+            end
         end
 
         if IsValid(zb.hostage) and zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then
@@ -221,8 +260,6 @@ function MODE:EndRound()
 
     local winnerprt = (winner == 1 and "Counter-Terrorists") or (winner == 0 and "Terrorists") or "Nobody"
     
-    PrintMessage(HUD_PRINTTALK, winnerprt.." have won the round.")
-
 	for k,ply in player.Iterator() do
 		if ply:Team() == winner then
 			ply:GiveExp(math.random(15,30))
@@ -235,6 +272,12 @@ function MODE:EndRound()
             ply:SetNWInt( "TDM_Money", math.max(ply:GetNWInt( "TDM_Money" ) + 1750, 0) )
 		end
 	end
+    
+    net.Start("CS_Roundover")
+        net.WriteBool(winner)
+        net.WriteString(winnerprt)
+        net.Broadcast()
+    winreason = 0
 
 	local winsTeam0 = zb.Winners[0] or 0
 	local winsTeam1 = zb.Winners[1] or 0
@@ -315,8 +358,18 @@ function MODE:ShouldRoundEnd()
     if zb.ROUND_START + 5 > CurTime() then return false end
 
 	local tbl = zb:CheckAliveTeams(true)
+    local tcount = #tbl[0]
+    local ctcount = #tbl[1]
     
     if zb.rtype == "bomb" then
+        if IsValid(zb.bomb) and zb.bomb:GetNWBool("active") and ctcount == 0 then
+            return true
+        end
+
+        if IsValid(zb.bomb) and zb.bomb:GetNWBool("active") then
+            return false    
+        end
+
         if zb.bombexploded then
             return true
         end
@@ -325,19 +378,15 @@ function MODE:ShouldRoundEnd()
             return true
         end
 
-        if #tbl[0] == 0 and not zb.bomb.active then
+        if tcount == 0 and not zb.bombexploded then
             return true
         end
 
-        if #tbl[1] == 0 and #tbl[0] > 0 then
+        if ctcount == 0 and tcount > 0 then
             return true
         end
 
-        if #tbl[1] == 0 and #tbl[0] == 0 and zb.bomb.active then
-            return true
-        end
-        
-        if #tbl[0] == 0 and #tbl[1] == 0 and not zb.bomb.active then
+        if ctcount == 0 and tcount == 0 and zb.bombexploded then
             return true
         end
     elseif zb.rtype == "hostage" then
@@ -345,11 +394,23 @@ function MODE:ShouldRoundEnd()
             return true
         end
 
-        if #tbl[0] == 0 or #tbl[1] == 0 or not zb.hostage.organism.alive then
+        if tcount == 0 or ctcount == 0 or not zb.hostage.organism.alive then
             return true
         end
         
         if zb.hostage.organism.alive and HostageInZone(zb.hostage:GetPos()) then
+            return true
+        end
+    else
+        if tcount == 0 and ctcount == 0 then
+            return true
+        end
+
+        if tcount == 0 and ctcount > 0 then
+            return true
+        end
+
+        if ctcount == 0 and tcount > 0 then
             return true
         end
     end
@@ -357,21 +418,32 @@ end
 
 function MODE:RoundThink()
 end
+    
+local killfeedcv = CreateConVar("zb_killfeed",0,nil,"Killfeed for Counter-Strike",0,1)
 
-hook.Add("HarmDone", "MoneyGive", function(ply, victim, amt) 
+local sumamt = 0
+hook.Add("HarmDone", "CS_PlayerDeath", function(ply, victim, amt)
+    -- not sure how this works. even PlayerDeath hook returns same player as a victim and attacker for some reason. 
     if not CurrentRound().KillMoney then return end
-    if not victim:IsPlayer() then return end
-    if ply == victim then return end
-    
+    sumamt = sumamt + amt
+    if sumamt < 1 and victim:Alive() then return end
+    sumamt = 0 
     local add = amt * MODE.KillMoney * (ply:Team() == victim:Team() and -1 or 1)
-    
     add = math.Round(add,0)
-
     --print(add,ply,ply:GetNWInt("TDM_Money"),victim)
-
     ply:SetNWInt( "TDM_Money", math.max(ply:GetNWInt( "TDM_Money" ) + add, 0) )
-
+    
     if (ply:Team() == victim:Team()) and add <= 0 then
         victim:SetNWInt( "TDM_Money", math.max(victim:GetNWInt( "TDM_Money" ) - add, 0) )
     end
+
+    if killfeedcv:GetBool() then
+        net.Start("CS_Killfeed")
+            net.WriteBool(ply:Team() == 0)
+            net.WriteBool(victim:Team() == 0)
+            net.WriteString(ply:Nick())
+            net.WriteString(victim:Nick())
+            net.Broadcast()
+    end
 end)
+

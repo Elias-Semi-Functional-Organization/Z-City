@@ -8,10 +8,9 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
---SWEP.WorldModel				= "models/pwb/weapons/w_glock17.mdl" 
-SWEP.WorldModel = "models/weapons/tfa_ins2/w_glock_p80.mdl"
-SWEP.WorldModelFake = "models/weapons/arccw/c_ud_glock.mdl" // МОДЕЛЬКИ ЧУТЬ ПОПОЗЖЕ ЗАЛЬЮ
-//SWEP.FakeScale = 1.5
+SWEP.WorldModel = "models/weapons/w_pist_glock18.mdl"
+SWEP.WorldModelFake = "models/weapons/arccw/c_ud_glock.mdl"
+
 SWEP.FakePos = Vector(-18, 2.34, 4.32)
 SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0.5,-1.2,-6.5)
@@ -27,11 +26,9 @@ SWEP.FakeBodyGroupsPresets = {
 	"1006",
 }
 
---SWEP.MagIndex = 46
+
 SWEP.FakeEjectBrassATT = "2"
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
---PrintTable(Entity(1):GetActiveWeapon():GetWM():GetAttachments())
+
 SWEP.FakeVPShouldUseHand = true
 
 SWEP.stupidgun = true
@@ -142,7 +139,7 @@ SWEP.Primary.Ammo = "9x19 mm Parabellum"
 SWEP.Primary.Cone = 0
 SWEP.Primary.Damage = 25
 SWEP.Primary.Sound = {"zcitysnd/sound/weapons/firearms/hndg_glock17/glock_fire_01.wav", 75, 90, 100}
-SWEP.SupressedSound = {"zcitysnd/sound/weapons/m45/m45_suppressed_fp.wav", 55, 90, 100}
+SWEP.SupressedSound = {"zcitysnd/sound/weapons/m45/m45_suppressed_fp.wav", 65, 90, 100}
 SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empty.wav", 75, 100, 105, CHAN_WEAPON, 2}
 SWEP.Primary.Force = 25
 SWEP.Primary.Wait = PISTOLS_WAIT

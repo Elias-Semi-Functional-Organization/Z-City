@@ -15,11 +15,9 @@ local supportCooldown = 290
 local lastSupportRequest = 0
 
 local function FindAirdropPosition()
-    local players = player.GetAll()
     local validPlayers = {}
-    
 
-    for _, ply in ipairs(players) do
+    for _, ply in player.Iterator() do
         if ply:Alive() and ply:Team() != TEAM_SPECTATOR then
             table.insert(validPlayers, ply)
         end
@@ -195,7 +193,7 @@ local function CreateFallingAirdrop(items, requester)
             if IsValid(smoke) then smoke:Remove() end
             
 
-            for _, player in ipairs(player.GetAll()) do
+            for _, player in player.Iterator() do
                 if player:Alive() and player:Team() ~= TEAM_SPECTATOR then
                     if IsValid(requester) then
                         player:ChatPrint("Commander " .. requester:Nick() .. "'s supply drop has arrived!")
@@ -302,7 +300,7 @@ local function SpawnSupportTeam(requester)
         
 
         npc:AddEntityRelationship(requester, D_LI, 99)
-        for _, player in ipairs(player.GetAll()) do
+        for _, player in player.Iterator() do
             if player:IsPlayer() and player:Alive() and player:Team() != TEAM_SPECTATOR then
                 npc:AddEntityRelationship(player, D_LI, 99)
                 player:AddEntityRelationship(npc, D_LI, 99)
@@ -322,7 +320,7 @@ local function SpawnSupportTeam(requester)
         requester:ChatPrint("Support team deployed with " .. successfulSpawns .. " soldiers")
         
 
-        for _, player in ipairs(player.GetAll()) do
+        for _, player in player.Iterator() do
             if player:Alive() and player:Team() != TEAM_SPECTATOR and player != requester then
                 player:ChatPrint("Commander " .. requester:Nick() .. " has called in a support team!")
             end
@@ -345,7 +343,7 @@ local function RespawnDeadPlayers(requester)
     
 
     local deadPlayers = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if not ply:Alive() and ply:Team() != TEAM_SPECTATOR then
             table.insert(deadPlayers, ply)
         end
@@ -369,7 +367,7 @@ local function RespawnDeadPlayers(requester)
     end
     
 
-    local spawnPoints = zb.GetMapPoints("PLY_DEFENSE_SPAWN")
+    local spawnPoints = MODE.GetUsualPlayerSpawnPoints and MODE:GetUsualPlayerSpawnPoints() or {}
     if not spawnPoints or #spawnPoints == 0 then
         if IsValid(requester) then
             requester:ChatPrint("No spawn points available!")
@@ -445,12 +443,18 @@ local function RespawnDeadPlayers(requester)
         if IsValid(ply) and not ply:Alive() and ply:Team() != TEAM_SPECTATOR then
 
             local spawnPoint = spawnPoints[math.random(#spawnPoints)]
+            local spawnPos = MODE.GetGroundedPlayerSpawn and MODE:GetGroundedPlayerSpawn(spawnPoint) or spawnPoint.pos
             
 
             ply:Spawn()
             
 
-            ply:SetPos(spawnPoint.pos)
+            ply:SetPos(spawnPos)
+            ply:SetLocalVelocity(vector_origin)
+
+            if spawnPoint.ang then
+                ply:SetEyeAngles(Angle(0, spawnPoint.ang.y, 0))
+            end
             
 
             ply:SetSuppressPickupNotices(true)
@@ -483,17 +487,18 @@ local function RespawnDeadPlayers(requester)
     
     if respawnedCount > 0 then
 
-        for _, player in ipairs(player.GetAll()) do
+        for _, player in player.Iterator() do
             player:ChatPrint("Commander " .. requester:Nick() .. " has called in reinforcements! " .. respawnedCount .. " players respawned!")
         end
         
 
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             ply:EmitSound("ambient/alarms/combine_bank_alarm_loop1.wav")
         end
         
         timer.Simple(2, function()
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
+				if not IsValid(ply) then return end
                 ply:StopSound("ambient/alarms/combine_bank_alarm_loop1.wav")
             end
         end)
@@ -722,7 +727,7 @@ net.Receive("defense_commander_menu", function(len, ply)
 end)
 
 hook.Add("RoundEnd", "CleanupSupportTeam", function()
-    for _, ent in pairs(ents.GetAll()) do
+    for _, ent in ents.Iterator() do
         if IsValid(ent) and ent.IsSupportTeamMember then
             SafeRemoveEntity(ent)
         end

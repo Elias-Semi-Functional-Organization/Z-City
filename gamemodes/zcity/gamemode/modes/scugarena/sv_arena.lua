@@ -6,19 +6,19 @@ MODE.LootSpawn = false
 MODE.GuiltDisabled = true
 MODE.randomSpawns = true
 
-MODE.Chance = 0.01
+MODE.Chance = 0.00
 
 util.AddNetworkString("scugarena_start")
 util.AddNetworkString("scugarena_end")
 
 function MODE:CanLaunch()
-    return false
+    return true
 end
 
 function MODE:Intermission()
 	game.CleanUpMap()
 
-	for k, ply in ipairs(player.GetAll()) do
+	for k, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then
 			continue
 		end
@@ -33,7 +33,7 @@ end
 
 function MODE:CheckAlivePlayers()
 	local AlivePlyTbl = {}
-	for _, ply in ipairs(player.GetAll()) do
+	for _, ply in player.Iterator() do
 		if not ply:Alive() then continue end
 		if ply.organism and ply.organism.incapacitated then continue end
 		AlivePlyTbl[#AlivePlyTbl + 1] = ply

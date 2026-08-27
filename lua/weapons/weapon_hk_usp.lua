@@ -8,7 +8,7 @@ SWEP.Category = "Weapons - Pistols"
 SWEP.Slot = 2
 SWEP.SlotPos = 10
 SWEP.ViewModel = ""
-SWEP.WorldModel = "models/weapons/zcity/w_usp_9mm.mdl"
+SWEP.WorldModel = "models/weapons/w_pist_usp.mdl"
 SWEP.WorldModelFake = "models/weapons/tfa_ins2/c_usp_match.mdl"
 
 SWEP.FakePos = Vector(-17, 2., 3.22)
@@ -16,8 +16,8 @@ SWEP.FakeAng = Angle(0, 0, 0)
 SWEP.AttachmentPos = Vector(0,0,-0.2)
 SWEP.AttachmentAng = Angle(0,0,90)
 SWEP.MagIndex = 53
-//MagazineSwap
---PrintBones(Entity(1):GetActiveWeapon():GetWM())
+
+
 SWEP.FakeVPShouldUseHand = true
 SWEP.AnimList = {
 	["idle"] = "base_idle",
@@ -149,7 +149,7 @@ SWEP.Primary.SoundEmpty = {"zcitysnd/sound/weapons/makarov/handling/makarov_empt
 --models/weapons/tfa_ins2/upgrades/laser_pistol.mdl
 SWEP.availableAttachments = {
 	barrel = {
-		[1] = {"supressor3", Vector(0,0,0), {}},
+		[1] = {"supressor3", Vector(-0.2,0,-0.12), {}},
 		[2] = {"supressor4", Vector(0,-0.15,0), {}},
 		[3] = {"supressor6", Vector(0,0,0), {}},
 		["mount"] = Vector(-0.2,0.6,0),

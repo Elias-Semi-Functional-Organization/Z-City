@@ -1,5 +1,7 @@
 --
 
+util.AddNetworkString("DynamicAnims_SendGesture")
+
 local PLAYER = FindMetaTable("Player")
 function PLAYER:PlayCustomAnims(anim, autoStop, speed, needForceLook, autostopAdjust, tSvCallbacks)
 	self:SetNWString("hg_CustomAnim", anim)
@@ -48,3 +50,28 @@ hook.Add("CalcMainActivity", "CustomAnim_Activity", function(ply, vel)
 		return -1, ply:LookupSequence(str)
 	end
 end)
+
+-- PlayAnimAsGesture
+-- https://gmodwiki.com/Player:AddVCDSequenceToGestureSlot
+-- https://gmodwiki.com/Entity:SetLayerBlendIn
+function PLAYER:PlayCustomAnimAsGesture(anim, weight, anim_time, start_time, autokill)
+	local AnimID, AnimDuration = self:LookupSequence(anim)
+	anim_time = anim_time or AnimDuration
+
+	if !AnimID then ErrorNoHalt("[Dynamic Anim] No sequence!\n") return end
+
+	self:AnimResetGestureSlot(GESTURE_SLOT_CUSTOM)
+	self:AddVCDSequenceToGestureSlot(GESTURE_SLOT_CUSTOM, AnimID, start_time or 0, autokill)
+	self:AnimSetGestureWeight(GESTURE_SLOT_CUSTOM, weight or 1)
+
+	net.Start("DynamicAnims_SendGesture")
+		net.WriteEntity(self)
+		net.WriteInt(AnimID, 16)
+		net.WriteFloat(weight or 1)
+		net.WriteFloat(CurTime())
+		net.WriteFloat(start_time or 0)
+		net.WriteFloat(anim_time)
+		net.WriteFloat(AnimDuration)
+		net.WriteBool(autokill or false)
+	net.SendPVS(self:GetPos())
+end

@@ -182,7 +182,7 @@ CreateEndMenu = function()
         surface.DrawOutlinedRect( 0, 0, w, h, 2.5 )
 	end
 
-	for i,ply in ipairs(player.GetAll()) do
+	for i, ply in player.Iterator() do
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		local but = vgui.Create("DButton",DScrollPanel)
 		but:SetSize(100,50)
@@ -336,7 +336,7 @@ local function OpenBuyMenu()
 	if not LocalPlayer():Alive() or StartTime + 40 < CurTime() then return end
 	TDM_OpenedBuyMenu = vgui.Create("ZFrame")
 	local Frame = TDM_OpenedBuyMenu
-	Frame:SetSize(1920*0.35,ScrH()*0.85)
+	Frame:SetSize(ScrW() * 0.35,ScrH() * 0.85)
 	Frame:Center()
 	Frame:MakePopup()
 	Frame:SetTitle("Buy menu")
@@ -362,7 +362,7 @@ local function OpenBuyMenu()
 			local ItemPanel = vgui.Create("DPanel",CategoryPanel)
 			ItemPanel:SetSize(0,ScrH()*0.1)
 			ItemPanel:Dock(TOP)
-			ItemPanel:DockMargin(0,5,0,0)
+			ItemPanel:DockMargin(0,8,0,0)
 			ItemPanel.Paint = PaintPanel1
 			--print(Item.ItemClass,weapon)
 			if ( weapon ~= nil and ( (weapon.WepSelectIcon2 and weapon.WepSelectIcon2:GetName()) or (weapon.IconOverride)) ) or ((ent and ent.t.IconOverride)) then
@@ -450,17 +450,18 @@ local function OpenBuyMenu()
 
 			if Item.Attachments and #Item.Attachments > 0 then
 				local ItemAtt = vgui.Create("DGrid",ItemPanel)
+				local ItemIcon = math.ceil(ScrH()*0.06)
 				ItemAtt:Dock(RIGHT)
 				ItemAtt:DockMargin(0,5,0,0)
 				ItemAtt:SetCols( 4 )
-				ItemAtt:SetColWide(50)
-				ItemAtt:SetRowHeight(50)
+				ItemAtt:SetColWide(ItemIcon)
+				ItemAtt:SetRowHeight(ItemIcon)
 				ItemAtt.Paint = function() end
 				for id,AttachN in pairs(Item.Attachments) do
 					local ico = hg.attachmentsIcons[AttachN]
 					local Attach = vgui.Create( "DImageButton" )
 					Attach:SetImage(ico)
-					Attach:SetSize(45,45)
+					Attach:SetSize(ItemIcon-5,ItemIcon-5)
 
 					Attach.Attachment = {k,n,AttachN}
 
