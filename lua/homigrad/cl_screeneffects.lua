@@ -9,6 +9,8 @@ local function DrawSunEffect()
 	DrawSunbeams(0.1, 0.15 * dot * sun.obstruction, 0.1, scrpos.x / ScrW(), scrpos.y / ScrH())
 end
 
+local hg_nostatic = ConVarExists("hg_nostatic") and GetConVar("hg_nostatic") or CreateClientConVar("hg_nostatic","0",true,false,"requires you to rejoin or wait for the next map change in order to take effect.",0,1)
+
 hg.postprocess = hg.postprocess or {}
 local postprs = hg.postprocess
 postprs.addtiveLayer = {
@@ -69,7 +71,7 @@ hook.Add("RenderScreenspaceEffects", "homigrad", function()
 		addtiveLayer["brightness"] = Lerp(weight, 0, layer["brightness"] or 0)
 		--end
 	end
-
+	
 	//DrawBloom(addtiveLayer.bloom_darken, addtiveLayer.bloom_mul, addtiveLayer.bloom_sizex, addtiveLayer.bloom_sizey, addtiveLayer.bloom_passes, addtiveLayer.bloom_colormul, addtiveLayer.bloom_colorr, addtiveLayer.bloom_colorg, addtiveLayer.bloom_colorb)
 	//DrawSharpen(addtiveLayer.sharpen, addtiveLayer.sharpen_dist)
 	//if not brain_motionblur then DrawMotionBlur(addtiveLayer.blur_addalpha, addtiveLayer.blur_drawalpha, addtiveLayer.blur_delay) end
@@ -251,6 +253,21 @@ local lobotomy_mats = {
 	[8] = Material("overlays/tallflash3.png")
 }
 
+local conscioustypebeats = {
+	"sound/zbattle/end.ogg",
+	"sound/zbattle/unconscious_type_beat.ogg"
+}
+
+if GetConVar("hg_nostatic"):GetBool() then
+	painMat = Material( "null" )
+	noiseMat = Material( "null" )
+	vignetteMat = Material( "effects/shaders/zb_vignette" )
+else
+	painMat = Material( "effects/shaders/zb_grain" )
+	noiseMat = Material( "effects/shaders/zb_grainwhite" )
+	vignetteMat = Material( "effects/shaders/zb_vignette" )
+end
+
 local function stopthings()
 	PainLerp = 0
 	O2Lerp = 0
@@ -321,6 +338,7 @@ local stations = {
 }
 
 local choosera = 1
+
 local tempolerp = 0
 local lerpblood = 0
 local addtime = CurTime()
@@ -467,14 +485,14 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		grainMat:SetFloat("$c2_y", 0) -- g
 		grainMat:SetFloat("$c2_z", 0) -- b
 		grainMat:SetFloat("$c3_x", 0) -- ImageIntensity
-	
+
 		render.SetMaterial(grainMat)
 		render.DrawScreenQuad()
 	end
 
 	local tempo = math.Clamp((5 - (tempLerp - 29)) * 0.5 - 5 * (org.heartbeat < 1 and 1 or 0), 0, 5)
 	tempolerp = LerpFT(0.01, tempolerp, tempo)
-	
+
 	if (tempolerp > 0) then
 		render.UpdateScreenEffectTexture()
 
@@ -508,11 +526,13 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		render.SetMaterial(painMat)
 		render.DrawScreenQuad()
 
-		if org.otrub then
+		if org.otrub and org.shock >= 40 and not org.incapacitated then
 			--DrawMotionBlur(0.1, 1., 0.01)
-			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 2, 0.5 )
+			lply:ScreenFade( SCREENFADE.OUT, Color(0,0,0, 254), 1, 0.5 )
+		elseif org.otrub then
+			lply:ScreenFade( SCREENFADE.IN, Color(0,0,0), 1, 0.5 )
 		end
-		
+
 		//if pain > 10 then
 			if IsValid(PainStation) then
 				PainStation:SetVolume(math.Clamp(math.Remap(pain, 0, 120, 0, 2), 0, 2))
@@ -617,7 +637,8 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		show_image_time = 0
 		lobotomy_index = 0
 	end
-	
+
+	local otrubtypebeats = conscioustypebeats[math.random(#conscioustypebeats)]
 
 	if O2Lerp > 1 then
 		render.UpdateScreenEffectTexture()
@@ -635,7 +656,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 50 and !org.otrub then
 			if !IsValid(NoiseStation2) or NoiseStation2:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/conscioustypebeat.ogg", "noblock noplay", function(station)
+				sound.PlayFile("sound/zbattle/conscioustypebeat_old.ogg", "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()
@@ -657,7 +678,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 20 and org.otrub then
 			if !IsValid(NoiseStation) or NoiseStation:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/unconscious_type_beat.ogg", "noblock noplay", function(station)
+				sound.PlayFile(otrubtypebeats, "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()

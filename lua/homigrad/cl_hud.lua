@@ -258,14 +258,16 @@ local function CreateRadialMenu(options_arg, bAutoClose)
 			thinkwait = CurTime() + 0.25
 			table.Empty(hg.radialOptions)
 			local functions = hook.GetTable()["radialOptions"]
-			
+			colWhiteTransparent = lply:GetPlayerColor():ToColor()
+			colWhiteTransparent.a = 100
+
 			for i, func in SortedPairs(functions) do
 				//if i == "zmeyka_test" then continue end
 				func()
 			end
 		end
 	end
-	
+
 	local sizePan = 0
 	local optionSelected = {}
 	menuPanel.Paint = function(self, w, h)
@@ -550,7 +552,7 @@ hook.Add("radialOptions", "7", function()
 
     if ply:Alive() and not organism.otrub and hg.GetCurrentCharacter(ply) == ply then
         if ply.GetPlayerClass and ply:GetPlayerClass() and ply:GetPlayerClass().CanUseGestures ~= nil and not ply:GetPlayerClass().CanUseGestures then return end
-		local tbl = {function(mouseClick)
+        local tbl = {function(mouseClick)
 			if mouseClick == 1 then
 				RunConsoleCommand("act", randomGestures[math.random(#randomGestures)])
 				if (ply.NextFoley or 0) < CurTime() then
@@ -738,7 +740,6 @@ hook.Add("HUDPaint","afflictionlist",function()
 		end
 	end--]]
 end)
-
 -- Now playable :steamhappy:
 -- No. fuc kyouy
 if game.SinglePlayer() then
