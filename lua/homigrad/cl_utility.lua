@@ -1053,7 +1053,8 @@ players : 1 humans, 0 bots (20 max)
 
 	hook.Add("OnPlayerJump", "hg.JumpGunViewpunch", function(ply)
 		if hg.IsLocal(ply) and hg_jump_gun_viewpunch:GetBool() then
-			ViewPunch2(Angle(math.random(2,3),math.random(-1,1),0))
+			ViewPunch(Angle(-0.5,0,0))
+			ViewPunch2(Angle(math.Rand(3,5),math.Rand(-2,0.5),0))
 		end
 	end)
 --//
