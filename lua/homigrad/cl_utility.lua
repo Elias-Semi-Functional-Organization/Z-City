@@ -1052,9 +1052,9 @@ players : 1 humans, 0 bots (20 max)
 	hg_jump_gun_viewpunch = CreateConVar("hg_jump_gun_viewpunch", "1", {FCVAR_ARCHIVE, FCVAR_REPLICATED, FCVAR_NOTIFY}, "Jump viewpunch var", 0, 1)
 
 	hook.Add("OnPlayerJump", "hg.JumpGunViewpunch", function(ply)
-		if hg.IsLocal(ply) and hg_jump_gun_viewpunch:GetBool() then
-			ViewPunch(Angle(-0.5,0,0))
-			ViewPunch2(Angle(math.Rand(3,5),math.Rand(-2,0.5),0))
+		if hg.IsLocal(ply) and hg_jump_gun_viewpunch:GetBool() and IsFirstTimePredicted() then
+			ViewPunch(Angle(-1,0,0))
+			ViewPunch2(Angle(math.random(3,5),math.Rand(-2,0.5),0))
 		end
 	end)
 --//
