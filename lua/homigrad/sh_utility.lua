@@ -413,7 +413,7 @@ hg.ConVars = hg.ConVars or {}
 	local hg_movement_walkspeed = CreateConVar("hg_movement_walkspeed", 85, FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Changes walk speed, new default - 85 old - 100", 0, 9999)
 	local hg_movement_slowwalkspeed = CreateConVar("hg_movement_slowwalkspeed", 40, FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Changes slowwalk speed, new default - 40 old - 60", 0, 9999)
 	local hg_movement_ladderclimbspeed = CreateConVar("hg_movement_ladderclimbspeed", 100, FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Changes leader climb speed, new default - 100 old - 150", 0, 9999)
-	local hg_movement_crouchwalkspeed = CreateConVar("hg_movement_ladderclimbspeed", 60, FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Changes crouch walk speed, default 60", 0, 9999)
+	local hg_movement_crouchwalkspeed = CreateConVar("hg_movement_crouchwalkspeed", 60, FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Changes crouch walk speed, default 60", 0, 9999)
 
 	hook.Add("player_spawn", "homigrad-spawn3", function(data)
 		local ply = Player(data.userid)
