@@ -272,7 +272,7 @@ local IsValid = IsValid
 				angle_hitground.p = math_Clamp(speedPrevious / 100, 0, 20)
 
 				ViewPunch(angle_hitground * 0.8)
-				ViewPunch3(angle_hitground)
+				ViewPunch2(angle_hitground * 1.5)
 			end
 		end)
 
