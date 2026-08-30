@@ -761,7 +761,7 @@ hook.Add("Player-Ragdoll think", "organism-think-client-blood", function(ply, en
 
 				end
 
-				ply:EmitSound("snds_jack_hmcd_breathing/" .. (ThatPlyIsFemale(ent) and "f" or "m") .. math.random(4) .. ".wav", min(heartbeat * 1.0 / ( muffed and 2.5 or 4), 45), pitch + pitchadd + math.Rand(-2, 2), vol, CHAN_AUTO, 0, muffed and 16 or 0)
+				ply:EmitSound("snds_jack_hmcd_breathing/" .. (ThatPlyIsFemale(ent) and "f" or "m") .. math.random(4) .. ".wav", min(heartbeat * 2 / ( muffed and 2.5 or 4), 45), pitch + pitchadd + math.Rand(-2, 2), vol, CHAN_AUTO, 0, muffed and 16 or 0)
 			elseif org.breathed and sin >= 0.1 then
 				org.breathed = false
 			end
