@@ -90,6 +90,14 @@ if CLIENT then
 	SWEP.WepSelectIcon = Material("vgui/hud/tfa_iw7_tactical_knife")
 	SWEP.IconOverride = "vgui/hud/tfa_iw7_tactical_knife.png"
 	SWEP.BounceWeaponIcon = false
+
+	function SWEP:PreDrawViewModel()
+		return true
+	end
+
+	function SWEP:ViewModelDrawn()
+		return false
+	end
 end
 
 SWEP.AttackSwing = "weapons/slam/throw.wav" --!! заменить звуки

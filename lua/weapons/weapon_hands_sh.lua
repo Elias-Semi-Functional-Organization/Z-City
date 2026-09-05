@@ -38,6 +38,16 @@ SWEP.ModelScale2 = 1.5
 
 SWEP.blockinganim = 0
 
+if CLIENT then
+	function SWEP:PreDrawViewModel()
+		return true
+	end
+
+	function SWEP:ViewModelDrawn()
+		return false
+	end
+end
+
 local clawClasses = {
 	["furry"] = 0.5,
 	["headcrabzombie"] = 1.5

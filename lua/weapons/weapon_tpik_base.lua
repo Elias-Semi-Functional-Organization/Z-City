@@ -77,6 +77,13 @@ end
 SWEP.modelscale = 1
 SWEP.modelscale2 = 1
 if CLIENT then
+	function SWEP:PreDrawViewModel()
+		return true
+	end
+
+	function SWEP:ViewModelDrawn()
+		return false
+	end
 
     local vecPochtiZero = Vector(0.0001, 0.0001, 0.0001)
 
