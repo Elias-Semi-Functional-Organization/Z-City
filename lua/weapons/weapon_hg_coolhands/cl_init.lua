@@ -30,6 +30,14 @@ local ang5 = Angle(0,0,0)
 local ang3 = Angle(0,0,180)
 local clamp = math_Clamp
 
+function SWEP:PreDrawViewModel()
+	return true
+end
+
+function SWEP:ViewModelDrawn()
+	return false
+end
+
 function SWEP:SecondaryAttack()
 end
 

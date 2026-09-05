@@ -3496,7 +3496,9 @@ if SERVER then
         ply.nextDrop = CurTime() + 0.5
 
         local ammotype = math.floor( net.ReadFloat() )
+		if not ammotype or not isnumber(ammotype) or ammotype == -1 then return end
         local cnt = math.floor( net.ReadFloat() )
+		if not cnt or not isnumber(cnt) then return end
 
         local ammoname = game.GetAmmoName( ammotype )
         if not ammoname or ammoname == "" then
@@ -3510,12 +3512,13 @@ if SERVER then
         end
 
         local haveammo = ply:GetAmmoCount(ammotype)
-        if haveammo - cnt < 0 then
+        if not haveammo or haveammo - cnt < 0 then
             ply:ChatPrint("You don't have enough ammo")
             return
         end
 
         local classname = "ent_ammo_" .. string.lower( string.Replace( ammoname, " ", "" ) )
+		if not classname or classname == nil or classname == "ent_ammo_" or classname == "ent_ammo_ " then return end
 
         if not scripted_ents.GetStored(classname) then
             ply:ChatPrint("Invalid entitytype...")
