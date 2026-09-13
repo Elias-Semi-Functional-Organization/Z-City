@@ -105,12 +105,14 @@ SWEP.ReloadAnimLH = {
 	Vector(-15,5,-15),
 	Vector(0,0,0),
 	Vector(0,0,0),
+	"fastreload",
 	Vector(0,0,0),
 	Vector(5,0,5),
 	Vector(-2,1,1),
 	Vector(-2,1,1),
 	Vector(-2,1,1),
 	Vector(0,0,0),
+	"reloadend",
 	Vector(0,0,0)
 }
 SWEP.ReloadAnimLHAng = {
