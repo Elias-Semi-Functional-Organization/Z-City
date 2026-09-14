@@ -29,3 +29,18 @@ function ENT:Use(activator)
 		self:Remove()
 	end
 end
+
+function ENT:PhysicsCollide( data, phys )
+	local ent = data.HitEntity
+	if self.AmmoGived == true then return end
+	if ent:GetClass() == self:GetClass()
+	and ent.AmmoType == self.AmmoType
+	and data.TheirOldVelocity:LengthSqr() < data.OurOldVelocity:LengthSqr() then
+		if ent.AmmoCount + self.AmmoCount > 60 then return end
+
+		ent.AmmoCount = ent.AmmoCount + self.AmmoCount
+		self.AmmoCount = 0
+		self.AmmoGived = true
+		SafeRemoveEntity(self)
+	end
+end
