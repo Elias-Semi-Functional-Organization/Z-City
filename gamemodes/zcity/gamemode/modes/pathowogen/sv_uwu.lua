@@ -335,7 +335,7 @@ function MODE:RoundStart()
 		self.saved.traitors[ply] = true
 	end
 
-	self.saved.traitors[Entity(1)] = true
+	-- self.saved.traitors[Entity(1)] = true
 	-- self.saved.furs[Entity(1)] = true
 
 	self.saved.traitorsLookUp = {}
