@@ -212,6 +212,7 @@ function MODE:ShouldRoundEnd()
     for _,ply in player.Iterator() do
         if not ply:Alive() then continue end
         if ply.PlayerClassName == "Combine" or ply.PlayerClassName == "Metrocop" or ply.PlayerClassName == "headcrabzombie" then continue end
+        if ply:IsBot() then continue end
         lives = lives + 1
     end
 
@@ -490,6 +491,22 @@ function MODE:CanLaunch()
     return #triggers > 0 and IsValid(triggers[1])
 end
 
+local preventiontext = {
+    "It has already started.",
+    "\"What... What am I turning into???\"",
+    "\"MAKE IT STOP!\"",
+    "\"HELP ME PLEASE!\"",
+    "\"Please someone...\"",
+    "\"I don't want to turn into one of them... Please...\""
+}
+
+function MODE:CanPlayerSuicide(ply)
+	if IsValid(ply) and ply:IsPlayer() and ply:GetNWString("PlayerName") == "Body with headcrab" then
+		ply:ChatPrint(preventiontext[math.random(#preventiontext)])
+		return false
+	end
+end
+
 local friendlyNPCClasses = {
     ["npc_citizen"] = true,
 }
@@ -503,14 +520,14 @@ local zombieNPCClasses = {
     ["npc_zombie"] = true,
 }
 
-local zb_coop_maxpossesses = ConVarExists("zb_coop_maxpossesses") and GetConVar("zb_coop_maxpossesses") or CreateConVar("zb_coop_maxpossesses",3,FCVAR_SERVER_CAN_EXECUTE,"Max NPC possession amount in Half-Life 2 CO-OP round",1,100)
+local zb_coop_maxpossesses = ConVarExists("zb_coop_maxpossesses") and GetConVar("zb_coop_maxpossesses") or CreateConVar("zb_coop_maxpossesses",10,FCVAR_SERVER_CAN_EXECUTE,"Max NPC possession amount in Half-Life 2 CO-OP round",1,100)
 
 local function CanPossessNPC(ply, npc)
     if not IsValid(ply) or not IsValid(npc) then return false end
     if ply:Alive() then return false end
     if CurrentRound().name ~= "coop" then return false end
     if not coop_rts:GetBool() then return false end
-    if (ply.RTSUses or 0) >= zb_coop_maxpossesses:GetInt() and not ply:IsAdmin() then return false end
+    if (ply.RTSUses or 0) >= zb_coop_maxpossesses:GetInt() and not ply:IsAdmin() then ply:ChatPrint("All of the possessions have been used up.") return false end
 
     local npcClass = npc:GetClass()
     if friendlyNPCClasses[npcClass] then return true end

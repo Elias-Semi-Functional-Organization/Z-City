@@ -137,6 +137,17 @@ musMeta:AddMusic(Music, 1, "zc_dyna_music/hl_coop/c"..(8)..".mp3" )
 -- Add2Pack
 DMusic:AddSequence( "hl_coop", "0"..(9), Music )
 
+-- CreatePack
+DMusic:AddPack( "hnschase" )
+
+-- Music
+local Music = musMeta:CreateTbl()
+--musMeta:AddMusic(Music, 1, "chase/ACTION&CONSEQUENCE.ogg", 1.2) dudes a BUMMMM
+musMeta:AddMusic(Music, 1, "chase/LAUNCHED.ogg", 1.2)
+
+-- Add2Pack
+DMusic:AddSequence( "hnschase", "normalchases", Music )
+
 -----------------------------------------------------------------------------------------
 
 

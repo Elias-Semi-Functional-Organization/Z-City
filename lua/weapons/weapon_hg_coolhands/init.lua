@@ -329,7 +329,7 @@ function SWEP:ApplyForce()
 						if not ply2.noHead then
 							ply:ChatPrint("You are beginning to perform CPR.")
 						else
-							ply:Notify("I dont think CPR would help here...", 10)
+							ply:Notify("I don't think CPR would help here...", 10)
 						end
 					end
 
