@@ -1068,7 +1068,7 @@ function MODE:ZB_JoinSpectators(ply)
 end
 
 function MODE.GuiltCheck(Attacker, Victim, add, harm, amt)
-	if MODE.saved.traitors[Attacker] then
+	if MODE.saved.traitors[Attacker] or MODE.saved.traitors[Victim] then
 		return 0, false
 	end
 
