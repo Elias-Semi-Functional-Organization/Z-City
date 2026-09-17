@@ -103,7 +103,11 @@ local unconsciousblud = org.otrub
 			( textOtrub2 ).."\n\n"..( textOtrub3 ).."</colour></font>"
 		)
 
-		parsed:Draw( ScrW()*0.009, ScrH()*0.9, TEXT_ALIGN_LEFT, nil, nil, TEXT_ALIGN_LEFT )
+		if plyguy.PlayerClassName == "Gordon" then // centered since gordon ui overlaps
+			parsed:Draw( ScrW()/2, ScrH()/2.2, TEXT_ALIGN_CENTER, nil, nil, TEXT_ALIGN_CENTER )
+		else
+			parsed:Draw( ScrW()*0.009, ScrH()*0.9, TEXT_ALIGN_LEFT, nil, nil, TEXT_ALIGN_LEFT )
+		end
     end
 end)
 
