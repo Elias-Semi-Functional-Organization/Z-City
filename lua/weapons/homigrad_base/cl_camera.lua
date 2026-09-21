@@ -150,6 +150,7 @@ local fov_mode_lerp = 0
 local hg_oldsights = CreateConVar("hg_oldsights", "0", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "No camera wobble when aiming")
 local hg_wepbase_postshake_mul = CreateConVar("hg_wepbase_postshake_mul", "0.02", {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Mul post shake after shoot, new default = 0.02, old default = 0.05", 0, 1)
 
+
 local angZero = Angle(0,0,0)
 
 local scopedLerpAddvec = Vector()
@@ -253,7 +254,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 	local shakeMul = (((larm > 0.75 and (larm - 0.75) * (ply.posture != 7 and ply.posture != 8 and 1 or 0)) or 0)
 		+ ((rarm > 0.1 and (rarm - 0.1)) or 0)) / 4
 
-	local addview = AngleRand(-shakeMul - 0.01, shakeMul + 0.01) * (organism.holdingbreath and 0.1 or 1)
+	local addview = AngleRand(-shakeMul - 0.02, shakeMul + 0.02) * ((organism.holdingbreath and 0.1 + (((rarm > 0.1 and (rarm - 0.1)) or 0)) / 4) or 1)
 	addview[3] = 0
 
 	if ply == LocalPlayer() then
