@@ -305,14 +305,13 @@ end
 --\\ Equipment drop command
     if SERVER then
         concommand.Add("hg_drop_new_equipment", function(ply, cmd, args)
-            print(ply)
             if !IsValid(ply) then return end
-            print(ply)
             if !ply:Alive() or !ply.organism or ply.organism.otrub then return end
             if !args[1] or !tonumber(args[1]) then return end
             local Equipment = ply:GetNetVar("zc_equipment", {})
-            print(args[1])
+            if not Equipment[tonumber(args[1])] then return end
             local Equip = Entity(Equipment[tonumber(args[1])])
+            if !IsValid(Equip) then return end
 
             Equip:Unwear(ply)
         end)
