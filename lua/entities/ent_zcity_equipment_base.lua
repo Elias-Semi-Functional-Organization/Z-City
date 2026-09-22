@@ -1,33 +1,6 @@
 local entMeta = FindMetaTable("Entity")
 -- meow
 
---\\ SLOTS... i think too many for armor, but this is cool!
-ZC_CLOTHES_SLOT_TORSO = 0
-ZC_CLOTHES_SLOT_PANTS = 1
-ZC_CLOTHES_SLOT_BOOTS = 2
-ZC_CLOTHES_SLOT_BACKPACK = 3
-
-ZC_ARMOR_SLOT_HEAD = 4
-    ZC_ARMOR_SLOT_FACE = 5
-        ZC_ARMOR_SLOT_EYES = 6
-    ZC_ARMOR_SLOT_EARS = 7
-
-ZC_ARMOR_SLOT_TORSO = 8
-    ZC_ARMOR_SLOT_UPPERARM_L = 9
-        ZC_ARMOR_SLOT_FOREARM_L = 10
-    ZC_ARMOR_SLOT_UPPERARM_R = 11
-        ZC_ARMOR_SLOT_FOREARM_R = 12  
-
-ZC_ARMOR_SLOT_BELLY = 13
-
-ZC_ARMOR_SLOT_PELVIS = 14
-    ZC_ARMOR_SLOT_THIGH_L = 15
-        ZC_ARMOR_SLOT_SHIN_L = 16
-    ZC_ARMOR_SLOT_THIGH_R = 17
-        ZC_ARMOR_SLOT_SHIN_R = 18
---//
-
-
 AddCSLuaFile()
 
 ENT.Type = "anim"
@@ -163,6 +136,8 @@ end
                 EquipmentBySlot[k] = self:EntIndex()
             end
             entUser:SetNetVar("zc_equipment_slot", EquipmentBySlot)
+            
+            self:OnWearNetVars(entUser)
         end
 
         local fem = ThatPlyIsFemale(entUser)
@@ -198,6 +173,10 @@ end
         self:OnWear(entUser)
     end
 
+    function ENT:OnWearNetVars(entUser)
+		--// Write your code here
+	end
+
     function ENT:OnWear(entUser)
 		--// Write your code here
 	end
@@ -213,6 +192,8 @@ end
                 EquipmentBySlot[k] = nil
             end
             entUser:SetNetVar("zc_equipment_slot", EquipmentBySlot)
+
+            self:OnUnwearNetVars(entUser)
         end
 
         if !bDontChangeMaterials and self.OldSubMaterials then
@@ -254,6 +235,10 @@ end
 
         self:OnUnwear(entUser)
     end
+
+    function ENT:OnUnwearNetVars(entUser)
+		--// Write your code here
+	end
 
     function ENT:OnUnwear(entUser)
 		--// Write your code here
