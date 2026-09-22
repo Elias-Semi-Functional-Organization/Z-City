@@ -459,3 +459,32 @@ local cmb_mdls = {
 function hg.organism.GetHitBoxOrgans(model, ent)
 	return (models_female[model] and female) or male
 end
+
+function hg.organism:HitBox(strBone, strName, nValue, vLocalPos, aLocalAng, vSize, cColor, bBool, nProtect)
+	local HBD = {} --HitBoxData
+	HBD.strBone = strBone
+	HBD.strName = strName
+	HBD.nValue = nValue
+	HBD.vLocalPos = vLocalPos
+	HBD.aLocalAng = aLocalAng
+	HBD.vSize = vSize
+	HBD.cColor = cColor
+	HBD.bBool = bBool
+	HBD.nProtect = nProtect
+	return HBD
+end
+
+function hg.organism:CreateHitBox(maleHitBoxData, femaleHitBoxData) 
+	local MHD = maleHitBoxData
+    table.insert(
+		male[MHD.strBone],
+		1,
+		{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+	)
+	MHD = femaleHitBoxData or MHD
+	table.insert(
+		female[MHD.strBone],
+		1,
+		{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+	)
+end
