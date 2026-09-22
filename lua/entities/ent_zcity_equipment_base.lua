@@ -316,12 +316,12 @@ end
             Equip:Unwear(ply)
         end)
     end
-
-    hook.Add("radialOptions", "zc_equipment", function()
+    
+    hook.Add("radialOptions", "1_zc_equipment", function()
         local ply = LocalPlayer()
         local organism = ply.organism or {}
 
-        if ply:Alive() and !organism.otrub and hg.GetCurrentCharacter(ply) == ply then
+        if ply:Alive() and !organism.otrub then
             local Equipment = ply:GetNetVar("zc_equipment", {})
             if !Equipment or #Equipment < 1 then return end
             local tbl = {function()
