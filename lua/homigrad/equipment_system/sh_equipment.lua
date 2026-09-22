@@ -172,13 +172,19 @@ local function loadArmor()
     local files = file.Find(path.."*.lua", "LUA")
     for k,v in ipairs(files) do
         load_from_armor_file = true
+        AddCSLuaFile(path .. v)
         include(path .. v)
     end
 end
 
-hook.Add("HG_BaseHitBoxSetLoaded","LoadArmor",loadArmor)
+hook.Add("HG_BaseHitBoxSetLoaded","LoadArmor",function() 
+    load_from_armor_file = true 
+    loadArmor() 
+end)
 
-hook.Add("Think","RemoveMeLoadArmor",function()
+hook.Add("Initialize", "init-atts", loadArmor)
+
+hook.Add("InitPostEntity","RemoveMeLoadArmor",function()
     hook.Remove("Think","RemoveMeLoadArmor")
     if !HG_BaseHitBoxSetLoaded then return end 
     loadArmor()

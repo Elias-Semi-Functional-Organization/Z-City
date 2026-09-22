@@ -21,6 +21,7 @@
 --//
 
 if not load_from_armor_file then return end -- i'm sorry for that, but that way light than create Entity registration module
+DEFINE_BASECLASS("ent_zcity_armor_base")
 local ENT = {}
 ENT.Type = "anim"
 ENT.Base = "ent_zcity_armor_base"
@@ -30,10 +31,10 @@ ENT.Spawnable = true
 ENT.Model = "models/combataegis/body/ballisticvest_d.mdl"
 ENT.ModelMaterial = nil
 ENT.IconOverride = "scrappers/armor1.png"
-
 ENT.SlotOccupation = {                              -- Slots what armor occupate
     [ZC_ARMOR_SLOT_TORSO] = true,
 }
+
 --\\ Balistic settings                              -- soon can be enchanced, per plate material, durability and other stuff
 
 --\\ HitBoxSets Hitbox Creation

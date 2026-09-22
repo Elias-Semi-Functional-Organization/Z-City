@@ -167,6 +167,7 @@ function ENT:Draw()
     if IsValid(self.renderModel) then self.renderModel:Remove() end
     self:DrawModel()
 end
+
 --\\ Render Equipment
     local developer = GetConVar("developer")
     ENT.ShouldRenderLocaly = true

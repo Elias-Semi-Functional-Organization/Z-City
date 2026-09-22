@@ -262,10 +262,9 @@ end
     hook.Add("CoolPostDrawAppearance", "zc_equipmentDraw",function(ent, ply)
         local Equipment = ply:GetNetVar("zc_equipment", {})
         if #Equipment < 1 then return end
-
         for i = 1, #Equipment do
             local Equip = Entity(Equipment[i])
-            if !IsValid(Equip) then continue end
+            if !IsValid(Equip) or !Equip.RenderOnBody then continue end
             Equip:RenderOnBody(ent)
         end
     end)
@@ -305,22 +304,17 @@ end
 
 --\\ Equipment drop command
     if SERVER then
-        concommand.Add("hg_drop_equipment", function(ply, cmd, args)
+        concommand.Add("hg_drop_new_equipment", function(ply, cmd, args)
+            print(ply)
             if !IsValid(ply) then return end
+            print(ply)
             if !ply:Alive() or !ply.organism or ply.organism.otrub then return end
             if !args[1] or !tonumber(args[1]) then return end
             local Equipment = ply:GetNetVar("zc_equipment", {})
+            print(args[1])
+            local Equip = Entity(Equipment[tonumber(args[1])])
 
-            for i = 1, #Equipment do
-                local Equip = Entity(Equipment[i])
-
-                for slot, _ in pairs(Equip.SlotOccupation) do
-                    if isnumber(slot) and tonumber(args[1]) == slot then
-                        Equip:Unwear(ply)
-                        return
-                    end
-                end
-            end
+            Equip:Unwear(ply)
         end)
     end
 
@@ -339,9 +333,7 @@ end
                     for slot, _ in pairs(Equip.SlotOccupation) do
                         commands[i] = {
                             [1] = function()
-                                local id = next(Equip.SlotOccupation)
-                                --print(slot)
-                                RunConsoleCommand("hg_drop_equipment", slot)
+                                RunConsoleCommand("hg_drop_new_equipment", i)
                                 return 0
                             end,
                             [2] = "Drop:" .. " " .. Equip.PrintName
