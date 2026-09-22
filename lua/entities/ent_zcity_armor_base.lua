@@ -241,7 +241,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
 	return 0.9
 end
 
-function hg.organism:AddInputList(strName, nPlacement)
+function hg.organism:AddArmorInputList(strName, nPlacement)
     hg.organism.input_list[strName] = function(org, bone, dmg, dmgInfo, ...)
         local protect = protec(org, bone, dmg, dmgInfo, nPlacement, ...)
         return protect
