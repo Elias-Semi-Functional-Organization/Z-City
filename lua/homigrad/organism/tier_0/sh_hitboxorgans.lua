@@ -18,6 +18,12 @@ local function getTransform(pos, ang, mins, maxs, obbCenter)
 end
 
 local LocalToWorld = LocalToWorld
+
+local ShowOnlyArmor = false
+if CLIENT then
+	ShowOnlyArmor = CreateConVar("hg_show_hitbox_onlyarmor", "0")
+end
+
 function hg.organism.ShootMatrix(ent, organs)
 	if not organs or not istable(organs) or table.IsEmpty(organs) then return end
 	local boxs = {}
@@ -57,6 +63,8 @@ function hg.organism.ShootMatrix(ent, organs)
 						continue
 					end
 				end
+			elseif ShowOnlyArmor and ShowOnlyArmor:GetBool() then
+				continue 
 			end
 			mins = -organ[5]
 			maxs = -mins

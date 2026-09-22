@@ -83,20 +83,24 @@ end
     --]]
 --//
 local developer = GetConVar("developer")
-local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, ricochet)
+local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, ricochet, hitbox)
     local armor = org.owner:GetEquipmentBySlot(placement)
 	if !IsValid(armor) then return end
 
-    local durablityMul = math.min(armor.Durability / (armor.DurabilityMax - armor.DurabilityWarranty), 1)
-    local protectionDamageMul = math.min(armor.ProtectionDamageMul * (1 + (1 - durablityMul)), 1)
-    local penetratedDamageMul = math.min(armor.PenetratedDamageMul * (1 + (1 - durablityMul)), 1)
+    local HitBoxName = hitbox[9]
+    local plates = armor.PlatesLinks
+    plate = plates and armor[plates[HitBoxName]] or armor
+
+    local durablityMul = math.min(plate.Durability / (plate.DurabilityMax - plate.DurabilityWarranty), 1)
+    local protectionDamageMul = math.min(plate.ProtectionDamageMul * (1 + (1 - durablityMul)), 1)
+    local penetratedDamageMul = math.min(plate.PenetratedDamageMul * (1 + (1 - durablityMul)), 1)
 
     local penetration = (dmgInfo:GetInflictor().bullet and dmgInfo:GetInflictor().bullet.Penetration or 1)
-    local prot = armor.Protection * durablityMul
-    --print(penetration, prot, durablityMul)
+    local prot = plate.Protection * durablityMul
+
 	prot = prot - penetration
 
-	if armor.NeedPunch then
+	if plate.NeedPunch then
 		if org.owner:IsPlayer() and org.alive and dmgInfo:IsDamageType(DMG_BUCKSHOT + DMG_BULLET) then
 			org.owner:ViewPunch(AngleRand(-30, 30))
 			
@@ -116,49 +120,52 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
 		end
 	end
 	
-	//scale = scale * (dmgInfo:IsDamageType(DMG_SLASH) and 0.1 or 1)
-	
-	ArmorEffect(placement, armor, dmgInfo, org, hit, prot)
-    //print(dmgInfo:IsDamageType(DMG_BULLET + DMG_SLASH))
-    local oldDurability = armor.Durability
-    if dmgInfo:IsDamageType(DMG_BULLET + DMG_SLASH) and (!org.oldBalisticDamageInfo or org.oldBalisticDamageInfo != dmgInfo) then
-        org.oldBalisticDamageInfo = dmgInfo
-        armor.Durability = math.max(armor.Durability - (penetration * armor.BalisticMaterial), 0)
-        --print(armor.Durability)
+	ArmorEffect(placement, plate, dmgInfo, org, hit, prot)
+
+    local oldDurability = plate.Durability
+    if dmgInfo:IsDamageType(DMG_BULLET + DMG_SLASH) and (!org.oldPlate or org.oldPlate != plates[HitBoxName]) then
+        org.oldPlate = plates[HitBoxName]
+        plate.Durability = math.max(plate.Durability - (penetration * plate.BalisticMaterial), 0)
+    else
+        org.oldPlate = nil
     end
-    --print(armor.Durability, prot, dmg)
 
     if developer:GetBool() and SERVER then
         local attacker = dmgInfo:GetAttacker()
         if IsValid(attacker) and attacker:IsPlayer() and attacker:IsAdmin() then
-            --print(org.owner)
             attacker:PrintMessage(HUD_PRINTCONSOLE, "\n--// Damage to armor on " .. org.owner:Nick())
-            attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| Armor: " .. armor.PrintName)
-            attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| OldDur ".. oldDurability ..", Dur ".. armor.Durability ..", Prot ".. prot ..", Dmg ".. dmg ..", Pentr ".. penetration)
+            attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| Armor: " .. armor.PrintName .. " | HitBox: " .. HitBoxName .. " | Plate: " .. plates[hitbox[9]])
+            attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| OldDur ".. oldDurability ..", Dur ".. plate.Durability ..", Prot ".. prot ..", Dmg ".. dmg ..", Pentr ".. penetration)
             attacker:PrintMessage(HUD_PRINTCONSOLE, "--\\\\ Penetrated? " .. (prot < 1 and "Yes." or "No.") .. "\n\n" )
         end
     end
 
 	if prot < 0 then
+        org.oldDmgInfo = dmgInfo
 		dmgInfo:ScaleDamage(penetratedDamageMul)
 		dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * penetratedDamageMul )
 		return 
 	end
-
-	dmgInfo:SetDamageType(DMG_CLUB)
-	dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * protectionDamageMul / 2)
-	dmgInfo:ScaleDamage(protectionDamageMul)
     
+    if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
+        dmgInfo:SetDamageType(DMG_CLUB)
+        dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * protectionDamageMul / 2)
+        dmgInfo:ScaleDamage(protectionDamageMul)
+    end
+
 	return 0.9
 end
+
 hg.organism = hg.organism or {}
 hg.organism.input_list = hg.organism.input_list or {}
+
 function hg.organism:AddArmorInputList(strName, nPlacement)
     hg.organism.input_list[strName] = function(org, bone, dmg, dmgInfo, ...)
         local protect = protec(org, bone, dmg, dmgInfo, nPlacement, ...)
         return protect
     end
 end
+
 load_from_armor_file = false
 local function loadArmor() 
     local path = "homigrad/equipment_system/entities/"

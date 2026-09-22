@@ -4,7 +4,6 @@ local entMeta = FindMetaTable("Entity")
 AddCSLuaFile()
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
 ENT.PrintName = "Equipment base"
 ENT.Category = "ZCity Equipment"
 ENT.Spawnable = false

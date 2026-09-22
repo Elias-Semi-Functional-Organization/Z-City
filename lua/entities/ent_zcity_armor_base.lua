@@ -85,6 +85,42 @@ ENT.DurabilityWarranty = 15                     -- guarantee that the protection
 ENT.NeedPunch = false                           -- viewpunch after impact
 --//
 
+--\\
+ENT.PlateLinks = {
+    -- FrontDown = "FrontPlate"
+    -- etc
+}
+
+--[[
+    ENT.FrontPlate = {}
+    ENT.FrontPlate.Protection = ZC_ARMOR_PROTCLASS_II
+        --\\ Protection classes
+            -- ZC_ARMOR_PROTCLASS_II = 4
+            -- ZC_ARMOR_PROTCLASS_IIIA = 8
+            -- ZC_ARMOR_PROTCLASS_III = 12
+            -- ZC_ARMOR_PROTCLASS_III_PLUS = 16
+            -- ZC_ARMOR_PROTCLASS_IV = 22
+    ENT.FrontPlate.ProtectionDamageMul = 0.6                   -- protected damage mul
+    ENT.FrontPlate.PenetratedDamageMul = 0.8                   -- penetrated damage mul
+
+    ENT.FrontPlate.BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
+        --\\ BalisticMaterials
+            -- ZC_ARMOR_MATERIAL_CERAMIC = 3
+            -- ZC_ARMOR_MATERIAL_TITAN = 1.8
+            -- ZC_ARMOR_MATERIAL_ARSTEEL = 1.4
+
+            -- ZC_ARMOR_MATERIAL_KEVLAR = 0.9
+            -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
+            -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
+            -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
+    ENT.FrontPlate.Durability = 100                            -- durability
+    ENT.FrontPlate.DurabilityMax = 100                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+    ENT.FrontPlate.DurabilityWarranty = 15                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+
+    ENT.FrontPlate.NeedPunch = false 
+--]]
+--//
+
 --\\ Render male model
 ENT.Male = {}
 ENT.Male.Model = "models/lightvest/lightvest.mdl"

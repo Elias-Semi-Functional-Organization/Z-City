@@ -476,28 +476,28 @@ end
 
 local HitBoxByName = {}
 
-function hg.organism:CreateHitBox(UID, maleHitBoxData, femaleHitBoxData) 
+function hg.organism:CreateHitBox(UID, maleHitBoxData, femaleHitBoxData)
 	local MHD = maleHitBoxData
 
 	if HitBoxByName[MHD.strName .. UID] then
-		male[MHD.strBone][HitBoxByName[MHD.strName .. UID]] = {MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+		male[MHD.strBone][HitBoxByName[MHD.strName .. UID]] = {MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
 	else
 		HitBoxByName[MHD.strName .. UID] =
 			table.insert(
 				male[MHD.strBone],
-				{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+				{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
 			)
 	end
 
 	MHD = femaleHitBoxData or MHD
 
 	if HitBoxByName["F" .. MHD.strName .. UID] then
-		female[MHD.strBone][HitBoxByName["F" .. MHD.strName .. UID]] = {MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+		female[MHD.strBone][HitBoxByName["F" .. MHD.strName .. UID]] = {MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
 	else
 		HitBoxByName["F" .. MHD.strName .. UID] =
 			table.insert(
 				female[MHD.strBone],
-				{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect}
+				{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
 			)
 	end
 end

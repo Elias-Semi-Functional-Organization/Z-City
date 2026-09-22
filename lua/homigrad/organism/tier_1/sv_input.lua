@@ -28,7 +28,7 @@ local function Trace_Bullet(box, hit, ricochet, org, organs, dmg, dmgInfo, dir)
 	dmg = hook_info.dmg
 	
 	if func and !hook_info.restricted then
-		return func(org, bone, dmg, dmgInfo, box[6], dir, hit, ricochet)
+		return func(org, bone, dmg, dmgInfo, box[6], dir, hit, ricochet, organ)
 	else
 		return 0
 	end
@@ -46,7 +46,7 @@ local function Trace_Blast(box, amt, org, organs, dmg, dmgInfo)
 
 	local amount = amt * dmg
 	
-	if func then return func(org, 1, amount, dmgInfo, box[6], vector_origin, true, false) end
+	if func then return func(org, 1, amount, dmgInfo, box[6], vector_origin, true, false, organ) end
 end
 
 local dir = Vector(0, 0, 0)

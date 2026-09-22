@@ -60,6 +60,8 @@ if CLIENT then
 			--print(GunTable.WepSelectIcon2)
 			local Icon = EquipTable.IconOverride
 			local HaveIcon = true
+
+			if string.len(Icon) < 1 then return end
 			return Icon, HaveIcon, false, true
 		end
 
