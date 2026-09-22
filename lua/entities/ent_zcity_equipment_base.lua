@@ -297,6 +297,11 @@ end
 
         return Entity(EquipmentBySlot[slot])
     end
+
+    function entMeta:GetEquipments(slot)
+
+        return self:GetNetVar("zc_equipment", {})
+    end
 --//
 
 --\\ Equipment drop command

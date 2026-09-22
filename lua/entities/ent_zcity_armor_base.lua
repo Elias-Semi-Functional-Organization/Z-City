@@ -1,12 +1,12 @@
 --[[             z...
     /\___/\    z
     | _ _ |  Z
-   /|__-__|\
-   \-------/
+   /|__-__|\            support us pls
+   \--|-|--/        he sleepyhead! :3
 --]]
 DEFINE_BASECLASS( "ent_zcity_equipment_base" )	
 AddCSLuaFile()
---[[
+--[[ Armor Slots
     ZC_ARMOR_SLOT_HEAD = 4
     ZC_ARMOR_SLOT_FACE = 5
         ZC_ARMOR_SLOT_EYES = 6
@@ -31,94 +31,99 @@ ENT.Base = "ent_zcity_equipment_base"
 ENT.PrintName = "Armor base"
 ENT.Category = "ZCity TestArmor"
 ENT.Spawnable = true
-ENT.Model = "models/jworld_equipment/kevlar.mdl"
-ENT.ModelMaterial = "sal/acc/armor01_2"
-ENT.IconOverride = ""
+ENT.Model = nil--"models/jworld_equipment/kevlar.mdl"
+ENT.ModelMaterial = nil--"sal/acc/armor01_2"
+ENT.IconOverride = nil--"vgui/icons/armor02"
 
-ENT.SlotOccupation = {
-    [ZC_ARMOR_SLOT_TORSO] = true,
-    --[zc_equipment_SLOT_PANTS] = true,
-    --[zc_equipment_SLOT_BOOTS] = true,
+ENT.SlotOccupation = { -- Slots what armor occupate
+    --[ZC_ARMOR_SLOT_TORSO] = true,
 }
---\\ balistic settings
-ENT.HitBoxSet = "TestVest"
-ENT.Protection = 10
-ENT.ProtectionDamageMul = 0.6
-ENT.PenetratedDamageMul = 0.8
+--\\ Balistic settings
 
-local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(1.5, 7, 0), Angle(0, -4, 0), Vector(7.5, 1, 6), Color(0, 17, 255), true)
-hg.organism:CreateHitBox("Front",TestVest) 
+--\\ HitBoxSets HitboxCreation
+    ENT.HitBoxSet = "TestVest"
 
-local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(1.5, -3, 0), Angle(0, 0, 0), Vector(8, 1, 6), Color(0, 17, 255), true)
-hg.organism:CreateHitBox("Back",TestVest) 
+    local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(1.5, 7, 0), Angle(0, -4, 0), Vector(7.5, 1, 6), Color(0, 17, 255), true)
+    hg.organism:CreateHitBox("Front",TestVest) 
 
-local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(-3.5, 2.5, 6.5), Angle(0, 0, 90), Vector(3, 1, 4.5), Color(0, 17, 255), true)
-hg.organism:CreateHitBox("LeftSide",TestVest) 
+    local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(1.5, -3, 0), Angle(0, 0, 0), Vector(8, 1, 6), Color(0, 17, 255), true)
+    hg.organism:CreateHitBox("Back",TestVest) 
 
-local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(-3.5, 2.5, -6.5), Angle(0, 0, 90), Vector(3, 1, 4.5), Color(0, 17, 255), true)
-hg.organism:CreateHitBox("RightSide",TestVest) 
+    local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(-3.5, 2.5, 6.5), Angle(0, 0, 90), Vector(3, 1, 4.5), Color(0, 17, 255), true)
+    hg.organism:CreateHitBox("LeftSide",TestVest) 
 
-hg.organism:AddArmorInputList("TestVest", ZC_ARMOR_SLOT_TORSO)
+    local TestVest = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "TestVest", 1, Vector(-3.5, 2.5, -6.5), Angle(0, 0, 90), Vector(3, 1, 4.5), Color(0, 17, 255), true)
+    hg.organism:CreateHitBox("RightSide",TestVest) 
 
+    hg.organism:AddArmorInputList("TestVest", ZC_ARMOR_SLOT_TORSO)
 --//
-    -- ZC_ARMOR_MATERIAL_CERAMIC = 3
-    -- ZC_ARMOR_MATERIAL_TITAN = 1.8
-    -- ZC_ARMOR_MATERIAL_ARSTEEL = 1.4
 
-    -- ZC_ARMOR_MATERIAL_KEVLAR = 0.9
-    -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
-    -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
-    -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
---\\
+ENT.Protection = ZC_ARMOR_PROTCLASS_III_PLUS    -- protection class
+    --\\ Protection classes
+        -- ZC_ARMOR_PROTCLASS_II = 4
+        -- ZC_ARMOR_PROTCLASS_IIIA = 8
+        -- ZC_ARMOR_PROTCLASS_III = 12
+        -- ZC_ARMOR_PROTCLASS_III_PLUS = 16
+        -- ZC_ARMOR_PROTCLASS_IV = 22
+ENT.ProtectionDamageMul = 0.6                   -- protected damage mul
+ENT.PenetratedDamageMul = 0.8                   -- penetrated damage mul
 
 ENT.BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
-ENT.Durability = 100
-ENT.DurabilityMax = 100
-ENT.DurabilityWarranty = 15
+    --\\ BalisticMaterials
+        -- ZC_ARMOR_MATERIAL_CERAMIC = 3
+        -- ZC_ARMOR_MATERIAL_TITAN = 1.8
+        -- ZC_ARMOR_MATERIAL_ARSTEEL = 1.4
 
-ENT.NeedPunch = false
+        -- ZC_ARMOR_MATERIAL_KEVLAR = 0.9
+        -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
+        -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
+        -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
+ENT.Durability = 100                            -- durability
+ENT.DurabilityMax = 100                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+ENT.DurabilityWarranty = 15                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+
+ENT.NeedPunch = false                           -- viewpunch after impact
 --//
---\\
+
+--\\ Render male model
 ENT.Male = {}
 ENT.Male.Model = "models/lightvest/lightvest.mdl"
-ENT.Male.ModelSubMaterials = {}
-ENT.Male.HideSubMaterails = {}
-ENT.Male.Skin = 0
-ENT.Male.Bodygroups = "0000000000000"
+ENT.Male.ModelSubMaterials = {}                 -- submaterials on rendered model
+ENT.Male.HideSubMaterails = {}                  -- playermodel hide submaterials
+ENT.Male.Skin = 0                               -- skin on rendered model
+ENT.Male.Bodygroups = "0000000000000"           -- bodygroups on rendered model
 --
 ENT.Male.BoneMerge = false
-ENT.Male.ParentBone = "ValveBiped.Bip01_Spine2"
+ENT.Male.ParentBone = "ValveBiped.Bip01_Spine2" -- parent bone
 ENT.Male.OffsetPos = Vector(-9.8,3.5,0)
 ENT.Male.OffsetAng = Angle(0,88,90)
 ENT.Male.ModelSize = 0.92
 --//
 
---\\
+--\\ Render female model
 ENT.FeMale = {}
 ENT.FeMale.Model = "models/lightvest/lightvest.mdl"
-ENT.FeMale.ModelSubMaterials = {}
-ENT.FeMale.HideSubMaterails = {}
-ENT.FeMale.Skin = 0
-ENT.FeMale.Bodygroups = "0000000000000"
+ENT.FeMale.ModelSubMaterials = {}                 -- submaterials on rendered model
+ENT.FeMale.HideSubMaterails = {}                  -- playermodel hide submaterials
+ENT.FeMale.Skin = 0                               -- skin on rendered model
+ENT.FeMale.Bodygroups = "0000000000000"           -- bodygroups on rendered model
 --
 ENT.FeMale.BoneMerge = false
-ENT.FeMale.ParentBone = "ValveBiped.Bip01_Spine2"
+ENT.FeMale.ParentBone = "ValveBiped.Bip01_Spine2" -- parent bone
 ENT.FeMale.OffsetPos = Vector(-9.1,2.5,0)
 ENT.FeMale.OffsetAng = Angle(0,90,90)
 ENT.FeMale.ModelSize = 0.8
 --//
 
 ENT.PhysicsSounds = true
-
+local vec30 = Vector(0,0,30)
 function ENT:Initialize()
     BaseClass.Initialize( self )
-
+    self:SetPos(self:GetPos() + vec30)
     self:SetMaterial(self.ModelMaterial)
 end
 
-
 function ENT:DrawOverlay()
-
 end
 
 function ENT:Draw()
@@ -126,8 +131,8 @@ function ENT:Draw()
     if IsValid(self.renderModel) then self.renderModel:Remove() end
     self:DrawModel()
 end
-local developer = GetConVar("developer")
 --\\ Render Equipment
+    local developer = GetConVar("developer")
     ENT.ShouldRenderLocaly = true
     local vec = Vector(1,1,1)
     function ENT:RenderOnBody(entDrawOn)
@@ -225,6 +230,7 @@ local developer = GetConVar("developer")
 --\\ Utilites
 local entMeta = FindMetaTable("Entity") 
 function entMeta:GetEquipmentByHitBoxSet(hitboxset)
+    if not IsValid(self) then return end
     local EquipmentBySlot = self:GetNetVar("zc_equipment_by_hitbox",{})
     
     return EquipmentBySlot[hitboxset] and Entity(EquipmentBySlot[hitboxset]) or nil

@@ -5,6 +5,16 @@ local PLAYER = FindMetaTable("Player")
 
 hg.ConVars = hg.ConVars or {}
 
+--\\ find lua file
+function GetCurrentLuaFile()
+    local source = debug.getinfo(2, "S").source
+    if source:sub(1,1) == "@" then
+        return source:sub(2)
+    else
+        error("Caller was not defined in a file", 2)
+    end
+end
+--//
 --\\ Is Changed
 	local ChangedTable = {}
 

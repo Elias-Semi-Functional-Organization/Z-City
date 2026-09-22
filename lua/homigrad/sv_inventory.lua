@@ -360,6 +360,15 @@ local functions = {
         ply.inventory.Attachments[#ply.inventory.Attachments + 1] = ent.inventory.Attachments[att]
         ent.inventory.Attachments[att] = nil
     end,
+    ["Equipment"] = function(ply, ent, equip)
+        equip = tonumber(equip)
+        local equipments = ent:GetEquipments()
+        if #equipments < 1 then return end
+        equip = Entity(equipments[equip])
+        if !IsValid(equip) then return end
+        equip:Unwear(ent)
+        equip:Use(ply)
+    end
     -- ["Money"] = function(ply, ent)
     --     local money = ent:GetNetVar("zb_Scrappers_RaidMoney", 0)
     --     ply:SetNetVar("zb_Scrappers_RaidMoney", ply:GetNetVar("zb_Scrappers_RaidMoney", 0) + money)

@@ -1,3 +1,4 @@
+-- need to rewrite this shit, make cool gui, also rewrite serverside
 hg.TraitorLoot = {
 	["weapon_sogknife"] = 10,
 	["weapon_buck200knife"] = 10,
@@ -39,6 +40,8 @@ if CLIENT then
 		if hg.armor and hg.armor[i] and hg.armor[i][thing] then return thing end
 		if hg.attachmentslaunguage and hg.attachmentslaunguage[thing] then return thing end
 		if i == "Money" then return "Money, " .. tostring(thing) .. "$" end
+		local tryEnt = Entity(thing)
+		if tryEnt and IsValid(tryEnt) then return tryEnt.PrintName end
 		return tostring(i)
 	end
 
@@ -50,6 +53,14 @@ if CLIENT then
 			local Overide = GunTable.WepSelectIcon2 == nil and true or false
 			local HaveIcon = true
 			return Icon, HaveIcon, Overide, GunTable.WepSelectIcon2box
+		end
+
+		if tab == "Equipment" and IsValid(Entity(thing)) then
+			local EquipTable = Entity(thing)
+			--print(GunTable.WepSelectIcon2)
+			local Icon = EquipTable.IconOverride
+			local HaveIcon = true
+			return Icon, HaveIcon, false, true
 		end
 
 		if tab == "Attachments" and hg.attachmentsIcons[thing] then
@@ -85,6 +96,9 @@ if CLIENT then
 		["Attachments"] = function(ply, ent, att, tbl)
 			if true then return true end
 		end,
+		["Equipment"] = function(ply, ent, att, tbl)
+			if true then return true end
+		end,
 		["Money"] = function(ply, ent)
 			if true then return true end
 		end,
@@ -106,6 +120,9 @@ if CLIENT then
 			if true then return true end
 		end,
 		["Attachments"] = function(ply, ent, att, tbl)
+			if true then return true end
+		end,
+		["Equipment"] = function(ply, ent, att, tbl)
 			if true then return true end
 		end,
 		["Money"] = function(ply, ent)
@@ -166,6 +183,8 @@ if CLIENT then
 		local armor = ent:GetNetVar("Armor")
 		inv["Armor"] = armor
 		if not inv then return end
+		local Equipments = ent:GetEquipments()
+		inv["Equipment"] = Equipments
 
 		local nameStr = "Unknown"
 		if IsValid(ent) then
