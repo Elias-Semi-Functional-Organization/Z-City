@@ -121,8 +121,8 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
                 -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
                 -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
                 -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
-        ENT.FrontPlate.Durability = 100                            -- durability
-        ENT.FrontPlate.DurabilityMax = 100                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT.FrontPlate.Durability = 170                            -- durability
+        ENT.FrontPlate.DurabilityMax = 170                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT.FrontPlate.DurabilityWarranty = 70                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
         ENT.FrontPlate.NeedPunch = false                           -- viewpunch after impact
@@ -156,7 +156,7 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
         ENT.LeftPlate.NeedPunch = false                           -- viewpunch after impact
     --//  
 
-    --\\ LeftPlate
+    --\\ RightPlate
         ENT.RightPlate = {}
         ENT.RightPlate.Protection = ZC_ARMOR_PROTCLASS_II
         ENT.RightPlate.ProtectionDamageMul = 0.6                   -- protected damage mul
