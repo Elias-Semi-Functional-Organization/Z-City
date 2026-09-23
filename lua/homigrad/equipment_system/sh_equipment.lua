@@ -254,7 +254,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
         org.oldDmgInfo = dmgInfo
 		dmgInfo:ScaleDamage(penetratedDamageMul)
 		dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * penetratedDamageMul )
-		return 0
+		return
 	end
     
     if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
@@ -263,7 +263,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
         dmgInfo:ScaleDamage(protectionDamageMul)
     end
 
-	return 0.9
+	return protectionDamageMul
 end
 
 hg.organism = hg.organism or {}
