@@ -56,12 +56,9 @@ function hg.organism.ShootMatrix(ent, organs)
 			if additional then
 				local ent = ent:IsPlayer() and ent or ent:IsRagdoll() and IsValid(hg.RagdollOwner(ent)) and hg.RagdollOwner(ent) or ent
 				local result = hook_Run("HG_OrganAvalible", ent, organ[1], organ)
-				if result != nil and result != true then
+
+				if result != nil and result != true and not (ent and ent.armors and table.HasValue(ent.armors,organ[1])) then
 					continue 
-				elseif !result then 
-					if ent and ent.armors and not table.HasValue(ent.armors,organ[1]) then
-						continue
-					end
 				end
 			elseif ShowOnlyArmor and ShowOnlyArmor:GetBool() then
 				continue 

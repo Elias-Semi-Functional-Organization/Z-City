@@ -14,7 +14,6 @@ local stepDiv = 1
 local tracePos = Vector(0, 0, 0)
 function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...)
 	local endDisSqr = endDis * endDis
-	tracePos:Set(pos - dir * 1)
 
 	local hitBoxs = {}
 	local tracePoses = {}
@@ -29,6 +28,8 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	distance = math.Clamp(distance, 0, 50)
 	dir:Normalize()
 	dir = dir * stepDis
+
+	tracePos:Set(pos - dir * 10)
 	
 	local distancereal = distance
 	
@@ -52,8 +53,8 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			
 			if not organs[box[6]] then continue end
 			
-			local startpos = tracePos - dir * 0
-			local endpos = dir * 100
+			local startpos = tracePos
+			local endpos = dir * 110
 
 			local hit_, normal_, frac_ = util_IntersectRayWithOBB(startpos, endpos, box[1], box[2], box[3], box[4])
 			
