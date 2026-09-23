@@ -274,7 +274,7 @@ end
     hook.Add("ItemsTransfered", "TransferEquipment", function(ply, ragdoll)
         local Equipment = ply:GetNetVar("zc_equipment", {})
         local EquipmentBySlot = ply:GetNetVar("zc_equipment_slot", {})
-        if #Equipment < 1 then return end
+        if Equipment and #Equipment < 1 then return end
 
         for i = 1, #Equipment do
             local Equip = Entity(Equipment[i])
@@ -286,6 +286,20 @@ end
         ragdoll:SetNetVar("zc_equipment_slot", EquipmentBySlot)
         ply:SetNetVar("zc_equipment", {})
         ply:SetNetVar("zc_equipment_slot", {})
+    end)
+--//
+
+--\\ Die items
+    hook.Add("ItemsRemoved", "TransferEquipment", function(ply, ragdoll)
+        local Equipment = ply:GetNetVar("zc_equipment", {})
+        local EquipmentBySlot = ply:GetNetVar("zc_equipment_slot", {})
+        if Equipment and #Equipment < 1 then return end
+
+        for i = 1, #Equipment do
+            local Equip = Entity(Equipment[i])
+            if !IsValid(Equip) then continue end
+            Equip:Remove()
+        end
     end)
 --//
 

@@ -241,7 +241,9 @@ function hg.TransferItems(ply,ragdoll)
 		ply.armors = ply:GetNetVar("Armor",{})
 		
 		hg.SyncWeapons()
-	end
+    else
+        hook.Run("ItemsRemoved",ply)
+    end
 end
 
 hook.Add("PostPlayerDeath", "homigrad-inventory", function(ply)
