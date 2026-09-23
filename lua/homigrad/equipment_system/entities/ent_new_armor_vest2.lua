@@ -30,9 +30,11 @@ ENT.Category = "ZCity TestArmor"
 ENT.Spawnable = true
 ENT.Model = "models/eu_homicide/armor_prop.mdl"
 ENT.ModelMaterial = nil
-ENT.IconOverride = "scrappers/armor1.png"
+ENT.IconOverride = "vgui/icons/policevest"
 ENT.SlotOccupation = {                              -- Slots what armor occupate
     [ZC_ARMOR_SLOT_TORSO] = true,
+    [ZC_ARMOR_SLOT_BELLY] = true,
+    [ZC_ARMOR_SLOT_PELVIS] = true
 }
 
 --\\ Balistic settings                              -- soon can be enchanced, per plate material, durability and other stuff

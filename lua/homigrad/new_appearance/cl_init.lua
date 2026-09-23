@@ -200,6 +200,11 @@ function DrawAccesories(ply, ent, accessories,accessData, islply, force, setup, 
 		return
 	end
 
+	if accessData["placement"] and hg.EquipmentAppearanceSlots[accessData["placement"]] and IsValid(ply:GetEquipmentBySlot(hg.EquipmentAppearanceSlots[accessData["placement"]])) then
+
+		return
+	end
+
 	if not force and ((ent.NotSeen or not ent.shouldTransmit) or (ply:IsPlayer() and not ply:Alive())) then
 
 		return

@@ -42,8 +42,117 @@ ZC_ARMOR_SLOT_PELVIS = 14
     ZC_ARMOR_PROTCLASS_III_PLUS = 16
     ZC_ARMOR_PROTCLASS_IV = 22
 --//
+
+hg.EquipmentAppearanceSlots = {
+    ["face"] = ZC_ARMOR_SLOT_FACE,
+    ["head"] = ZC_ARMOR_SLOT_HEAD,
+    ["spine"] = ZC_ARMOR_SLOT_PELVIS,
+    ["torso"] = ZC_ARMOR_SLOT_TORSO
+}
+
 hg = hg or {}
 hg.organism = hg.organism or {}
+
+if CLIENT then
+    local function DrawFirstPersonHelmet(self, ply)
+        if ply:GetNetVar("headcrab") then return end
+        if not ply:Alive() then return end
+        if ply.organism and ply.organism.otrub then return end
+        if not self.Overlay then return end
+
+        local vecAdjust =   self.Overlay.PosAdjust
+        local fFov =        self.Overlay.Fov
+        local setMat =      self.Overlay.ModelMaterial
+
+        if not IsValid(ply.FirstPersonHelmetModel) then
+            ply.FirstPersonHelmetModel = ClientsideModel(self.Overlay.Model)
+            ply.FirstPersonHelmetModel:SetNoDraw(true)
+            return
+        end
+
+        if not IsValid(ply.FirstPersonHelmetModel2) then
+            ply.FirstPersonHelmetModel2 = ClientsideModel(self.Overlay.Model)
+            ply.FirstPersonHelmetModel2:SetNoDraw(true)
+            ply.FirstPersonHelmetModel2:SetModelScale(1.05)
+            return
+        end
+
+        local mdl = ply.FirstPersonHelmetModel
+        local mdl2 = ply.FirstPersonHelmetModel2
+
+        if mdl:GetModel() != self.Overlay.Model then
+            mdl:SetModel(self.Overlay.Model)
+        end
+
+        if mdl2:GetModel() != self.Overlay.Model then
+            mdl2:SetModel(self.Overlay.Model)
+        end
+        
+        if setMat and !mdl.matseted1 then
+            mdl:SetSubMaterial(0,setMat)
+            mdl.matseted = false
+            mdl.matseted1 = true
+            --print('huy')
+        elseif !setMat and !mdl.matseted then
+            --print("huy")
+            mdl:SetSubMaterial(0,nil)
+            mdl.matseted = true
+            mdl.matseted1 = false
+        end
+
+        local gp = false
+        local view = render.GetViewSetup()
+        cam.Start3D(view.origin,view.angles,view.fov + fFov,nil,nil,nil,nil,1,10)
+            --cam.IgnoreZ(true)
+            local viewpunching = GetViewPunchAngles() / 2
+            local ang = view.angles + viewpunching
+            mdl:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
+            mdl:SetRenderAngles(ang)
+            mdl2:SetRenderOrigin(view.origin + ang:Forward() * (vecAdjust.x + (gp and vecAdjust2.x or 0)) + ang:Right() * (vecAdjust.y + (gp and vecAdjust2.y or 0)) + ang:Up() * (vecAdjust.z + (gp and vecAdjust2.z or 0)))
+            mdl2:SetRenderAngles(ang)
+            mdl:SetParent(ply, ply:LookupBone("ValveBiped.Bip01_Head1"))
+            render.SetColorModulation(1,1,1)
+                render.SetStencilWriteMask( 0xFF )
+                render.SetStencilTestMask( 0xFF )
+                render.SetStencilReferenceValue( 0 )
+                render.SetStencilCompareFunction( STENCIL_ALWAYS )
+                render.SetStencilPassOperation( STENCIL_KEEP )
+                render.SetStencilFailOperation( STENCIL_KEEP )
+                render.SetStencilZFailOperation( STENCIL_KEEP )
+                render.ClearStencil()
+
+                -- Enable stencils
+                render.SetStencilEnable( true )
+                -- Set everything up everything draws to the stencil buffer instead of the screen
+                render.SetStencilReferenceValue( 1 )
+                render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
+                render.SetStencilPassOperation( STENCIL_REPLACE )
+                render.SetBlend(0)
+                    mdl2:DrawModel()
+                render.SetBlend(1)
+                render.SetStencilCompareFunction( STENCIL_EQUAL )
+                mdl:DrawModel()
+                if not hg.ConVars.potatopc:GetBool() then
+                    DrawBokehDOF(8,0.9,15)
+                end
+                -- Let everything render normally again
+                render.SetStencilEnable( false )
+            render.SetColorModulation(1,1,1)
+            --cam.IgnoreZ(false)
+        cam.End3D()
+    end
+    
+    hg.DrawFirstPersonHelmet = DrawFirstPersonHelmet
+
+    hook.Add("Post Pre Post Processing", "renderEquipmentOverlay", function()
+        local Overlay = lply:GetEquipmentBySlot(ZC_ARMOR_SLOT_HEAD)
+        Overlay = IsValid(lply:GetEquipmentBySlot(ZC_ARMOR_SLOT_EYES)) and lply:GetEquipmentBySlot(ZC_ARMOR_SLOT_EYES) or Overlay
+        if !IsValid(Overlay) then return end
+        if lply:IsLocal() then return end
+        Overlay:DrawOverlay(lply)
+    end)
+end
+
 
 local function ArmorEffect(placement, armor, dmgInfo, org, hit, prot)
 	if prot < 0 then return end
@@ -150,7 +259,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
     
     if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
         dmgInfo:SetDamageType(DMG_CLUB)
-        dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * protectionDamageMul / 2)
+        dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * protectionDamageMul)
         dmgInfo:ScaleDamage(protectionDamageMul)
     end
 
