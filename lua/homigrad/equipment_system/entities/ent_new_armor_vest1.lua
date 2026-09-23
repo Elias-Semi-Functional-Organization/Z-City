@@ -38,46 +38,47 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
 --\\ Balistic settings                              -- soon can be enchanced, per plate material, durability and other stuff
 
 --\\ HitBoxSets Hitbox Creation
-    ENT.HitBoxSet = "new_vest1"                     -- you can use same hitbox sets on other armor
+    local HitBoxSet = "new_vest1"
+    ENT.HitBoxSet = HitBoxSet                     -- you can use same hitbox sets on other armor
     --\\ Plates HitBoxSets
         local color_yellow = Color(255,255,0)
         -- Fornt Plate
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, 7, 0), Angle(0, -4, 0), Vector(3, 1, 3.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, 0), Angle(0, -4, 0), Vector(3, 1, 3.5), color_yellow, true)
             hg.organism:CreateHitBox("Front",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(0, 7.5, 0), Angle(0, -4, 0), Vector(4.1, 1, 5.2), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(0, 7.5, 0), Angle(0, -4, 0), Vector(4.1, 1, 5.2), color_yellow, true)
             hg.organism:CreateHitBox("FrontDown",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, 7, -2.9), Angle(-18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, -2.9), Angle(-18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
             hg.organism:CreateHitBox("FrontRight",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, 7, 2.9), Angle(18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, 2.9), Angle(18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
             hg.organism:CreateHitBox("FrontLeft",HitBox)
         --//
 
         -- Back Plate
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, -3, 0), Angle(0, -4, 0), Vector(3, 1, 3.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, 0), Angle(0, -4, 0), Vector(3, 1, 3.5), color_yellow, true)
             hg.organism:CreateHitBox("Back",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(0, -2.5, 0), Angle(0, -4, 0), Vector(4.1, 1, 5.2), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(0, -2.5, 0), Angle(0, -4, 0), Vector(4.1, 1, 5.2), color_yellow, true)
             hg.organism:CreateHitBox("BackDown",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, -3, -2.9), Angle(-18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, -2.9), Angle(-18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
             hg.organism:CreateHitBox("BackRight",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(5.8, -3, 2.9), Angle(18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, 2.9), Angle(18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
             hg.organism:CreateHitBox("BackLeft",HitBox)
         --//
 
         -- Side Plates (kevlar... but soon)
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(-1.7, 2.5, 6), Angle(0, 0, 90), Vector(2.5, 0.5, 4.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(-1.7, 2.5, 6), Angle(0, 0, 90), Vector(2.5, 0.5, 4.5), color_yellow, true)
             hg.organism:CreateHitBox("LeftSide",HitBox)
 
-            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", "new_vest1", 1, Vector(-1.7, 2.5, -6), Angle(0, 0, 90), Vector(2.5, 0.5, 4.5), color_yellow, true)
+            local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(-1.7, 2.5, -6), Angle(0, 0, 90), Vector(2.5, 0.5, 4.5), color_yellow, true)
             hg.organism:CreateHitBox("RightSide",HitBox)
         --//
     --//
-    hg.organism:AddArmorInputList("new_vest1", ZC_ARMOR_SLOT_TORSO)
+    hg.organism:AddArmorInputList(HitBoxSet, ZC_ARMOR_SLOT_TORSO)
 --//
 
     --\\ Plates
@@ -101,18 +102,18 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
         RightSide =     RP
     }
     --\\ FrontPlate
-        ENT.FrontPlate = {}
-        ENT.FrontPlate.Protection = ZC_ARMOR_PROTCLASS_IV
+        ENT[FP] = {}
+        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_IV
             --\\ Protection classes
                 -- ZC_ARMOR_PROTCLASS_II = 4
                 -- ZC_ARMOR_PROTCLASS_IIIA = 8
                 -- ZC_ARMOR_PROTCLASS_III = 12
                 -- ZC_ARMOR_PROTCLASS_III_PLUS = 16
                 -- ZC_ARMOR_PROTCLASS_IV = 22
-        ENT.FrontPlate.ProtectionDamageMul = 0.4                   -- protected damage mul
-        ENT.FrontPlate.PenetratedDamageMul = 0.7                   -- penetrated damage mul
+        ENT[FP].ProtectionDamageMul = 0.4                   -- protected damage mul
+        ENT[FP].PenetratedDamageMul = 0.7                   -- penetrated damage mul
 
-        ENT.FrontPlate.BalisticMaterial = ZC_ARMOR_MATERIAL_CERAMIC -- actually this is just a mul of degradation armor
+        ENT[FP].BalisticMaterial = ZC_ARMOR_MATERIAL_CERAMIC -- actually this is just a mul of degradation armor
             --\\ BalisticMaterials
                 -- ZC_ARMOR_MATERIAL_CERAMIC = 3
                 -- ZC_ARMOR_MATERIAL_TITAN = 1.8
@@ -122,53 +123,53 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
                 -- ZC_ARMOR_MATERIAL_KEVLAR_CERAMIC = 0.75
                 -- ZC_ARMOR_MATERIAL_KEVLAR_ARSTEEL = 0.6
                 -- ZC_ARMOR_MATERIAL_KEVLAR_TITAN = 0.45
-        ENT.FrontPlate.Durability = 170                            -- durability
-        ENT.FrontPlate.DurabilityMax = 170                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
-        ENT.FrontPlate.DurabilityWarranty = 70                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+        ENT[FP].Durability = 170                            -- durability
+        ENT[FP].DurabilityMax = 170                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[FP].DurabilityWarranty = 70                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
-        ENT.FrontPlate.NeedPunch = false                           -- viewpunch after impact
+        ENT[FP].NeedPunch = false                           -- viewpunch after impact
     --//       
     
     --\\ BackPlate
-        ENT.BackPlate = {}
-        ENT.BackPlate.Protection = ZC_ARMOR_PROTCLASS_IV
-        ENT.BackPlate.ProtectionDamageMul = 0.4                   -- protected damage mul
-        ENT.BackPlate.PenetratedDamageMul = 0.7                   -- penetrated damage mul
+        ENT[BP] = {}
+        ENT[BP].Protection = ZC_ARMOR_PROTCLASS_IV
+        ENT[BP].ProtectionDamageMul = 0.4                   -- protected damage mul
+        ENT[BP].PenetratedDamageMul = 0.7                   -- penetrated damage mul
 
-        ENT.BackPlate.BalisticMaterial = ZC_ARMOR_MATERIAL_CERAMIC -- actually this is just a mul of degradation armor
-        ENT.BackPlate.Durability = 170                            -- durability
-        ENT.BackPlate.DurabilityMax = 170                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
-        ENT.BackPlate.DurabilityWarranty = 70                    -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+        ENT[BP].BalisticMaterial = ZC_ARMOR_MATERIAL_CERAMIC -- actually this is just a mul of degradation armor
+        ENT[BP].Durability = 170                            -- durability
+        ENT[BP].DurabilityMax = 170                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[BP].DurabilityWarranty = 70                    -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
-        ENT.BackPlate.NeedPunch = false                           -- viewpunch after impact
+        ENT[BP].NeedPunch = false                           -- viewpunch after impact
     --//  
 
     --\\ LeftPlate
-        ENT.LeftPlate = {}
-        ENT.LeftPlate.Protection = ZC_ARMOR_PROTCLASS_II
-        ENT.LeftPlate.ProtectionDamageMul = 0.6                   -- protected damage mul
-        ENT.LeftPlate.PenetratedDamageMul = 0.8                   -- penetrated damage mul
+        ENT[LP] = {}
+        ENT[LP].Protection = ZC_ARMOR_PROTCLASS_II
+        ENT[LP].ProtectionDamageMul = 0.6                   -- protected damage mul
+        ENT[LP].PenetratedDamageMul = 0.8                   -- penetrated damage mul
 
-        ENT.LeftPlate.BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
-        ENT.LeftPlate.Durability = 25                            -- durability
-        ENT.LeftPlate.DurabilityMax = 25                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
-        ENT.LeftPlate.DurabilityWarranty = 20                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+        ENT[LP].BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
+        ENT[LP].Durability = 25                            -- durability
+        ENT[LP].DurabilityMax = 25                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[LP].DurabilityWarranty = 20                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
-        ENT.LeftPlate.NeedPunch = false                           -- viewpunch after impact
+        ENT[LP].NeedPunch = false                           -- viewpunch after impact
     --//  
 
     --\\ RightPlate
-        ENT.RightPlate = {}
-        ENT.RightPlate.Protection = ZC_ARMOR_PROTCLASS_II
-        ENT.RightPlate.ProtectionDamageMul = 0.6                   -- protected damage mul
-        ENT.RightPlate.PenetratedDamageMul = 0.8                   -- penetrated damage mul
+        ENT[RP] = {}
+        ENT[RP].Protection = ZC_ARMOR_PROTCLASS_II
+        ENT[RP].ProtectionDamageMul = 0.6                   -- protected damage mul
+        ENT[RP].PenetratedDamageMul = 0.8                   -- penetrated damage mul
 
-        ENT.RightPlate.BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
-        ENT.RightPlate.Durability = 25                            -- durability
-        ENT.RightPlate.DurabilityMax = 25                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
-        ENT.RightPlate.DurabilityWarranty = 20                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
+        ENT[RP].BalisticMaterial = ZC_ARMOR_MATERIAL_KEVLAR -- actually this is just a mul of degradation armor
+        ENT[RP].Durability = 25                            -- durability
+        ENT[RP].DurabilityMax = 25                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
+        ENT[RP].DurabilityWarranty = 20                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
 
-        ENT.RightPlate.NeedPunch = false                           -- viewpunch after impact
+        ENT[RP].NeedPunch = false                           -- viewpunch after impact
     --//  
 --//
 

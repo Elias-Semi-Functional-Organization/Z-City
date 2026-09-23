@@ -256,8 +256,8 @@ table.insert(male["ValveBiped.Bip01_Spine2"],1,{"vest8", 1, Vector(-7, -2.5, 0),
 
 table.insert(male["ValveBiped.Bip01_Head1"],1,{"helmet6", 1, Vector(6.5, -1, 0), Angle(0, 15, 0), Vector(2.7, 6, 4.5), Color(250, 255, 0), true, hg.armor.head["helmet6"].protection})
 --table.insert(male["ValveBiped.Bip01_Head1"],1,{"helmet6", 1, Vector(1, 2, 0), Angle(0, 0, 0), Vector(1.5, 1.7, 4.5), Color(250, 255, 0), true, hg.armor.head["helmet6"].protection})
-local female = {}
-table.CopyFromTo(male, female)
+local female = table.Copy(male)
+--table.CopyFromTo(male, female)
 
 female["ValveBiped.Bip01_Head1"] = {
 	{
@@ -457,7 +457,7 @@ local cmb_mdls = {
 }
 
 function hg.organism.GetHitBoxOrgans(model, ent)
-	return (models_female[model] and female) or male
+	return (ThatPlyIsFemale(ent) and female) or male
 end
 
 function hg.organism:HitBox(strBone, strName, nValue, vLocalPos, aLocalAng, vSize, cColor, bBool, nProtect)
@@ -476,7 +476,7 @@ end
 
 local HitBoxByName = {}
 
-function hg.organism:CreateHitBox(UID, maleHitBoxData, femaleHitBoxData)
+function hg.organism:CreateHitBox(UID, maleHitBoxData, femaleHitBoxData,p)
 	local MHD = maleHitBoxData
 
 	if HitBoxByName[MHD.strName .. UID] then
@@ -489,15 +489,15 @@ function hg.organism:CreateHitBox(UID, maleHitBoxData, femaleHitBoxData)
 			)
 	end
 
-	MHD = femaleHitBoxData or MHD
+	local FHD = femaleHitBoxData or MHD
 
-	if HitBoxByName["F" .. MHD.strName .. UID] then
-		female[MHD.strBone][HitBoxByName["F" .. MHD.strName .. UID]] = {MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
+	if HitBoxByName["F" .. FHD.strName .. UID] then
+		female[FHD.strBone][HitBoxByName["F" .. FHD.strName .. UID]] = {FHD.strName, FHD.nValue, FHD.vLocalPos, FHD.aLocalAng, FHD.vSize, FHD.cColor, FHD.bBool, FHD.nProtect, UID}
 	else
-		HitBoxByName["F" .. MHD.strName .. UID] =
+		HitBoxByName["F" .. FHD.strName .. UID] =
 			table.insert(
-				female[MHD.strBone],
-				{MHD.strName, MHD.nValue, MHD.vLocalPos, MHD.aLocalAng, MHD.vSize, MHD.cColor, MHD.bBool, MHD.nProtect, UID}
+				female[FHD.strBone],
+				{FHD.strName, FHD.nValue, FHD.vLocalPos, FHD.aLocalAng, FHD.vSize, FHD.cColor, FHD.bBool, FHD.nProtect, UID}
 			)
 	end
 end

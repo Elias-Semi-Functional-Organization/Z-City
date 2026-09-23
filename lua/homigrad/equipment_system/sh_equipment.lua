@@ -123,8 +123,9 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
 	ArmorEffect(placement, plate, dmgInfo, org, hit, prot)
 
     local oldDurability = plate.Durability
-    if dmgInfo:IsDamageType(DMG_BULLET + DMG_SLASH) and (!org.oldPlate or org.oldPlate != plates[HitBoxName]) then
+    if dmgInfo:IsDamageType(DMG_BULLET + DMG_SLASH) and ( (!org.oldPlate or org.oldPlate != plates[HitBoxName]) or (!org.oldDmgInfo1 or org.oldDmgInfo1 != dmgInfo) ) then
         org.oldPlate = plates[HitBoxName]
+        org.oldDmgInfo1 = dmgInfo
         plate.Durability = math.max(plate.Durability - (penetration * plate.BalisticMaterial), 0)
     else
         org.oldPlate = nil
@@ -133,10 +134,10 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
     if developer:GetBool() and SERVER then
         local attacker = dmgInfo:GetAttacker()
         if IsValid(attacker) and attacker:IsPlayer() and attacker:IsAdmin() then
-            attacker:PrintMessage(HUD_PRINTCONSOLE, "\n--// Damage to armor on " .. org.owner:Nick())
+            attacker:PrintMessage(HUD_PRINTCONSOLE, "\n--// Damage to armor on " .. (org.owner:IsPlayer() and org.owner:Nick() or "Ragdoll[".. org.owner:EntIndex() .."]"))
             attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| Armor: " .. armor.PrintName .. " | HitBox: " .. HitBoxName .. " | Plate: " .. plates[hitbox[9]])
             attacker:PrintMessage(HUD_PRINTCONSOLE, "--|| OldDur ".. oldDurability ..", Dur ".. plate.Durability ..", Prot ".. prot ..", Dmg ".. dmg ..", Pentr ".. penetration)
-            attacker:PrintMessage(HUD_PRINTCONSOLE, "--\\\\ Penetrated? " .. (prot < 1 and "Yes." or "No.") .. "\n\n" )
+            attacker:PrintMessage(HUD_PRINTCONSOLE, "--\\\\ Penetrated? " .. (prot < 0 and "Yes." or "No.") .. "\n\n" )
         end
     end
 
@@ -144,7 +145,7 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
         org.oldDmgInfo = dmgInfo
 		dmgInfo:ScaleDamage(penetratedDamageMul)
 		dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * penetratedDamageMul )
-		return 
+		return 0
 	end
     
     if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
@@ -184,7 +185,7 @@ end)
 
 hook.Add("Initialize", "init-atts", loadArmor)
 
-hook.Add("InitPostEntity","RemoveMeLoadArmor",function()
+hook.Add("Think","RemoveMeLoadArmor",function()
     hook.Remove("Think","RemoveMeLoadArmor")
     if !HG_BaseHitBoxSetLoaded then return end 
     loadArmor()
