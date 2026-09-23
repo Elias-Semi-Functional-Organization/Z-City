@@ -103,7 +103,7 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
     }
     --\\ FrontPlate
         ENT[FP] = {}
-        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_IV
+        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_III
             --\\ Protection classes
                 -- ZC_ARMOR_PROTCLASS_II = 4
                 -- ZC_ARMOR_PROTCLASS_IIIA = 8
@@ -132,7 +132,7 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
     
     --\\ BackPlate
         ENT[BP] = {}
-        ENT[BP].Protection = ZC_ARMOR_PROTCLASS_IV
+        ENT[BP].Protection = ZC_ARMOR_PROTCLASS_III
         ENT[BP].ProtectionDamageMul = 0.4                   -- protected damage mul
         ENT[BP].PenetratedDamageMul = 0.7                   -- penetrated damage mul
 

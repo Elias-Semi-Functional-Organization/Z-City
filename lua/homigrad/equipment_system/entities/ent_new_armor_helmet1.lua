@@ -25,7 +25,7 @@ DEFINE_BASECLASS("ent_zcity_armor_base")
 local ENT = {}
 ENT.Type = "anim"
 ENT.Base = "ent_zcity_armor_base"
-ENT.PrintName = "ACH Helmet III"
+ENT.PrintName = "ACH Helmet IIIA"
 ENT.Category = "ZCity TestArmor"
 ENT.Spawnable = true
 ENT.Model = "models/barney_helmet.mdl"
@@ -121,7 +121,7 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
     }
     --\\ FrontPlate
         ENT[FP] = {}
-        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_III
+        ENT[FP].Protection = ZC_ARMOR_PROTCLASS_IIIA
             --\\ Protection classes
                 -- ZC_ARMOR_PROTCLASS_II = 4
                 -- ZC_ARMOR_PROTCLASS_IIIA = 8
@@ -131,7 +131,7 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
         ENT[FP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[FP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[FP].BalisticMaterial = ZC_ARMOR_MATERIAL_TITAN -- actually this is just a mul of degradation armor
+        ENT[FP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
             --\\ BalisticMaterials
                 -- ZC_ARMOR_MATERIAL_CERAMIC = 3
                 -- ZC_ARMOR_MATERIAL_TITAN = 1.8
@@ -150,11 +150,11 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
     
     --\\ BackPlate
         ENT[BP] = {}
-        ENT[BP].Protection = ZC_ARMOR_PROTCLASS_III
+        ENT[BP].Protection = ZC_ARMOR_PROTCLASS_IIIA
         ENT[BP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[BP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[BP].BalisticMaterial = ZC_ARMOR_MATERIAL_TITAN -- actually this is just a mul of degradation armor
+        ENT[BP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
         ENT[BP].Durability = 50                            -- durability
         ENT[BP].DurabilityMax = 50                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT[BP].DurabilityWarranty = 10                    -- guarantee that the protection level will not decrease (no debuff) upon the degradation
@@ -164,11 +164,11 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
 
     --\\ TopPlate
         ENT[TP] = {}
-        ENT[TP].Protection = ZC_ARMOR_PROTCLASS_III
+        ENT[TP].Protection = ZC_ARMOR_PROTCLASS_IIIA
         ENT[TP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[TP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[TP].BalisticMaterial = ZC_ARMOR_MATERIAL_TITAN -- actually this is just a mul of degradation armor
+        ENT[TP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
         ENT[TP].Durability = 50                            -- durability
         ENT[TP].DurabilityMax = 50                         -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT[TP].DurabilityWarranty = 10                    -- guarantee that the protection level will not decrease (no debuff) upon the degradation
@@ -178,11 +178,11 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
 
     --\\ SideLPlate
         ENT[SLP] = {}
-        ENT[SLP].Protection = ZC_ARMOR_PROTCLASS_III
+        ENT[SLP].Protection = ZC_ARMOR_PROTCLASS_IIIA
         ENT[SLP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[SLP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[SLP].BalisticMaterial = ZC_ARMOR_MATERIAL_TITAN -- actually this is just a mul of degradation armor
+        ENT[SLP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
         ENT[SLP].Durability = 25                             -- durability
         ENT[SLP].DurabilityMax = 25                          -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT[SLP].DurabilityWarranty = 10                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
@@ -192,11 +192,11 @@ ENT.DrawOverlay = hg.DrawFirstPersonHelmet
 
     --\\ SideRPlate
         ENT[SRP] = {}
-        ENT[SRP].Protection = ZC_ARMOR_PROTCLASS_III
+        ENT[SRP].Protection = ZC_ARMOR_PROTCLASS_IIIA
         ENT[SRP].ProtectionDamageMul = 0.6                   -- protected damage mul
         ENT[SRP].PenetratedDamageMul = 0.9                   -- penetrated damage mul
 
-        ENT[SRP].BalisticMaterial = ZC_ARMOR_MATERIAL_TITAN -- actually this is just a mul of degradation armor
+        ENT[SRP].BalisticMaterial = ZC_ARMOR_MATERIAL_UHMWPE -- actually this is just a mul of degradation armor
         ENT[SRP].Durability = 25                             -- durability
         ENT[SRP].DurabilityMax = 25                          -- max durability, for the future repair armor (yeah i'm doing immersive shit)
         ENT[SRP].DurabilityWarranty = 10                     -- guarantee that the protection level will not decrease (no debuff) upon the degradation
