@@ -34,6 +34,7 @@ ENT.Spawnable = false
 ENT.Model = nil--"models/jworld_equipment/kevlar.mdl"
 ENT.ModelMaterial = nil--"sal/acc/armor01_2"
 ENT.IconOverride = nil--"vgui/icons/armor02"
+ENT.IsZPickup = true
 
 ENT.SlotOccupation = { -- Slots what armor occupate
     --[ZC_ARMOR_SLOT_TORSO] = true,
@@ -157,6 +158,18 @@ function ENT:Initialize()
     BaseClass.Initialize( self )
     self:SetPos(self:GetPos() + vec30)
     self:SetMaterial(self.ModelMaterial)
+end
+ENT.EquipSound = "snd_jack_hmcd_disguise.wav"
+ENT.UnEquipSound = "snd_jack_hmcd_disguise.wav"
+function ENT:Use(entUser)
+    BaseClass.Use( self, entUser )
+
+    self:EmitSound(self.EquipSound, 60, math.random(95,105), 1, CHAN_AUTO)
+end
+
+function ENT:OnUnwear()
+
+    self:EmitSound(self.UnEquipSound, 55, math.random(95,105), 1, CHAN_AUTO)
 end
 
 function ENT:DrawOverlay()
