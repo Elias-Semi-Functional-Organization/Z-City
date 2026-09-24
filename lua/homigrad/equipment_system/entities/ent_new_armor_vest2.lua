@@ -108,6 +108,24 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
         LeftSide =      LP,
         RightSide =     RP
     }
+
+    -- ENT.SideLinks = {                 -- for penetration damage type change, cuz i don't want rewrite organism hitbox system fully
+    --     Front =         "Front",
+    --     FrontPlate =    "Front",
+    --     FrontPlateDown ="Front",
+    --     FrontPlateRight="Front",
+    --     FrontPlateLeft= "Front",
+
+    --     Back =          "Back",
+    --     BackPlate =     "Back",
+    --     BackPlateDown = "Back",
+    --     BackPlateRight= "Back",
+    --     BackPlateLeft=  "Back",
+
+    --     LeftSide =      "Left",
+    --     RightSide =     "Right"
+    -- }
+    
     --\\ FrontPlate
         ENT[FP] = {}
         ENT[FP].Protection = ZC_ARMOR_PROTCLASS_II

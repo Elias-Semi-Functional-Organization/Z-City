@@ -255,14 +255,26 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
         end
     end
 
+    if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
+        org.oldSideLink = armor.SideLinks and armor.SideLinks[HitBoxName] or nil
+        armor.nodamagetypeChange = false
+    end
+
+    if armor.SideLinks and armor.SideLinks[HitBoxName] != org.oldSideLink then
+        armor.nodamagetypeChange = true
+    end
+
 	if prot < 0 then
+        org.oldSideLink = armor.SideLinks and armor.SideLinks[HitBoxName] or nil
         org.oldDmgInfo = dmgInfo
 		dmgInfo:ScaleDamage(penetratedDamageMul)
 		dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * penetratedDamageMul )
+    
+        dmgInfo:GetInflictor().bullet.Penetration = dmgInfo:GetInflictor().bullet.Penetration * penetratedDamageMul
 		return
 	end
     
-    if not org.oldDmgInfo or org.oldDmgInfo != dmgInfo then
+    if not org.oldDmgInfo or (org.oldDmgInfo != dmgInfo) or !armor.nodamagetypeChange then
         dmgInfo:SetDamageType(DMG_CLUB)
         dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * protectionDamageMul)
         dmgInfo:ScaleDamage(protectionDamageMul)
