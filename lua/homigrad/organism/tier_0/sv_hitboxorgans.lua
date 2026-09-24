@@ -30,6 +30,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	dir = dir * stepDis
 
 	tracePos:Set(pos - dir * 5)
+	distance = distance + (dir * 5):Length()
 	
 	local distancereal = distance
 	
@@ -37,7 +38,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	local maxtries = 20
 	while(passing < distance and maxtries > 0)do
 		maxtries = maxtries - 1
-		
+
 		if maxpen ~= 0 and passing >= maxpen + 10 then break end
 
 		dir:Normalize()
@@ -102,7 +103,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			end*/
 			
 			dirSub = funcInput(box, tracePos, ricocheted, ...)
-			
+
 			if dirSub then
 				distance = distance - dirSub * distance
 			end
@@ -129,7 +130,6 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 		end
 		
 		tracePoses[#tracePoses + 1] = Vector(tracePos[1], tracePos[2], tracePos[3])
-		
 		if passing >= distance or (tracePos - center):LengthSqr() > endDisSqr then break end
 	end
 	

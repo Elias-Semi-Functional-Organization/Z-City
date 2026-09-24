@@ -52,16 +52,20 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
 
         -- Fornt Plate
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, 0), Angle(0, -4, 0), Vector(3, 1, 3.5), color_yellow, true)
-            hg.organism:CreateHitBox("FrontPlate",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, 6.5, 0), Angle(0, 0, 0), Vector(3, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("FrontPlate",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(0, 7.5, 0), Angle(0, -4, 0), Vector(4.1, 1, 5.2), color_yellow, true)
-            hg.organism:CreateHitBox("FrontPlateDown",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(-3, 6.5, 0), Angle(0, 0, 0), Vector(4.1, 1, 5.2), color_yellow, true)
+            hg.organism:CreateHitBox("FrontPlateDown",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, -2.9), Angle(-18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
-            hg.organism:CreateHitBox("FrontPlateRight",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, 6.5, -2.9), Angle(-18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            hg.organism:CreateHitBox("FrontPlateRight",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, 7, 2.9), Angle(18, -4, 0), Vector(2.5, 1, 1.5), color_yellow, true)
-            hg.organism:CreateHitBox("FrontPlateLeft",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, 6.5, 2.9), Angle(18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            hg.organism:CreateHitBox("FrontPlateLeft",HitBox, HitBoxF)
         --//
 
         -- Back Kevlar
@@ -72,16 +76,20 @@ ENT.SlotOccupation = {                              -- Slots what armor occupate
 
         -- Back Plate
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, 0), Angle(0, 0, 0), Vector(3, 1, 3.5), color_yellow, true)
-            hg.organism:CreateHitBox("BackPlate",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, -3.5, 0), Angle(0, 0, 0), Vector(3, 1, 3.5), color_yellow, true)
+            hg.organism:CreateHitBox("BackPlate",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(0, -3, 0), Angle(0, 0, 0), Vector(4.1, 1, 5.2), color_yellow, true)
-            hg.organism:CreateHitBox("BackPlateDown",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(-3, -3.5, 0), Angle(0, 0, 0), Vector(4.1, 1, 5.2), color_yellow, true)
+            hg.organism:CreateHitBox("BackPlateDown",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, -2.9), Angle(-18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
-            hg.organism:CreateHitBox("BackPlateRight",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, -3.5, -2.9), Angle(-18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            hg.organism:CreateHitBox("BackPlateRight",HitBox, HitBoxF)
 
             local HitBox = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(5.8, -3, 2.9), Angle(18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
-            hg.organism:CreateHitBox("BackPlateLeft",HitBox)
+            local HitBoxF = hg.organism:HitBox("ValveBiped.Bip01_Spine2", HitBoxSet, 1, Vector(2.8, -3.5, 2.9), Angle(18, 0, 0), Vector(2.5, 1, 1.5), color_yellow, true)
+            hg.organism:CreateHitBox("BackPlateLeft",HitBox, HitBoxF)
         --//
 
         -- Side Kevlar (kevlar... but soon)
@@ -246,7 +254,7 @@ ENT.Male = {}
 ENT.Male.Model = "models/lightvest/lightvest.mdl"
 ENT.Male.ModelSubMaterials = {}                     -- submaterials on rendered model
 ENT.Male.HideSubMaterails = {}                      -- playermodel hide submaterials
-ENT.Male.Skin = 4                                   -- skin on rendered model
+ENT.Male.Skin = 0                                   -- skin on rendered model
 ENT.Male.Bodygroups = "0000000000000"               -- bodygroups on rendered model
 --
 ENT.Male.BoneMerge = false
@@ -261,7 +269,7 @@ ENT.FeMale = {}
 ENT.FeMale.Model = "models/lightvest/lightvest.mdl"
 ENT.FeMale.ModelSubMaterials = {}                   -- submaterials on rendered model
 ENT.FeMale.HideSubMaterails = {}                    -- playermodel hide submaterials
-ENT.FeMale.Skin = 4                                 -- skin on rendered model
+ENT.FeMale.Skin = 0                                 -- skin on rendered model
 ENT.FeMale.Bodygroups = "0000000000000"             -- bodygroups on rendered model
 --
 ENT.FeMale.BoneMerge = false
