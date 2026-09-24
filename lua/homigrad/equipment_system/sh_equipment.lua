@@ -269,8 +269,9 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
         org.oldDmgInfo = dmgInfo
 		dmgInfo:ScaleDamage(penetratedDamageMul)
 		dmgInfo:SetDamageForce(dmgInfo:GetDamageForce() * penetratedDamageMul )
-    
-        dmgInfo:GetInflictor().bullet.Penetration = dmgInfo:GetInflictor().bullet.Penetration * penetratedDamageMul
+        if dmgInfo:GetInflictor().bullet then
+            dmgInfo:GetInflictor().bullet.Penetration = math.max(dmgInfo:GetInflictor().bullet.Penetration * penetratedDamageMul, 0)
+        end
 		return
 	end
     

@@ -694,7 +694,7 @@ hook.Add("EntityTakeDamage", "homigrad-damage", function(ent, dmgInfo)
 				bullet.limit_ricochet = bullet.limit_ricochet or 0
 				bullet.penetrated = bullet.penetrated + 1
 				bullet.limit_ricochet = bullet.limit_ricochet + 1
-				bullet.Penetration = distance
+				bullet.Penetration = bullet.Penetration
 				inf:FireLuaBullets(bullet, true)
 
 				local tr = util.QuickTrace(outputHole[#outputHole], -outputDir:GetNormalized() * 10, ent)
