@@ -1039,6 +1039,3 @@ hook.Add("HUDPaint", "DrawBossIncomingBanner", DrawBossIncomingBanner)
     
     --chat.AddText(Color(255, 50, 50), "[DEFENSE] ", Color(255, 255, 255), "Boss banner test activated!")
 end)]]
-
-
-

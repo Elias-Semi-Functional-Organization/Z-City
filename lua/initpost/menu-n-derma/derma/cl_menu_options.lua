@@ -96,6 +96,8 @@ hg.settings:AddOpt("Blood","hg_blood_sprites", "Blood Sprites (DISABLED FOR EVER
 hg.settings:AddOpt("Blood","hg_old_blood", "Old blood")
 
 hg.settings:AddOpt("UI","hg_font", "Set Custom Font", false, true)
+hg.settings:AddOpt("UI","hg_nostatic", "Remove static border effects")
+hg.settings:AddOpt("UI","hg_unconscioustimer", "Unconscious Timer")
 
 hg.settings:AddOpt("Weapons","hg_weaponshotblur_enable", "Shooting Blur")
 hg.settings:AddOpt("Weapons","hg_dynamic_mags", "Dynamic Ammo Inspect")

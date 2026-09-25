@@ -1,4 +1,4 @@
-if SERVER then AddCSLuaFile() end
+﻿if SERVER then AddCSLuaFile() end
 SWEP.Base = "weapon_tpik_base"
 SWEP.PrintName = "M67"
 SWEP.Instructions = 
@@ -246,7 +246,6 @@ end
 
 function SWEP:Throw(mul, time, nosound, throwPosAdjust, throwAngAdjust)
 	if not self.ENT then return end
-
 	local owner = self.Thrower or self:GetOwner()
 	local ent = ents.Create(self.ENT)
 	local entOwner = IsValid(owner.FakeRagdoll) and owner.FakeRagdoll or IsValid(owner) and owner

@@ -675,6 +675,3 @@ net.Receive("defense_change_vote", function(len, ply)
         MODE.VotesChanged = false
     end
 end)
-
-
-
