@@ -1,37 +1,9 @@
 local entMeta = FindMetaTable("Entity")
 -- meow
 
---\\ SLOTS... i think too many for armor, but this is cool!
-ZC_CLOTHES_SLOT_TORSO = 0
-ZC_CLOTHES_SLOT_PANTS = 1
-ZC_CLOTHES_SLOT_BOOTS = 2
-ZC_CLOTHES_SLOT_BACKPACK = 3
-
-ZC_ARMOR_SLOT_HEAD = 4
-    ZC_ARMOR_SLOT_FACE = 5
-        ZC_ARMOR_SLOT_EYES = 6
-    ZC_ARMOR_SLOT_EARS = 7
-
-ZC_ARMOR_SLOT_TORSO = 8
-    ZC_ARMOR_SLOT_UPPERARM_L = 9
-        ZC_ARMOR_SLOT_FOREARM_L = 10
-    ZC_ARMOR_SLOT_UPPERARM_R = 11
-        ZC_ARMOR_SLOT_FOREARM_R = 12  
-
-ZC_ARMOR_SLOT_BELLY = 13
-
-ZC_ARMOR_SLOT_PELVIS = 14
-    ZC_ARMOR_SLOT_THIGH_L = 15
-        ZC_ARMOR_SLOT_SHIN_L = 16
-    ZC_ARMOR_SLOT_THIGH_R = 17
-        ZC_ARMOR_SLOT_SHIN_R = 18
---//
-
-
 AddCSLuaFile()
 
 ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
 ENT.PrintName = "Equipment base"
 ENT.Category = "ZCity Equipment"
 ENT.Spawnable = false
@@ -163,6 +135,8 @@ end
                 EquipmentBySlot[k] = self:EntIndex()
             end
             entUser:SetNetVar("zc_equipment_slot", EquipmentBySlot)
+            
+            self:OnWearNetVars(entUser)
         end
 
         local fem = ThatPlyIsFemale(entUser)
@@ -198,6 +172,10 @@ end
         self:OnWear(entUser)
     end
 
+    function ENT:OnWearNetVars(entUser)
+		--// Write your code here
+	end
+
     function ENT:OnWear(entUser)
 		--// Write your code here
 	end
@@ -213,6 +191,8 @@ end
                 EquipmentBySlot[k] = nil
             end
             entUser:SetNetVar("zc_equipment_slot", EquipmentBySlot)
+
+            self:OnUnwearNetVars(entUser)
         end
 
         if !bDontChangeMaterials and self.OldSubMaterials then
@@ -255,6 +235,10 @@ end
         self:OnUnwear(entUser)
     end
 
+    function ENT:OnUnwearNetVars(entUser)
+		--// Write your code here
+	end
+
     function ENT:OnUnwear(entUser)
 		--// Write your code here
 	end
@@ -278,10 +262,9 @@ end
     hook.Add("CoolPostDrawAppearance", "zc_equipmentDraw",function(ent, ply)
         local Equipment = ply:GetNetVar("zc_equipment", {})
         if #Equipment < 1 then return end
-
         for i = 1, #Equipment do
             local Equip = Entity(Equipment[i])
-            if !IsValid(Equip) then continue end
+            if !IsValid(Equip) or !Equip.RenderOnBody then continue end
             Equip:RenderOnBody(ent)
         end
     end)
@@ -291,7 +274,7 @@ end
     hook.Add("ItemsTransfered", "TransferEquipment", function(ply, ragdoll)
         local Equipment = ply:GetNetVar("zc_equipment", {})
         local EquipmentBySlot = ply:GetNetVar("zc_equipment_slot", {})
-        if #Equipment < 1 then return end
+        if Equipment and #Equipment < 1 then return end
 
         for i = 1, #Equipment do
             local Equip = Entity(Equipment[i])
@@ -306,40 +289,53 @@ end
     end)
 --//
 
+--\\ Die items
+    hook.Add("ItemsRemoved", "TransferEquipment", function(ply, ragdoll)
+        local Equipment = ply:GetNetVar("zc_equipment", {})
+        local EquipmentBySlot = ply:GetNetVar("zc_equipment_slot", {})
+        if Equipment and #Equipment < 1 then return end
+
+        for i = 1, #Equipment do
+            local Equip = Entity(Equipment[i])
+            if !IsValid(Equip) then continue end
+            Equip:Remove()
+        end
+    end)
+--//
+
 --\\
     function entMeta:GetEquipmentBySlot(slot)
         local EquipmentBySlot = self:GetNetVar("zc_equipment_slot",{})
 
-        return Entity(EquipmentBySlot[slot])
+        return EquipmentBySlot[slot] and Entity(EquipmentBySlot[slot]) or nil
+    end
+
+    function entMeta:GetEquipments(slot)
+
+        return self:GetNetVar("zc_equipment", {})
     end
 --//
 
 --\\ Equipment drop command
     if SERVER then
-        concommand.Add("hg_drop_equipment", function(ply, cmd, args)
+        concommand.Add("hg_drop_new_equipment", function(ply, cmd, args)
             if !IsValid(ply) then return end
             if !ply:Alive() or !ply.organism or ply.organism.otrub then return end
             if !args[1] or !tonumber(args[1]) then return end
             local Equipment = ply:GetNetVar("zc_equipment", {})
+            if not Equipment[tonumber(args[1])] then return end
+            local Equip = Entity(Equipment[tonumber(args[1])])
+            if !IsValid(Equip) then return end
 
-            for i = 1, #Equipment do
-                local Equip = Entity(Equipment[i])
-
-                for slot, _ in pairs(Equip.SlotOccupation) do
-                    if isnumber(slot) and tonumber(args[1]) == slot then
-                        Equip:Unwear(ply)
-                        return
-                    end
-                end
-            end
+            Equip:Unwear(ply)
         end)
     end
-
-    hook.Add("radialOptions", "zc_equipment", function()
+    
+    hook.Add("radialOptions", "1_zc_equipment", function()
         local ply = LocalPlayer()
         local organism = ply.organism or {}
 
-        if ply:Alive() and !organism.otrub and hg.GetCurrentCharacter(ply) == ply then
+        if ply:Alive() and !organism.otrub then
             local Equipment = ply:GetNetVar("zc_equipment", {})
             if !Equipment or #Equipment < 1 then return end
             local tbl = {function()
@@ -348,20 +344,19 @@ end
                     local Equip = Entity(Equipment[i])
 
                     for slot, _ in pairs(Equip.SlotOccupation) do
+                        --Equip.IconInv = isstring(Equip.IconOverride) and Material(Equip.IconOverride) or Equip.IconInv or nil -- soon
                         commands[i] = {
                             [1] = function()
-                                local id = next(Equip.SlotOccupation)
-                                --print(slot)
-                                RunConsoleCommand("hg_drop_equipment", slot)
+                                RunConsoleCommand("hg_drop_new_equipment", i)
                                 return 0
                             end,
-                            [2] = "Drop:" .. " " .. Equip.PrintName
+                            [2] = "Drop:" .. " " .. Equip.PrintName,
                         }
                     end
                 end
                 hg.CreateRadialMenu(commands)
                 return -1
-            end, "Drop Equipment"}
+            end, "Drop\nEquipment"}
             hg.radialOptions[#hg.radialOptions + 1] = tbl
         end
     end)

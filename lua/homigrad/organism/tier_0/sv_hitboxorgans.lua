@@ -14,7 +14,6 @@ local stepDiv = 1
 local tracePos = Vector(0, 0, 0)
 function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs, ricochetable, funcInput, ...)
 	local endDisSqr = endDis * endDis
-	tracePos:Set(pos)
 
 	local hitBoxs = {}
 	local tracePoses = {}
@@ -29,6 +28,9 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	distance = math.Clamp(distance, 0, 50)
 	dir:Normalize()
 	dir = dir * stepDis
+
+	tracePos:Set(pos - dir * 5)
+	distance = distance + (dir * 5):Length()
 	
 	local distancereal = distance
 	
@@ -36,8 +38,8 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	local maxtries = 20
 	while(passing < distance and maxtries > 0)do
 		maxtries = maxtries - 1
-		
-		if maxpen ~= 0 and passing >= maxpen then break end
+
+		if maxpen ~= 0 and passing >= maxpen + 10 then break end
 
 		dir:Normalize()
 
@@ -52,8 +54,8 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			
 			if not organs[box[6]] then continue end
 			
-			local startpos = tracePos - dir * 0
-			local endpos = dir * 100
+			local startpos = tracePos
+			local endpos = dir * 105
 
 			local hit_, normal_, frac_ = util_IntersectRayWithOBB(startpos, endpos, box[1], box[2], box[3], box[4])
 			
@@ -71,7 +73,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 		
 		frac = math.max(frac, 0.001)
 
-		dir = dir:GetNormalized() * frac * 100
+		dir = dir:GetNormalized() * frac * 105
 		
 		if iHit then
 			hitBoxs[iHit] = true
@@ -101,7 +103,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			end*/
 			
 			dirSub = funcInput(box, tracePos, ricocheted, ...)
-			
+
 			if dirSub then
 				distance = distance - dirSub * distance
 			end
@@ -109,7 +111,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			//print(organs[box[6]][box[7]][1], distance, dirSub, passing, passing > distance)
 		end
 		
-		passing = passing + 100 * frac
+		passing = passing + 105 * frac
 
 		if not inBody and iHit then
 			inBody = true
@@ -128,7 +130,6 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 		end
 		
 		tracePoses[#tracePoses + 1] = Vector(tracePos[1], tracePos[2], tracePos[3])
-		
 		if passing >= distance or (tracePos - center):LengthSqr() > endDisSqr then break end
 	end
 	

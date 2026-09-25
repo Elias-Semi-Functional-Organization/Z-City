@@ -1,3 +1,4 @@
+
 hg.armor = {}
 local hg_gopro = ConVarExists("hg_gopro") and GetConVar("hg_gopro") or CreateClientConVar("hg_gopro", "0", true, false, "Toggle GoPro-like first-person camera view", 0, 1)
 
@@ -883,3 +884,4 @@ end
 
 initArmor()
 hook.Add("Initialize", "init-atts", initArmor)
+
