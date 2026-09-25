@@ -317,3 +317,21 @@ hook.Add("Think","RemoveMeLoadArmor",function()
     if !HG_BaseHitBoxSetLoaded then return end 
     loadArmor()
 end)
+
+--\\ concommands
+
+    concommand.Add("hg_eqipment_enable", function(ply, cmd, args)
+        if !IsValid(ply) then return end
+        if !ply:Alive() or !ply.organism or ply.organism.otrub then return end
+        if !args[1] or !tonumber(args[1]) then return end
+        local Equipment = ply:GetNetVar("zc_equipment", {})
+        if not Equipment[tonumber(args[1])] then return end
+        local Equip = Entity(Equipment[tonumber(args[1])])
+        if !IsValid(Equip) then return end
+
+        if Equip.Enable then
+            Equip:Enable(ply)
+        end
+    end)
+
+--//

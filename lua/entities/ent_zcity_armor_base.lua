@@ -181,6 +181,10 @@ function ENT:Draw()
     self:DrawModel()
 end
 
+function ENT:RenderModifyPosAng(entDrawOn, pos, ang)
+
+end
+
 --\\ Render Equipment
     local developer = GetConVar("developer")
     ENT.ShouldRenderLocaly = true
@@ -248,6 +252,8 @@ end
             local ang = matBone:GetAngles()
 
             pos,ang = LocalToWorld(model.OffsetPos, model.OffsetAng, pos, ang)
+
+            self:RenderModifyPosAng(entDrawOn, pos, ang)
             model:SetPos(pos)
             model:SetAngles(ang)
 
