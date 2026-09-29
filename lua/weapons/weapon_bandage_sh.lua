@@ -71,7 +71,7 @@ function SWEP:DrawWorldModel2(nodraw)
 	if self.Color then
 		WorldModel:SetColor(self.Color or color_white)
 	end
-	
+
 	if IsValid(owner) then
 		local offsetVec = self.offsetVec
 		local offsetAng = self.offsetAng
@@ -93,7 +93,7 @@ function SWEP:DrawWorldModel2(nodraw)
 	if self.AfterDrawModel then
 		self:AfterDrawModel(WorldModel,nodraw)
 	end
-	
+
 	if not nodraw then WorldModel:DrawModel() end
 
 	if self.Color then
@@ -354,6 +354,7 @@ function SWEP:SecondaryAttack()
 		if !IsValid(self.healbuddy) then return end
 		if hg.GetCurrentCharacter(self.healbuddy) == hg.GetCurrentCharacter(self:GetOwner()) then return end
 		local done = self:Heal(self.healbuddy, self.mode)
+
 		if(done and self.PostHeal)then
 			self:PostHeal(self.healbuddy, self.mode)
 		end		

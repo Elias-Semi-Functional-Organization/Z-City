@@ -33,7 +33,7 @@ end
 
 local blacklist = {
     ["gm_construct"] = true, ["gm_flatgrass"] = true, ["gm_altarskforest"] = true, ["gm_renostruct_v2"] = true,
-    ["gm_renostruct_v2_night"] = true, ["gm_city_of_silence"] = true, ["ttt_hogwarts"] = true,
+    ["gm_renostruct_v2_night"] = true, ["gm_city_of_silence"] = true, ["ttt_hogwarts"] = true, ["gm_ijm_boreas"] = true, ["gm_cfx_upsilon_hotel"] = true
 }
 
 local allowedPrefix = {
@@ -166,7 +166,6 @@ net.Receive("ZB_RockTheVote_vote", function(len, ply)
         net.WriteTable(votes)
     net.Broadcast()
 end)
-
 
 local endStarted = false
 
