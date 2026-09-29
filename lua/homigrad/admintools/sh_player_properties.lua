@@ -627,7 +627,7 @@ properties.Add( "door_unlock", {
 local defaultinv = {
     Weapons = {},
     Ammo = {},
-    Armor = {},
+    --Armor = {}, -- not used anywhere right now, armor is in netvars "Armor" and "zc_equipment"
     Attachments = {}
 }
 local function Respawn(ply,body)

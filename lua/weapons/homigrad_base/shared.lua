@@ -176,7 +176,8 @@ function SWEP:Initialize()
 
 	self:WorldModel_Transform()
 
-	table.insert(hg.weapons,self)
+	--юзлик тут насрач клиентам был жесткий
+	if not table.HasValue(hg.weapons, self) then table.insert(hg.weapons, self) end
 	self.ishgweapon = true
 
 	if SERVER then
@@ -209,7 +210,6 @@ function SWEP:Initialize()
 		end
 	end)
 
-	if SERVER then hg.SyncWeapons() end
 	self:InitializePost()
 end
 
@@ -246,12 +246,6 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 end
 
 if CLIENT then
-	hook.Add("OnGlobalVarSet","hg-weapons",function(key,var)
-		if key == "weapons" then
-			hg.weapons = var
-		end
-	end)
-
 	hook.Add("OnNetVarSet","weapons-net-var",function(index,key,var)
 		if key == "attachments" then
 			local ent = Entity(index)
@@ -268,10 +262,6 @@ if CLIENT then
 			ent.attachments = var
 		end
 	end)
-else
-	function hg.SyncWeapons()
-		SetNetVar("weapons",hg.weapons)
-	end
 end
 
 function SWEP:ShouldDropOnDie()
@@ -312,11 +302,7 @@ end
 
 hg.weaponsDead = hg.weaponsDead or {}
 function SWEP:OnRemove()
-	if SERVER then
-		table.RemoveByValue(hg.weapons,self)
-
-		SetNetVar("weapons",hg.weapons)
-	end
+	table.RemoveByValue(hg.weapons, self)
 end
 
 local hg_aimtoshoot = ConVarExists("hg_aimtoshoot") and GetConVar("hg_aimtoshoot") or CreateConVar("hg_aimtoshoot", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "Toggle DarkRP-like shooting system (aim to shoot): 0 - disabled; 1 - hipfire only; 2 - aiming only", 0, 2)
