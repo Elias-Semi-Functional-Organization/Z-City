@@ -49,7 +49,7 @@ function MODE:HUDPaint()
 	zb.RemoveFade()
     local fade = math.Clamp(zb.ROUND_START + 8 - CurTime(),0,1)
 	local team_ = lply:Team()
-    draw.SimpleText("Homicide | CO-OP", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Z-City | CO-OP", "ZB_HomicideMediumLarge", sw * 0.5, sh * 0.1, Color(0,162,255, 255 * fade), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     local Rolename = (lply.role and lply.role.name) or "Unknown"
     local ColorRole = teams[0].color1
     ColorRole.a = 255 * fade

@@ -57,7 +57,9 @@
 
 local BlackList = {
     ["weapon_hands_sh"] = true,
-    ["weapon_zombclaws"] = true
+    ["weapon_zombclaws"] = true,
+    ["weapon_physgun"] = true,
+    ["gmod_tool"] = true,
 }
 
 -- not SWEPs, just true in Weapons. They stay in inventory when weapons are renewed
