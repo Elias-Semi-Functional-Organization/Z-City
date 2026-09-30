@@ -28,7 +28,9 @@ local function Trace_Bullet(box, hit, ricochet, org, organs, dmg, dmgInfo, dir)
 	dmg = hook_info.dmg
 	
 	if func and !hook_info.restricted then
-		return func(org, bone, dmg, dmgInfo, box[6], dir, hit, ricochet, organ)
+		local oldBox = box[8]
+		local oldOrgan = (oldBox and oldBox[6] and organs[oldBox[6]][oldBox[7]])
+		return func(org, bone, dmg, dmgInfo, box[6], dir, hit, ricochet, organ, oldOrgan)
 	else
 		return 0
 	end

@@ -143,12 +143,25 @@ function SWEP:Tie(tr)
 				local criswat = zb and zb.CROUND == "criresp" and self:GetOwner():Team() == 0
 
 				local victim = hg.RagdollOwner(ent)
+				local owner = self:GetOwwner()
+
+				if not IsValid(owner:GetActiveWeapon()) or IsValid(owner:GetActiveWeapon()) and owner:GetActiveWeapon() ~= self then
+					return -- you could just fool your enemy by switching your weapon while trace was active then end up tying them
+				end
+
 				if criswat and IsValid(victim) and victim:IsPlayer() and victim:Team() == 0 then
-					self:GetOwner():ChatPrint("You cant handcuff your buddies >:(")
+					owner:ChatPrint("You cant handcuff your buddies >:(")
 					return
 				end
 
-				self:GetOwner():ChatPrint("Threat handcuffed.")
+				owner:ChatPrint("Threat handcuffed.")
+				if ent:IsPlayer() then
+					if IsValid(ent:GetActiveWeapon()) then
+						if ent:GetActiveWeapon():GetClass() ~= "weapon_hands_sh" or "weapon_handcuffs_key" then
+							ent:DropWeapon()
+						end
+					end
+				end
 
 				if ent:IsRagdoll() then handcuff(ent) end
 
@@ -162,7 +175,7 @@ function SWEP:Tie(tr)
 					ply:SetNetVar("handcuffed",true)
 				end
 
-				self:GetOwner():SelectWeapon("weapon_hands_sh")
+				owner:SelectWeapon("weapon_hands_sh")
 
 				org.handcuffed = true
 				ent:SetNetVar("handcuffed",true)

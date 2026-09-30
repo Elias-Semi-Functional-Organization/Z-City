@@ -197,7 +197,7 @@ end
     --]]
 --//
 local developer = GetConVar("developer")
-local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, ricochet, hitbox)
+local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, ricochet, hitbox, oldOrgan)
     local armor = org.owner:GetEquipmentBySlot(placement)
 	if !IsValid(armor) then return end
 
@@ -261,6 +261,10 @@ local function protec(org, bone, dmg, dmgInfo, placement, boneindex, dir, hit, r
     end
 
     if armor.SideLinks and armor.SideLinks[HitBoxName] != org.oldSideLink then
+        armor.nodamagetypeChange = true
+    end
+
+    if oldOrgan and !oldOrgan[7] then
         armor.nodamagetypeChange = true
     end
 
