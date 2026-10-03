@@ -208,7 +208,7 @@ function SWEP:Camera(eyePos, eyeAng, view, vellen, ply)
 
 	randomPosL = LerpFT(0.05 * (inpain and 25 - (24 * painmul) or 1), randomPosL, randomPos)
 	
-	scopedLerpAddvec = LerpVectorFT(((self.shot2 == 1) and 1 or 0.06 - self.shot2 * 0.4) * (cocking and 0.25 or 1) * (inpain and 1 or 1), scopedLerpAddvec, (cocking and 1 or 1) * (justzoomed and 0.5 or 1) * (self.shot2 == 1 and 0.8 or 0.5) * 3 * randomPosL * slowlyZooming)
+	scopedLerpAddvec = LerpVectorFT(((self.shot2 == 1) and 0.6 or 0.06 - self.shot2 * 0.4) * (cocking and 0.25 or 1) * (inpain and 1 or 1), scopedLerpAddvec, (cocking and 1 or 1) * (justzoomed and 0.5 or 1) * (self.shot2 == 1 and 0.8 or 0.5) * 3 * randomPosL * slowlyZooming)
 	if !hg_oldsights:GetBool() then
 		if not (ply:IsSuperAdmin() and hg_setzoompos:GetBool()) then
 			posZoom:Add(scopedLerpAddvec)

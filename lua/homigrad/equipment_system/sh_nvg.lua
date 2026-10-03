@@ -52,6 +52,9 @@ local function DrawNoise(amt, alpha)
 end
 
 function RenderNVGOverlay(self, ply)
+	if not self:GetEnabled() then
+		hg.DrawFirstPersonHelmet(self,ply)
+	end
     if !self.GetEnabled or !self:GetEnabled() then 
         if IsValid(lply.NVGLamp) then
             lply.NVGLamp:Remove()
@@ -67,11 +70,11 @@ function RenderNVGOverlay(self, ply)
 		lply.NVGLamp = ProjectedTexture()
 		lply.NVGLamp:SetTexture("effects/flashlight001")
 		lply.NVGLamp:SetBrightness(0.2)
-		lply.NVGLamp:SetEnableShadows(true)
+		lply.NVGLamp:SetEnableShadows(false)
 		local FoV = lply:GetFOV()
 		lply.NVGLamp:SetFOV(FoV + 10)
 		lply.NVGLamp:SetFarZ(500000 / FoV)
-        lply.NVGLamp:SetNearZ( 5 )
+        lply.NVGLamp:SetNearZ( 15 )
 		lply.NVGLamp:SetConstantAttenuation(.1)
 	else
 		local Ang = EyeAngles()

@@ -25,15 +25,22 @@ DEFINE_BASECLASS("ent_zcity_armor_base")
 local ENT = {}
 ENT.Type = "anim"
 ENT.Base = "ent_zcity_armor_base"
-ENT.PrintName = "NVG"
+ENT.PrintName = "NVG GPNVG 18"
 ENT.Category = "ZCity TestArmor"
 ENT.Spawnable = true
 ENT.Model = "models/arctic_nvgs/nvg_gpnvg.mdl"
-ENT.IconOverride = "vgui/icons/helmet"
+ENT.IconOverride = "vgui/icons/nvg"
 ENT.SlotOccupation = {                              -- Slots what armor occupate
     [ZC_ARMOR_SLOT_EYES] = true,
 }
 ENT.ShouldRenderLocaly = false
+
+ENT.Overlay = {}
+ENT.Overlay.PosAdjust = Vector(-2,0,-2)
+ENT.Overlay.AngAdjust = Angle(0,0,0)
+ENT.Overlay.Fov = 0
+ENT.Overlay.ModelMaterial = nil
+ENT.Overlay.Model = "models/arctic_nvgs/nvg_gpnvg.mdl"
 
 ENT.OverlayMaterial = Material("overlays/nvg_scene_opticf2.png")
 ENT.LightFOV = 45
@@ -57,7 +64,7 @@ function ENT:Think()
     local BlurAfterNVG = self:GetBlurAfterNVG()
     if CLIENT and BlurAfterNVG > 0 then
         hookadded = true
-        hook.Add("RenderScreenspaceEffects","renderblur",function()
+        hook.Add("Post Pre Post Processing","renderblurNvg",function()
             local color = color_black
             color.a = bluring*55
             if !lply:IsLocal() then
@@ -65,7 +72,7 @@ function ENT:Think()
             end
             bluring = LerpFT( 0.1, bluring, BlurAfterNVG)
             if BlurAfterNVG <= 0.01 or IsValid(lply.EZNVGlamp) then
-                hook.Remove("RenderScreenspaceEffects","renderblur")
+                hook.Remove("Post Pre Post Processing","renderblurNvg")
                 hookadded = false
             end
         end)
@@ -82,11 +89,15 @@ end
 function ENT:Enable(ply)
     ply:ViewPunch(Angle(2,0,0))
 
-    hg.RunZManipAnim( ply, "visordown", self:GetEnabled(), self:GetEnabled() and 1 or 1.5 )
-	timer.Simple( self:GetEnabled() and 0.6 or 0.4,function()
+    hg.RunZManipAnim( ply, "visordown", self:GetEnabled(), self:GetEnabled() and 1.5 or 1.5 )
+	timer.Simple(0.4,function()
 		if not IsValid(ply) then return end
-        self:SetEnabled(not self:GetEnabled(false))
+        timer.Simple(0.2,function()
+            self:SetEnabled(not self:GetEnabled(false))
+        end)
         self:SetBlurAfterNVG(8)
+
+        self:EmitSound("universal/uni_crawl_r_04.wav",60,math.random(90,110),1,CHAN_AUTO)
 	end)
 end
 

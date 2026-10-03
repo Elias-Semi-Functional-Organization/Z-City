@@ -89,8 +89,8 @@ end
         for _,v in ipairs(Equipment) do
             local Equip = Entity(v)
             if !IsValid(Equip) then continue end
-            --PrintTable(v.SlotOccupation)
-            --PrintTable(self.SlotOccupation)
+            -- PrintTable(Equip.SlotOccupation)
+            -- PrintTable(self.SlotOccupation)
             for slot, _ in pairs(Equip.SlotOccupation) do
                 if isnumber(slot) and self.SlotOccupation[slot] then return false, slot end
             end
@@ -106,7 +106,7 @@ end
 --\\ Use function
     function ENT:Use(entUser)
         local CanWear, Slot = self:CanWear(entUser) 
-        if !CanWear then entUser:GetEquipmentBySlot(Slot):Unwear(entUser) end
+        if !CanWear then entUser:GetEquipmentBySlot(Slot):Unwear(entUser) return end
 
         self:Wear(entUser)
     end

@@ -7,14 +7,13 @@ SWEP.AutoSwitchTo = false
 SWEP.AutoSwitchFrom = false
 SWEP.SpecialTime = 0
 
-local math = math -- owo
+local math, util, Vector, Angle = math, util, Vector, Angle -- owo
 local math_random, math_Clamp, CurTime, Color = math.random, math.Clamp, CurTime, Color
 
 local ang4 = Angle(0,0,180)
 local ang5 = Angle(0,0,0)
 
 local ang3 = Angle(0,0,180)
-local clamp = math_Clamp
 
 local function WhomILookinAt(ply, cone, dist)
 	local CreatureTr, ObjTr, OtherTr
@@ -61,47 +60,76 @@ function SWEP:Deploy()
 	return true
 end
 
+local clawClasses = {
+	["furry"] = 0.5,
+	["headcrabzombie"] = 1.5
+}
+
+local trMins, trMaxs = Vector(-5, -5, -5), Vector(5, 5, 5)
+local trMinsClaws, trMaxsClaws = Vector(-8, -8, -8), Vector(8, 8, 8)
 function SWEP:SecondaryAttack()
-	if self:GetOwner():InVehicle() then return end
+	local owner = self:GetOwner()
+	if owner:InVehicle() then return end
 	if not IsFirstTimePredicted() then return end
-	if self:GetFists() and self:GetOwner().PlayerClassName == "sc_infiltrator" then
+	if self:GetFists() and owner.PlayerClassName == "sc_infiltrator" then
 		self:PrimaryAttack(true)
 	end
-	if self:GetFists() then return end
-	if self:GetOwner():GetNetVar("handcuffed",false) then return end
-	if SERVER then
-		self:SetCarrying()
-		local ply = self:GetOwner()
-		local pos = hg.eye(self:GetOwner())
-		local tr = util.QuickTrace(pos, self:GetOwner():GetAimVector() * self.ReachDistance, {self:GetOwner()})
 
-		if ply.PlayerClassName == "furry" then
+	if self:GetFists() --[[and owner.PlayerClassName ~= "headcrabzombie"]] then return end
+	--[[if self:GetFists() and owner.PlayerClassName == "headcrabzombie" then
+		self:SetFists(false)
+	end--]]
+	if owner:GetNetVar("handcuffed",false) then return end
+
+	self:SetCarrying()
+	local ply = owner
+	local pos = hg.eye(ply)
+	local tr = util.QuickTrace(pos, owner:GetAimVector() * self.ReachDistance, {owner})
+
+	if clawClasses[ply.PlayerClassName] then
+		tr = util.TraceHull({
+			start = pos,
+			endpos = pos + owner:GetAimVector() * self.ReachDistance,
+			filter = {ply, hg.GetCurrentCharacter(ply)},
+			mins = trMinsClaws,
+			maxs = trMaxsClaws,
+		})
+	else
+		tr = util.TraceLine({
+			start = pos,
+			endpos = pos + owner:GetAimVector() * self.ReachDistance,
+			filter = {ply, hg.GetCurrentCharacter(ply)},
+			mins = trMins,
+			maxs = trMaxs,
+		})
+
+		if !tr.Hit or tr.Entity:IsWorld() then
 			tr = util.TraceHull({
 				start = pos,
-				endpos = pos + self:GetOwner():GetAimVector() * self.ReachDistance,
-				filter = {self:GetOwner()},
-				mins = Vector(-5, -5, -5),
-				maxs = Vector(5, 5, 5),
+				endpos = pos + owner:GetAimVector() * self.ReachDistance,
+				filter = {ply, hg.GetCurrentCharacter(ply)},
+				mins = trMins,
+				maxs = trMaxs,
 			})
 		end
 
 		--if (IsValid(tr.Entity) or game.GetWorld() == tr.Entity) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
 		if (IsValid(tr.Entity)) and self:CanPickup(tr.Entity) and not tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
 			--if Dist < self.ReachDistance then
-				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", self:GetOwner():GetShootPos(), 65, math_random(90, 110))
+				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", owner:GetShootPos(), 65, math_random(90, 110))
 				self:SetCarrying(tr.Entity, tr.PhysicsBone, tr.HitPos, Dist)
 				tr.Entity.Touched = true
 				self:ApplyForce()
 			--end
 		elseif IsValid(tr.Entity) and tr.Entity:IsPlayer() then
-			local Dist = (select(1, hg.eye(self:GetOwner())) - tr.HitPos):Length()
+			local Dist = (select(1, hg.eye(owner)) - tr.HitPos):Length()
 			if Dist < self.ReachDistance then
-				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", self:GetOwner():GetShootPos(), 65, math_random(90, 110))
-				self:GetOwner():SetVelocity(self:GetOwner():GetAimVector() * 20)
-				tr.Entity:SetVelocity((self:GetOwner():KeyDown(IN_SPEED) and 1 or -1) * self:GetOwner():GetAimVector() * 50)
+				sound.Play("weapons/melee/blunt_light"..math_random(8)..".wav", owner:GetShootPos(), 65, math_random(90, 110))
+				owner:SetVelocity(owner:GetAimVector() * 20)
+				tr.Entity:SetVelocity((owner:KeyDown(IN_SPEED) and 1 or -1) * owner:GetAimVector() * 50)
 				self:SetNextSecondaryFire(CurTime() + .25)
-				if self:GetOwner().organism.superfighter or self:GetOwner().PlayerClassName == "sc_infiltrator" or (self:GetOwner().PlayerClassName == "furry" and tr.Entity.PlayerClassName ~= "furry") or self:GetOwner():IsBerserk() then
+				if owner.organism.superfighter or owner.PlayerClassName == "sc_infiltrator" or (clawClasses[owner.PlayerClassName] and !(tr.Entity.PlayerClassName == "furry" or (tr.Entity.IsBerserk and tr.Entity:IsBerserk()))) or owner:IsBerserk() then
 					hg.LightStunPlayer(tr.Entity, 3)
 					timer.Simple(0,function()
 						local rag = hg.GetCurrentCharacter(tr.Entity)
@@ -117,7 +145,7 @@ end
 
 SWEP.Checking = 0
 
--- function SWEP:AdjustMouseSensitivity()
+-- function SWEP:AdjustMouseSensitivity() --!! TODO: uncomment??? needs testing
 -- 	local owner = self:GetOwner()
 -- 	local ent = owner:GetNetVar("carryent", nil)
 -- 	if IsValid(ent) and ent:IsRagdoll() and owner.PlayerClassName ~= "sc_infiltrator" and owner.PlayerClassName ~= "superfighter" then
@@ -342,11 +370,11 @@ function SWEP:ApplyForce()
 							org.CO = math.Approach(org.CO, 0, (ply.Profession == "doctor" and 2 or 1))
 							org.COregen = math.Approach(org.COregen, 0, (ply.Profession == "doctor" and 2 or 1))
 
-							if math.random(3) == 1 then
+							if math_random(3) == 1 then
 								org.lungsfunction = true
 							end
 
-							if math.random(50) == 1 and (ply.Profession != "doctor") then
+							if math_random(50) == 1 and (ply.Profession != "doctor") then
 								local dmginfo = DamageInfo()
 								dmginfo:SetDamageType(DMG_CRUSH)
 								dmginfo:SetInflictor(self)
@@ -358,7 +386,7 @@ function SWEP:ApplyForce()
 
 						phys:ApplyForceCenter(-vector_up * 6000)
 
-						--self.CarryEnt:EmitSound("physics/body/body_medium_impact_soft" .. tostring(math.random(7)) .. ".wav")
+						--self.CarryEnt:EmitSound("physics/body/body_medium_impact_soft" .. tostring(math_random(7)) .. ".wav")
 					end
 				end
 			else
@@ -563,7 +591,7 @@ function SWEP:Think()
 		end]]
 
 		if owner.organism and not owner.organism.rarmamputated then
-			self.SpecialTime = math.Clamp(self.SpecialTime - 0.1, Time, self.SpecialTime)
+			self.SpecialTime = math_Clamp(self.SpecialTime - 0.1, Time, self.SpecialTime)
 
 			if self.SpecialTime > 0 and self.SpecialTime <= Time then
 				self:PlayAnim("attack_charge_end",0.9)
@@ -645,9 +673,7 @@ function SWEP:PrimaryAttack(forcespecial)
 	self:SetNextDown(CurTime() + 7)
 	if not self:GetFists() then
 		self:SetFists(true)
-		if CLIENT then
-			self:EmitSound("pwb2/weapons/matebahomeprotection/mateba_cloth.wav", 60, math.random(90, 100), 1, CHAN_BODY)
-		end
+		self:EmitSound("pwb2/weapons/matebahomeprotection/mateba_cloth.wav", 60, math_random(90, 100), 1, CHAN_BODY)Q
 		owner:ViewPunch(depang)
 		if not isfur then
 			self:PlayAnim("draw",1)
@@ -794,8 +820,8 @@ function SWEP:AttackFront(special_attack, rand)
 				end)
 			end
 		else
-			if not isfur and not owner.organism.superfighter and not havekastet and not owner:IsBerserk() and math.random(special_attack and 2 or 1, special_attack and 6 or 4) > 3 then
-				owner.organism.painadd = owner.organism.painadd + (math.random(3, 6) * (special_attack and 2.5 or 1.5))
+			if not isfur and not owner.organism.superfighter and not havekastet and not owner:IsBerserk() and math_random(special_attack and 2 or 1, special_attack and 6 or 4) > 3 then
+				owner.organism.painadd = owner.organism.painadd + (math_random(3, 6) * (special_attack and 2.5 or 1.5))
 				hg.organism.AddWoundManual(owner, math_random(6, 8) * (special_attack and 2 or 1), vector_origin, AngleRand(), owner:LookupBone("ValveBiped.Bip01_"..(rand and "R" or "L").."_Hand"), CurTime())
 			end
 			sound.Play(owner.PlayerClassName == "furry" and "pwb/weapons/knife/hitwall.wav" or "weapons/melee/blunt_light"..math_random(8)..".wav", HitPos, 65, math_random(90, 110))

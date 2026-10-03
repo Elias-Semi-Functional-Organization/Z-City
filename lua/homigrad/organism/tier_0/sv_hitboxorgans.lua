@@ -30,9 +30,10 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	dir = dir * stepDis
 
 	tracePos:Set(pos - dir * 10)
-	distance = distance + (dir * 10):Length()
-	
+
 	local distancereal = distance
+
+	distance = distance + (dir * 10):Length()
 	
 	local passing = 0
 	local maxtries = 20
@@ -56,7 +57,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			if not organs[box[6]] then continue end
 			
 			local startpos = tracePos
-			local endpos = dir * 105
+			local endpos = dir * 100
 
 			local hit_, normal_, frac_ = util_IntersectRayWithOBB(startpos, endpos, box[1], box[2], box[3], box[4])
 			
@@ -113,7 +114,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 			//print(organs[box[6]][box[7]][1], distance, dirSub, passing, passing > distance)
 		end
 		
-		passing = passing + 105 * frac
+		passing = passing + 100 * frac
 
 		if not inBody and iHit then
 			inBody = true
@@ -146,7 +147,7 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 
 	dir:Normalize()
 
-	return tracePos, hitBoxs, inputHole, outputHole, dir, distance, tracePoses
+	return tracePos, hitBoxs, inputHole, outputHole, dir, distancereal, tracePoses
 end
 
 function hg.organism.BlastTrace(pos, size, dmg, boxs, organs, funcInput, ...)
