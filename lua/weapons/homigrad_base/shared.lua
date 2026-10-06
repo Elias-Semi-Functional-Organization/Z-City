@@ -2382,7 +2382,7 @@ elseif CLIENT then
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
         if IsValid(ent) and ent.PlayAnim and ( sendtoclient and sendtoclient or !ent:IsLocal()) then
-            ent:PlayAnim(tbl.anim,tbl.data,tbl.cycling,tbl.callback,tbl.reverse)
+            ent:PlayAnim(tbl.anim,tbl.data,tbl.cycling,tbl.callback,tbl.reverse, nil, tbl.curtime)
         end
     end)
 end
@@ -2399,7 +2399,7 @@ SWEP.AnimList = {
 
 //PrintAnims(Entity(1):GetActiveWeapon():GetWM())
 //Entity(1):GetActiveWeapon():PlayAnim("idle", 1, false, nil, false, false)
-function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
+function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient, curtime)
     local start = 0
 	local time = 1
 	local callbackAdjust = 0
@@ -2419,7 +2419,8 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
                 data = data,
                 cycling = cycling,
                 --callback = callback,
-                reverse = reverse
+                reverse = reverse,
+				curtime = CurTime()
             }
             net.WriteTable(netTbl) 
             net.WriteEntity(self)
@@ -2433,6 +2434,32 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
 			self.callback(self)
 			--self.callback = nil
 		end)
+
+		self.seq = self.AnimList[anim] or anim
+
+		if self.AnimsEvents and (self.AnimsEvents[anim]) then
+			local Time = time
+			for k,v in pairs(self.AnimsEvents[anim]) do
+				self.VM_TimerEvents = self.VM_TimerEvents or {}
+
+				local TimerName = "VM_Events_ZC-Base" .. self:EntIndex() .. anim .. k
+				local TimerID = #self.VM_TimerEvents + 1
+				local seq = self.seq
+				if istable(v) and v[2] and (v[2] == 1 or v[2] == 2) then
+					if k < 0 then v[1](self) continue end
+
+					timer.Create(TimerName, Time * k, 1, function()
+					if not IsValid(self) then return end
+						if seq != self.seq then self:VM_RemoveAllEvents() end
+						v[1](self, mdl)
+						self.VM_TimerEvents[TimerID] = nil
+					end)
+
+					self.VM_TimerEvents[TimerID] = TimerName
+					continue 
+				end
+			end
+		end
 
 		return
 	end
@@ -2456,7 +2483,9 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
 	self.tries = 10
 	self.seq = self.AnimList[anim] or anim
 	mdl:SetSequence(self.seq)
-    self.animtime = CurTime() + time - start
+	local local_curtime = CurTime()
+	local curtime = curtime or local_curtime
+    self.animtime = curtime + time - start
     self.animspeed = time
     self.cycling = cycling
     self.reverseanim = reverse
@@ -2472,7 +2501,24 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
 			local TimerName = "VM_Events_ZC-Base" .. self:EntIndex() .. self.seq .. k
 			local TimerID = #self.VM_TimerEvents + 1
 			local seq = self.seq
+			k = k + start
+
+			if istable(v) and v[2] and (v[2] == 0 or v[2] == 2) then
+				if k < 0 then v[1](self) continue end
+				k = k + (curtime - local_curtime)
+				timer.Create(TimerName, Time * k, 1, function()
+					if not IsValid(self) then return end
+					if seq != self.seq then self:VM_RemoveAllEvents() end
+					v[1](self, mdl)
+					self.VM_TimerEvents[TimerID] = nil
+				end)
+
+				self.VM_TimerEvents[TimerID] = TimerName
+				continue 
+			end
+
 			if k < 0 then v(self) continue end
+			k = k + (curtime - local_curtime)
 			timer.Create(TimerName, Time * k, 1, function()
 				if not IsValid(self) then return end
 				if seq != self.seq then self:VM_RemoveAllEvents() end
@@ -2485,14 +2531,23 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient)
 	end
 end
 
-if CLIENT then
-	function SWEP:VM_RemoveAllEvents()
-		for k,v in ipairs(self.VM_TimerEvents) do
-			timer.Remove(v)
-		end
-		table.Empty(self.VM_TimerEvents)
+function SWEP:VM_RemoveAllEvents()
+	for k,v in ipairs(self.VM_TimerEvents) do
+		timer.Remove(v)
 	end
+	table.Empty(self.VM_TimerEvents)
+end
 
+--[[
+	SWEP.AnimsEvents = {
+		["animname"] = {
+			[fTime] = {function() end,2}, -- 0 for clientside only, 1 for serverside only, 2 for shared!
+			[fTime] = function() end -- still we can use legacy way
+		}
+	}
+--]]
+
+if CLIENT then
 	function PrintPosParameters(ent)
 		for i=0, ent:GetNumPoseParameters() - 1 do
 			local min, max = ent:GetPoseParameterRange( i )

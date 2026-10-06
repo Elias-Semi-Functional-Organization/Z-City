@@ -493,7 +493,7 @@ elseif CLIENT then
         local ent = net.ReadEntity()
         local sendtoclient = net.ReadBool()
         if IsValid(ent) and ent.PlayAnim and ( sendtoclient and sendtoclient or !ent:IsLocal()) then
-            ent:PlayAnim(tbl.anim,tbl.time,tbl.cycling,tbl.callback,tbl.reverse)
+            ent:PlayAnim(tbl.anim,tbl.time,tbl.cycling,tbl.callback,tbl.reverse,nil,tbl.curtime)
             --if tbl.anim == "attack" or tbl.anim == "attack2" and ent:GetOwner().AnimRestartGesture then
             --    ent:GetOwner():AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM, true)
             --end
@@ -501,7 +501,7 @@ elseif CLIENT then
     end)
 end
 
-function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
+function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient,curtime)
     if SERVER then
         sendtoclient = true
         net.Start("melee_attack2")
@@ -510,7 +510,8 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
                 time = time,
                 cycling = cycling,
                 callback = callbackFuncName,
-                reverse = reverse
+                reverse = reverse,
+                curtime = CurTime()
             }
             net.WriteTable(netTbl) 
             net.WriteEntity(self)
@@ -523,6 +524,30 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
         self.seq = tAnim and tAnim[1] or anim
         self.anim = anim
         self.animspeed = time or tAnim[2] or 1
+
+		if self.AnimsEvents and (self.AnimsEvents[self.anim]) then
+			local Time = time
+			for k,v in pairs(self.AnimsEvents[self.anim]) do
+				self.VM_TimerEvents = self.VM_TimerEvents or {}
+
+				local TimerName = "VM_Events_ZC-Base" .. self:EntIndex() .. self.anim .. k
+				local TimerID = #self.VM_TimerEvents + 1
+				local seq = self.seq
+				if istable(v) and v[2] and (v[2] == 1 or v[2] == 2) then
+					if k < 0 then v[1](self) continue end
+
+					timer.Create(TimerName, Time * k, 1, function()
+					if not IsValid(self) then return end
+						if seq != self.seq then self:VM_RemoveAllEvents() end
+						v[1](self, mdl)
+						self.VM_TimerEvents[TimerID] = nil
+					end)
+
+					self.VM_TimerEvents[TimerID] = TimerName
+					continue 
+				end
+			end
+		end
         --self.cycling = cycling or (tAnim[3] ~= nil and tAnim[3])
         --self.reverseanim = reverse or (tAnim[4] ~= nil and tAnim[4])
 
@@ -538,6 +563,7 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
                 end
             end)
         end
+        
 
     return end
     if not IsValid(self:GetWM()) or not IsValid(self:GetOwner()) or self:GetOwner():GetActiveWeapon() ~= self then
@@ -558,7 +584,9 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
     self.seq = tAnim and tAnim[1] or anim
     self.anim = anim
     mdl:SetSequence(tAnim[1] or anim)
-    self.animtime = CurTime() + ( time or tAnim[2] or 1)
+    local local_curtime = CurTime()
+    curtime = curtime or local_curtime
+    self.animtime = curtime + ( time or tAnim[2] or 1)
     self.animspeed = time or tAnim[2] or 1
     self.cycling = cycling or (tAnim[3] ~= nil and tAnim[3])
     self.reverseanim = reverse or (tAnim[4] ~= nil and tAnim[4])
@@ -566,15 +594,32 @@ function SWEP:PlayAnim(anim,time,cycling,callbackFuncName,reverse,sendtoclient)
         self.callback = self[callbackFuncName] or tAnim[5]
     end
 
-    if self.AnimsEvents and self.AnimsEvents[self.seq] then
-		local Time = self.animspeed
-		for k,v in pairs(self.AnimsEvents[self.seq]) do
+    if self.AnimsEvents and (self.AnimsEvents[anim] or self.AnimsEvents[self.seq]) then
+		local Time = time or tAnim[2] or 1
+		for k,v in pairs(self.AnimsEvents[anim] or self.AnimsEvents[self.seq]) do
 			self.VM_TimerEvents = self.VM_TimerEvents or {}
 
 			local TimerName = "VM_Events_ZC-Base" .. self:EntIndex() .. self.seq .. k
 			local TimerID = #self.VM_TimerEvents + 1
 			local seq = self.seq
+			--k = k + start
 
+			if istable(v) and v[2] and (v[2] == 0 or v[2] == 2) then
+				if k < 0 then v[1](self) continue end
+				k = k + (curtime - local_curtime)
+				timer.Create(TimerName, Time * k, 1, function()
+					if not IsValid(self) then return end
+					if seq != self.seq then self:VM_RemoveAllEvents() end
+					v[1](self, mdl)
+					self.VM_TimerEvents[TimerID] = nil
+				end)
+
+				self.VM_TimerEvents[TimerID] = TimerName
+				continue 
+			end
+
+			if k < 0 then v(self) continue end
+			k = k + (curtime - local_curtime)
 			timer.Create(TimerName, Time * k, 1, function()
 				if not IsValid(self) then return end
 				if seq != self.seq then self:VM_RemoveAllEvents() end
