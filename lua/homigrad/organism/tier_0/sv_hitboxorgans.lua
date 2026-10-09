@@ -28,7 +28,8 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 	distance = math.Clamp(distance, 0, 50)
 	dir:Normalize()
 	dir = dir * stepDis
-
+	local oldDir = Vector()
+	oldDir:Set(dir)
 	tracePos:Set(pos - dir * 10)
 
 	local distancereal = distance
@@ -118,12 +119,16 @@ function hg.organism.Trace(pos, dir, size, maxpen, boxs, center, endDis, organs,
 
 		if not inBody and iHit then
 			inBody = true
-			inputHole[#inputHole + 1] = Vector(tracePos[1], tracePos[2], tracePos[3])
+			local id = #inputHole + 1
+			inputHole[id] = Vector(tracePos[1], tracePos[2], tracePos[3])
+			inputHole[id] = inputHole[id] + oldDir * 10
 		end
 
 		if inBody and not iHit then
-			outputHole[#outputHole + 1] = Vector(tracePos[1], tracePos[2], tracePos[3])
 			inBody = nil
+			local id = #inputHole + 1
+			inputHole[id] = Vector(tracePos[1], tracePos[2], tracePos[3])
+			inputHole[id] = inputHole[id] + oldDir * 10
 		end
 
 		if hit then

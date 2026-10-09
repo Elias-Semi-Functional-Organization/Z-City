@@ -536,6 +536,7 @@ function hg.ApplyPoses(ply)
 end
 
 function hg.Fake(ply, huyragdoll, no_freemove, force)
+	if not IsValid(ply) then return end
 	ply.switchingseat = nil
 	if ply:GetMoveType() == 0 then return end
 	if ply.InVehicle and ply:InVehicle() and not force then return end

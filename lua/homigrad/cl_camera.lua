@@ -474,25 +474,30 @@ CalcView = function(ply, origin, angles, fov, znear, zfar)
 	--angle[3] = angles[3]
 
 	if hg_thirdperson:GetBool() then
+		if not ply.lean then ply.lean = 0 end
 		lerpaim = LerpFT(0.1, lerpaim, (not IsAimingNoScope(ply)) and 1 or (hg_legacycam:GetBool() and 1 or 0))
 		leanmul1 = ((ply.lean < 0 and ply.lean * 2.2 or 0) + 1)
-		leanmul2 = ((ply.lean > 0 and ply.lean * 2.2 or 0) + 1)
-		origin = origin + ((angles:Forward() * -30 + angles:Right() * 15 * leanmul1) * lerpaim)
+		leanmul2 = ((ply.lean > 0 and ply.lean * 1.2 or 0) + 1)
+		origin = origin + ((angles:Forward() * -50 + angles:Right() * 18 * (leanmul1) * leanmul2))
 		view = hook.Run("Camera", ply, view.origin, view.angles, view, vector_origin) or view
 		lerpasad = Lerp(0.1, lerpasad, ((IsAimingNoScope(ply) or hg_legacycam:GetBool()) and 0.001 or 1))
 
-		local pos = hg.eye(ply, 10, follow)
-		local ang = ply:EyeAngles()
-		local tr = {}
-		tr.start = pos
-		tr.endpos = pos - ang:Forward() * 60 * lerpasad + ang:Right() * 15 * lerpasad
-		tr.filter = {ply}
-		tr.mask = MASK_SOLID
+		local trace = util.TraceLine({
+			start = ply:GetShootPos(),
+			endpos = origin,
+			filter = ply,
+			mask = MASK_SOLID_BRUSHONLY
+		})
+		
+		if trace.Hit then
+			origin = trace.HitPos - (origin - ply:GetShootPos()):GetNormalized() * 5
+		end
 
-		view.origin = util.TraceLine(tr).HitPos + ((tr.endpos - tr.start):GetNormalized() * -5)
+		view.origin = origin
 		view.angles = angles
 		view.drawviewer = true
-		view.fov = 95 + lerpfovadd + lerpfovadd2
+		view.fov = 50 + lerpfovadd + lerpfovadd2 + (lerpaim * 30)
+		view.znear = 0.7
 		return view
 	end
 

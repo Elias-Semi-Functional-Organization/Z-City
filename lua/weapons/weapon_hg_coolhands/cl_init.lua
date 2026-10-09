@@ -350,11 +350,13 @@ SWEP.laptime = 0
 local ang180, ang1, ang2 = Angle(0,180,0), Angle(-110,-90,0), Angle(-70,-90,0)
 function SWEP:SetHandPos(noset)
 	local ply = self:GetOwner()
+	if CLIENT and self.IsLocal and not self:IsLocal() and IsValid(ply) and ply.PlayerClassName == "headcrabzombie" and not IsValid(ply:GetNetVar("carryent")) then return end
 
 	if not IsValid(ply) or not IsValid(self.worldModel) then return end
 	if IsValid(ply) and (not ply.shouldTransmit or ply.NotSeen) then return end
 	-- ply:SetupBones()
 
+	local ent = self:GetNWEntity("carryent")
 	self.rhandik = (self:GetFists()) or (IsValid(ent) and twohands)
 	self.lhandik = (self:GetFists() and hg.CanUseLeftHand(ply)) or IsValid(ent)
 
