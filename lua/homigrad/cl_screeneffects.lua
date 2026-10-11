@@ -656,7 +656,7 @@ hook.Add("Post Post Processing", "ItHurts", function()
 		
 		if o2 > 50 and !org.otrub then
 			if !IsValid(NoiseStation2) or NoiseStation2:GetState() != GMOD_CHANNEL_PLAYING then
-				sound.PlayFile("sound/zbattle/conscioustypebeat_old.ogg", "noblock noplay", function(station)
+				sound.PlayFile("sound/zbattle/conscioustypebeat.ogg", "noblock noplay", function(station)
 					if IsValid(station) then
 						station:SetVolume(0)
 						station:Play()
