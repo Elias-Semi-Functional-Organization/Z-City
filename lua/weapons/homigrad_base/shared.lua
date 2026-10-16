@@ -378,6 +378,8 @@ function SWEP:CanUse()
 	return not blockedState
 end
 
+local hg_gunbase_allow_jumpshoot = CreateConVar("hg_gunbase_allow_jumpshoot", 0, {FCVAR_ARCHIVE,FCVAR_REPLICATED,FCVAR_NOTIFY},"Allow/Disallow shooting in air when you jump", 0, 1)
+
 function SWEP:IsSprinting()
 	local ply = self:GetOwner()
 
@@ -385,9 +387,17 @@ function SWEP:IsSprinting()
 		return false
 	end
 
+	local jumpshoot = hg_gunbase_allow_jumpshoot:GetBool()
+
 	local isfast = ply:GetVelocity():LengthSqr() > 150 * 150
 	local sprinting = self:KeyDown(IN_SPEED)
 	local validrag = IsValid(ply.FakeRagdoll)
+
+	if not jumpshoot and not ply:IsOnGround() and ply:GetMoveType() == MOVETYPE_WALK and isfast then
+		return true
+	elseif not jumpshoot then
+		ply.InAirTime = 0
+	end
 
 	if hg_aimtoshoot:GetInt() > 0 then
 		local sprintCondition = sprinting and isfast
