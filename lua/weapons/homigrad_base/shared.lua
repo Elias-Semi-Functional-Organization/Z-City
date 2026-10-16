@@ -395,8 +395,6 @@ function SWEP:IsSprinting()
 
 	if not jumpshoot and not ply:IsOnGround() and ply:GetMoveType() == MOVETYPE_WALK and isfast then
 		return true
-	elseif not jumpshoot then
-		ply.InAirTime = 0
 	end
 
 	if hg_aimtoshoot:GetInt() > 0 then
