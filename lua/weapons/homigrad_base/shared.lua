@@ -2484,7 +2484,7 @@ function SWEP:PlayAnim(anim, data, cycling, callback, reverse, sendtoclient, cur
 	self.seq = self.AnimList[anim] or anim
 	mdl:SetSequence(self.seq)
 	local local_curtime = CurTime()
-	local curtime = curtime or local_curtime
+	local curtime = isnumber(curtime) and curtime or local_curtime
     self.animtime = curtime + time - start
     self.animspeed = time
     self.cycling = cycling
