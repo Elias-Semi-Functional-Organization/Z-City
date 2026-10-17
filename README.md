@@ -27,7 +27,7 @@
 
 ## 📦 Versioning
 
-**Current version:** `1.4.1`
+**Current version:** `1.4.2`
 
 Our versioning system follows the **`A.B.cc`** format:
 * **`A`** - Global updates
