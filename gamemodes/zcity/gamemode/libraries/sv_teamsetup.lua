@@ -30,4 +30,21 @@ function zb:AutoBalance()
 		if ply:Team() == TEAM_SPECTATOR then continue end
 		ply:SetTeam(zb:BalancedChoice(0, 1))
 	end
+
+	if mode.name == "hns" then
+		print("Gamemode is Hide and Seek!")
+		local users = {}
+			for i, ply in ipairs(player_GetAll()) do
+			if ply:Team() == TEAM_SPECTATOR then continue end
+			if ply:IsBot() == true then ply:SetTeam(1) continue end
+			table.insert(users, ply:SteamID())
+			print(ply:SteamID())
+		end
+		local seeker = math.random(1, #users)
+		player.GetBySteamID(users[seeker]):SetTeam(0)
+		table.remove(users, seeker)
+		for i, ply in ipairs(users) do
+			player.GetBySteamID(ply):SetTeam(1)
+		end
+	end
 end

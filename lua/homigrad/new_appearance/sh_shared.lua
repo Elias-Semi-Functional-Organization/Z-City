@@ -189,7 +189,7 @@ hg.Appearance.Clothes[1] = {
 	young = "models/humans/male/group01/young",
 	cold = "models/humans/male/group01/cold",
 	casual = "models/humans/male/group01/casual",
-	sweater_xmas = "models/humans/male/group01/sweater",
+	--sweater_xmas = "models/humans/male/group01/sweater",
 	worker = "models/humans/male/group01/worker",
 }
 
@@ -201,7 +201,7 @@ hg.Appearance.Clothes[2] = {
 	young = "models/humans/female/group01/young",
 	cold = "models/humans/female/group01/cold",
 	casual = "models/humans/female/group01/casual",
-	sweater_xmas = "models/humans/female/group01/sweater",
+	--sweater_xmas = "models/humans/female/group01/sweater",
 }
 
 hg.Appearance.ClothesDesc = {
@@ -226,10 +226,10 @@ hg.Appearance.ClothesDesc = {
 	casual = {
 		desc = "from orignial Jack's Homicide gamemode.\nForever."
 	},
-	sweater_xmas = {
+	--[[sweater_xmas = {
 		desc = "by Wontairr from steam workshop\nRMB to open link",
 		link = "https://steamcommunity.com/sharedfiles/filedetails/?id=3621630161"
-	},
+	},]]--
 	worker = {
 		desc = "by Chervo93 from steam workshop\nRMB to open link",
 		link = "https://steamcommunity.com/sharedfiles/filedetails/?id=3540506879"

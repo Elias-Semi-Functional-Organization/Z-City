@@ -40,7 +40,6 @@ local sharp_pain = {
 	"AAAaaAa",
 	"AaaAAaghf",
 	"aaAaaAaff",
-	"aaahhh",
 	"AAAaaGHHH",
 	"AAAaaAAHH",
 	"AAAaaAAAAAaGHHHH",
@@ -86,6 +85,10 @@ local random_phrase = {
 	"Time moves so strangely here.",
 	"I can't remember the last time anything changed.",
 	"The quiet is starting to feel alive.",
+  "Why was I here again?",
+	"Nothing noteworthy happening...",
+	"Lost my train of thought...",
+	"Just me and my thoughts... Yep...",
 }
 
 
@@ -189,7 +192,7 @@ local dislocated_limb = {
 	"I have to get this bone back in.",
 	"No... I have to move it back in place.",
 	"It just hurts so much there. I might need a check up.",
-	"My limb is out of place.",
+	"It's either I move it back into place or ask someone else to do it for me."
 }
 
 local hungry_a_bit = {
@@ -389,7 +392,7 @@ local function get_status_message(ply)
 	local str = ""
 
 	local most_wanted_phraselist
-	
+
 	if temperature < 35 then
 		most_wanted_phraselist = temperature > 31 and cold_phraselist or (temperature < 28 and numb_phraselist or freezing_phraselist)
 	elseif temperature > 38 then
@@ -438,10 +441,6 @@ local function get_status_message(ply)
 		most_wanted_phraselist = ((IsAimedAt(ply) > 0.9) and is_aimed_at_phrases or (math.random(10) == 1 and fear_hurt_ironic or fear_phrases))
 	end
 
-	if brain > 0.1 then
-		most_wanted_phraselist = brain < 0.2 and slight_braindamage_phraselist or braindamage_phraselist
-	end
-	
 	if most_wanted_phraselist then
 		str = most_wanted_phraselist[math.random(#most_wanted_phraselist)]
 
@@ -450,6 +449,7 @@ local function get_status_message(ply)
 		return ""
 	end
 end
+
 
 local allowedlist_types = {
 	heatvomit = heatvomit_phraselist,

@@ -268,12 +268,23 @@ end
 local gradient_d = Material("vgui/gradient-d")
 local gray = Color(255, 255, 255, 100)
 local black = Color(0, 0, 0, 200)
+local otrubmoment = {
+	"You can't speak.",
+	"But nothing came out.",
+	"You couldn't say anything.",
+	"You are unable to speak.",
+	"Unconscious people don't talk.",
+	"Could it be the end?",
+	"no one can hear you.",
+	"Only you and your thoughts.",
+	"And suddenly it's pitch black."
+}
+otrubmoment = table.Random(otrubmoment)
 
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(247, 67, 67, 100 + math.sin(CurTime()) * 30)
 	surface.SetMaterial(gradient_d)
 	surface.DrawTexturedRect(0, h * 0.5, w, h * 0.5)
-
 	surface.SetDrawColor(0, 0, 0, 200)
 	surface.DrawRect(0, 0, w, h)
 
@@ -287,9 +298,9 @@ function PANEL:Paint(w, h)
 		draw.SimpleText("Hold left ALT and press ENTER to whisper", "zChatFontSmall", 5, h * 1.01 + 1, black)
 		draw.SimpleText("Hold left ALT and press ENTER to whisper", "zChatFontSmall", 4, h * 1.01, gray)
 
-		if LocalPlayer().organism and LocalPlayer().organism.otrub  then
-			draw.SimpleText("Your messages are currently not visible to anyone.", "zChatFontSmall", ScrW() * 0.3 + 1, h * 1.01 + 1, black, TEXT_ALIGN_RIGHT)
-			draw.SimpleText("Your messages are currently not visible to anyone.", "zChatFontSmall", ScrW() * 0.3, h * 1.01, gray, TEXT_ALIGN_RIGHT)
+		if LocalPlayer().organism and LocalPlayer().organism.otrub then
+			draw.SimpleText(otrubmoment, "zChatFontSmall", ScrW() * 0.3 + 1, h * 1.01 + 1, black, TEXT_ALIGN_RIGHT)
+			draw.SimpleText(otrubmoment, "zChatFontSmall", ScrW() * 0.3, h * 1.01, gray, TEXT_ALIGN_RIGHT)
 		end
 	DisableClipping(false)
 

@@ -134,6 +134,7 @@ function zb:EndRoundThink()
 			if zb.nextround == "coop" and GetGlobalVar("coop_first_round_timer", 0) == 0 then
 
 				zb.END_TIME = (CurTime() + (GetConVar("zb_dev"):GetBool() and 5 or 60))
+        RunConsoleCommand("hostname", "Elias's Semi Functional Z-COOP SERVER | INTERMISSION")
 				SetGlobalVar("coop_first_round_timer", zb.END_TIME)
 			end
 		end
@@ -583,6 +584,8 @@ function zb:RoundStart()
 		net.WriteString(mode.name or "hmcd")
 		net.WriteInt(zb.ROUND_STATE, 4)
 	net.Broadcast()
+
+	RunConsoleCommand("hostname", "Elias's Semi Functional Z-City Server | " .. "Current Round: " .. mode.PrintName or "Unknown.")
 
 	if forcemodeconvar:GetString() != "" then
 		forcemode = forcemodeconvar:GetString()
